@@ -25,13 +25,17 @@ const (
 //
 // Isso permite:
 //   - Stores com SQL explícito, forte, rápido (PG);
-//   - Stores polimórficos / experimentais usando QueryModel (Generic).
+//   - Stores polimórficos / experimentais usando QueryModel (Generic);
+//   - Stores ORM-based usando GORM (Gorm).
 type Executor interface {
 	// Kind retorna o "flavor" principal do backend.
 	Kind() BackendKind
 
 	// PG retorna o executor específico de Postgres (se disponível).
 	PG() PGExecutor
+
+	// Gorm retorna o executor baseado em GORM (se disponível).
+	Gorm() GormExecutor
 
 	// Futuro: extensões para Mongo, Redis, etc.
 	// Mongo() MongoExecutor
@@ -47,8 +51,11 @@ type Executor interface {
 type executorImpl struct {
 	kind BackendKind
 
-	pg  PGExecutor
-	gen GenericExecutor
+	pg   PGExecutor
+	gen  GenericExecutor
+	gorm GormExecutor
+
+	// Futuro:
 	// mongo MongoExecutor
 	// redis RedisExecutor
 	// http  HTTPExecutor
@@ -79,6 +86,13 @@ func WithGeneric(gen GenericExecutor) ExecutorOption {
 	}
 }
 
+// WithGorm define o executor baseado em GORM.
+func WithGorm(gorm GormExecutor) ExecutorOption {
+	return func(e *executorImpl) {
+		e.gorm = gorm
+	}
+}
+
 // NewExecutor cria um Executor dual-mode.
 //
 // Exemplo de uso:
@@ -86,6 +100,7 @@ func WithGeneric(gen GenericExecutor) ExecutorOption {
 //	ex := NewExecutor(
 //	    WithKind(BackendPostgres),
 //	    WithPG(pgExec),
+//	    WithGorm(gormExec),
 //	    WithGeneric(NewGenericExecutor()),
 //	)
 func NewExecutor(opts ...ExecutorOption) Executor {
@@ -109,6 +124,10 @@ func (e *executorImpl) Kind() BackendKind {
 
 func (e *executorImpl) PG() PGExecutor {
 	return e.pg
+}
+
+func (e *executorImpl) Gorm() GormExecutor {
+	return e.gorm
 }
 
 // Futuro:

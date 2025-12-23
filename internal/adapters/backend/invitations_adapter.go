@@ -64,7 +64,7 @@ type CreatePartnerInvitationInput struct {
 	TenantID     string     `json:"tenant_id"`
 	InvitedBy    string     `json:"invited_by"`
 	ExpiresAt    *time.Time `json:"expires_at,omitempty"`
-	Metadata     *string    `json:"metadata,omitempty"`P
+	Metadata     *string    `json:"metadata,omitempty"`
 }
 
 type CreateInternalInvitationInput struct {
