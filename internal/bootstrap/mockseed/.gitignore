@@ -1,0 +1,16 @@
+# Arquivos gerados automaticamente pelo Meta-Seeder
+# Não commitar - são gerados a partir do banco de dados
+
+# Diretório de types gerados
+types/
+
+# Logs de execução
+logs/
+*.log
+
+# Relatórios temporários
+*.csv
+sync_report_*.csv
+
+# Schema temporário
+schema.json

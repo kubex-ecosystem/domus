@@ -1,0 +1,44 @@
+{
+  "name": "Kubex DS",
+  "application": "domus",
+  "version": "0.0.1",
+  "private": true,
+  "published": false,
+  "aliases": [
+    "domus"
+  ],
+  "repository": "https://github.com/kubex-ecosystem/domus",
+  "homepage": "https://github.com/kubex-ecosystem/domus",
+  "description": "Kubex DS: A complete tool for managing databases, data models, and more.",
+  "go_version": "1.25.5",
+  "main": "cmd/main.go",
+  "bin": "domus",
+  "author": "Rafael Mori <faelmori@gmail.com>",
+  "organization": "kbx_gnyx",
+  "license": "MIT",
+  "keywords": [
+    "domus",
+    "control",
+    "command-line",
+    "tool",
+    "management"
+  ],
+  "platforms": [
+    "linux/amd64",
+    "darwin/amd64",
+    "windows/amd64"
+  ],
+  "dependencies": [
+    "pkg-config",
+    "tar",
+    "gzip",
+    "curl",
+    "git",
+    "zip",
+    "unzip",
+    "jq"
+  ],
+  "healthcheck_type": "http",
+  "healthcheck_url": "http://localhost:9123/health",
+  "healthcheck_cmd": "systemctl --user is-active gnyx-ds.service"
+}
