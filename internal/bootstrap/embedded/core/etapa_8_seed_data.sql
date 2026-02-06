@@ -1,4 +1,4 @@
-\ echo '🚀 ETAPA 8: Inserindo dados iniciais (seed)...' -- ============================================================================
+\ echo 'ETAPA 8: Inserindo dados iniciais (seed)...' -- ============================================================================
 -- KUBEX PRM - Seed Data v1.0
 -- ============================================================================
 -- Dados iniciais para roles, permissions e org/tenant de exemplo
@@ -561,7 +561,7 @@ SELECT COUNT(*) INTO permission_count
 FROM permission;
 SELECT COUNT(*) INTO role_permission_count
 FROM role_permission;
-RAISE NOTICE '✅ Seed concluído com sucesso!';
+RAISE NOTICE 'Seed concluído com sucesso!';
 RAISE NOTICE '   - % roles criadas',
 role_count;
 RAISE NOTICE '   - % permissions criadas',

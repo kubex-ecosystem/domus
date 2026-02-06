@@ -23,7 +23,7 @@ func DockerCmd() *cobra.Command {
 		Use:         "docker",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			err := cmd.Help()
 			if err != nil {
@@ -60,7 +60,7 @@ func startDockerCmd() *cobra.Command {
 		Use:         "start",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			loggers := logz.GetLoggerZ("CanalizeDB")
 			dkr, dkrErr := docker.NewDockerService(loggers)
@@ -92,7 +92,7 @@ func stopDockerCmd() *cobra.Command {
 		Use:         "stop",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			logger := logz.GetLoggerZ("CanalizeDB")
 			dkr, dkrErr := docker.NewDockerService(logger)
@@ -119,7 +119,7 @@ func statusDockerCmd() *cobra.Command {
 		Use:         "status",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("CanalizeDB"))
 			//if dkrErr != nil {
@@ -146,7 +146,7 @@ func restartDockerCmd() *cobra.Command {
 		Use:         "restart",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			logger := logz.GetLoggerZ("CanalizeDB")
 			dkr, dkrErr := docker.NewDockerService(logger)
@@ -177,7 +177,7 @@ func getContainerLogs() *cobra.Command {
 		Use:         "logs",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			logger := logz.GetLoggerZ("CanalizeDB")
 			dkr, dkrErr := docker.NewDockerService(logger)
@@ -206,7 +206,7 @@ func startContainerCmd() *cobra.Command {
 		Use:         "start",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			logger := logz.GetLoggerZ("CanalizeDB")
 			dkr, dkrErr := docker.NewDockerService(logger)
@@ -252,7 +252,7 @@ func createVolumeCmd() *cobra.Command {
 		Use:         "create",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("CanalizeDB"))
 			//if dkrErr != nil {
@@ -279,7 +279,7 @@ func getContainersListCmd() *cobra.Command {
 		Use:         "list",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("CanalizeDB"))
 			//if dkrErr != nil {
@@ -308,7 +308,7 @@ func getVolumesListCmd() *cobra.Command {
 		Aliases:     []string{"list-vol", "volumes", "vol"},
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			logger := logz.GetLoggerZ("CanalizeDB")
 			dkr, dkrErr := docker.NewDockerService(logger)
@@ -346,7 +346,7 @@ func startContainerByNameCmd() *cobra.Command {
 		Use:         "start",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			logger := logz.GetLoggerZ("CanalizeDB")
 			//dkr, dkrErr := factory.NewDockerService(nil, logger)
@@ -378,7 +378,7 @@ func stopContainerByNameCmd() *cobra.Command {
 		Use:         "stop",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("CanalizeDB"))
 			//if dkrErr != nil {
@@ -405,7 +405,7 @@ func addServiceCmd() *cobra.Command {
 		Use:         "add",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("CanalizeDB"))
 			//if dkrErr != nil {

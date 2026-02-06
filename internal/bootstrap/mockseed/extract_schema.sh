@@ -19,15 +19,15 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 log_info() {
-  echo -e "${BLUE}ℹ️  [EXTRACT]${NC} $1"
+  echo -e "${BLUE} [EXTRACT]${NC} $1"
 }
 
 log_success() {
-  echo -e "${GREEN}✅ [EXTRACT]${NC} $1"
+  echo -e "${GREEN}[EXTRACT]${NC} $1"
 }
 
 log_error() {
-  echo -e "${RED}❌ [EXTRACT]${NC} $1"
+  echo -e "${RED}[EXTRACT]${NC} $1"
 }
 
 # Validar DATABASE_URL

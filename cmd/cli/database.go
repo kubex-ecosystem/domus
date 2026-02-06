@@ -28,7 +28,7 @@ func DatabaseCmd() *cobra.Command {
 		Use:         "database",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			if initArgs.Debug {
 				gl.SetDebugMode(initArgs.Debug)
@@ -62,7 +62,7 @@ func startDatabaseCmd() *cobra.Command {
 		Use:         "start",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			gl.SetDebugMode(initArgs.Debug)
 			if err := migrateDatabaseCmd().Execute(); err != nil {
@@ -94,7 +94,7 @@ func stopDatabaseCmd() *cobra.Command {
 		Use:         "stop",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := cmd.Help(); err != nil {
 				gl.Errorf("Error displaying help: %v", err)
@@ -120,7 +120,7 @@ func statusDatabaseCmd() *cobra.Command {
 		Use:         "status",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := cmd.Help(); err != nil {
 				gl.Errorf("Error displaying help: %v", err)
@@ -141,7 +141,7 @@ func statusDatabaseCmd() *cobra.Command {
 // 		Short:       shortDesc,
 // 		Long:        longDesc,
 // 		Aliases:     []string{"svc", "dbs"},
-// 		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+// 		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 // 		RunE: func(cmd *cobra.Command, args []string) error {
 // 			gl.SetDebugMode(initArgs.Debug)
 
@@ -199,7 +199,7 @@ func migrateDatabaseCmd() *cobra.Command {
 		Use:         "migrate",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("DOMUS_HIDEBANNER") == "true")),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Initialize context and logger
 			ctx := context.Background()

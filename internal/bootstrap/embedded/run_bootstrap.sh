@@ -37,23 +37,23 @@ NC='\033[0m' # No Color
 # ==========================================
 
 log_info() {
-  echo -e "${BLUE}ℹ️  [INFO]${NC} $1" | tee -a "$LOG_FILE"
+  echo -e "${BLUE} [INFO]${NC} $1" | tee -a "$LOG_FILE"
 }
 
 log_success() {
-  echo -e "${GREEN}✅ [SUCCESS]${NC} $1" | tee -a "$LOG_FILE"
+  echo -e "${GREEN}[SUCCESS]${NC} $1" | tee -a "$LOG_FILE"
 }
 
 log_warning() {
-  echo -e "${YELLOW}⚠️  [WARNING]${NC} $1" | tee -a "$LOG_FILE"
+  echo -e "${YELLOW} [WARNING]${NC} $1" | tee -a "$LOG_FILE"
 }
 
 log_error() {
-  echo -e "${RED}❌ [ERROR]${NC} $1" | tee -a "$LOG_FILE"
+  echo -e "${RED}[ERROR]${NC} $1" | tee -a "$LOG_FILE"
 }
 
 log_step() {
-  echo -e "${PURPLE}🚀 [STEP $1]${NC} $2" | tee -a "$LOG_FILE"
+  echo -e "${PURPLE}[STEP $1]${NC} $2" | tee -a "$LOG_FILE"
 }
 
 print_header() {
@@ -228,7 +228,7 @@ main() {
   mkdir -p "$LOG_DIR"
 
   # Header
-  print_header "🚀 KUBEX SCHEMA HÍBRIDO v3.0 - INICIANDO"
+  print_header "KUBEX SCHEMA HÍBRIDO v3.0 - INICIANDO"
 
   log_info "Timestamp: $(date)"
   log_info "Database: ${DATABASE_URL//:*@/:***@}"
@@ -257,7 +257,7 @@ main() {
     local end_time=$(date +%s)
     local total_duration=$((end_time - start_time))
 
-    print_header "✅ BOOTSTRAP CONCLUÍDO COM SUCESSO"
+    print_header "BOOTSTRAP CONCLUÍDO COM SUCESSO"
     log_success "Tempo total: ${total_duration}s"
     log_info "Log completo: $LOG_FILE"
 
@@ -267,7 +267,7 @@ main() {
     local end_time=$(date +%s)
     local total_duration=$((end_time - start_time))
 
-    print_header "⚠️  BOOTSTRAP CONCLUÍDO COM AVISOS"
+    print_header " BOOTSTRAP CONCLUÍDO COM AVISOS"
     log_warning "Tempo total: ${total_duration}s"
     log_warning "Revise o log: $LOG_FILE"
 

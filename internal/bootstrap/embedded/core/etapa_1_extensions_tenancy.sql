@@ -11,18 +11,18 @@
 -- public
 -- Garante que estamos no schema correto
 SET search_path TO public;
-\ echo '🚀 ETAPA 1: Criando extensions e estrutura de multi-tenancy...' -- Extensions
+\ echo 'ETAPA 1: Criando extensions e estrutura de multi-tenancy...' -- Extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE EXTENSION IF NOT EXISTS "citext";
 -- Case-insensitive text
-\ echo '  ✅ Extensions criadas' -- Organização (nível mais alto)
+\ echo '  Extensions criadas' -- Organização (nível mais alto)
 CREATE TABLE IF NOT EXISTS org (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-\ echo '  ✅ Tabela org criada' -- Tenant (empresa/cliente individual)
+\ echo '  Tabela org criada' -- Tenant (empresa/cliente individual)
 CREATE TABLE IF NOT EXISTS tenant (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     org_id UUID NOT NULL REFERENCES org(id) ON DELETE CASCADE,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS tenant (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ
 );
-\ echo '  ✅ Tabela tenant criada' -- Teams (times dentro de um tenant)
+\ echo '  Tabela tenant criada' -- Teams (times dentro de um tenant)
 CREATE TABLE IF NOT EXISTS team (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id UUID NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
@@ -56,4 +56,4 @@ CREATE TABLE IF NOT EXISTS team (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ
 );
-\ echo '  ✅ Tabela team criada' \ echo '✨ ETAPA 1 concluída com sucesso!'
+\ echo '  Tabela team criada' \ echo 'ETAPA 1 concluída com sucesso!'

@@ -21,19 +21,19 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 log_info() {
-  echo -e "${BLUE}ℹ️  [GEN-TS]${NC} $1"
+  echo -e "${BLUE} [GEN-TS]${NC} $1"
 }
 
 log_success() {
-  echo -e "${GREEN}✅ [GEN-TS]${NC} $1"
+  echo -e "${GREEN}[GEN-TS]${NC} $1"
 }
 
 log_warning() {
-  echo -e "${YELLOW}⚠️  [GEN-TS]${NC} $1"
+  echo -e "${YELLOW} [GEN-TS]${NC} $1"
 }
 
 log_error() {
-  echo -e "${RED}❌ [GEN-TS]${NC} $1"
+  echo -e "${RED}[GEN-TS]${NC} $1"
 }
 
 # Validar schema.json
@@ -199,5 +199,5 @@ EOF
 
 echo "export * from './metadata';" >> "$INDEX_FILE"
 
-log_success "✨ Geração completa!"
+log_success "Geração completa!"
 log_info "📁 Arquivos em: $OUTPUT_DIR"

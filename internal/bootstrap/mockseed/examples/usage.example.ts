@@ -167,14 +167,14 @@ async function UsersPage() {
 // ==========================================
 
 /*
-✅ Type-safety completa em todo o frontend
-✅ Autocomplete no VSCode/IDE
-✅ Mocks reais do banco de dados
-✅ Zero configuração manual
-✅ Sincronização automática PG → TS
-✅ Testes mais confiáveis
-✅ Desenvolvimento offline
-✅ Documentação viva do schema
+Type-safety completa em todo o frontend
+Autocomplete no VSCode/IDE
+Mocks reais do banco de dados
+Zero configuração manual
+Sincronização automática PG → TS
+Testes mais confiáveis
+Desenvolvimento offline
+Documentação viva do schema
 
 Para atualizar types quando o schema mudar:
 
