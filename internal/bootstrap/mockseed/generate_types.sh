@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==========================================
-# CANALIZE META-SEEDER: TypeScript Generator
+# KUBEX META-SEEDER: TypeScript Generator
 # ==========================================
 # Gera TypeScript types a partir do schema.json
 # Entrada: schema.json

@@ -1,5 +1,5 @@
 -- ============================================================
--- SEED CANALIZE - V0.1 (Minimal, Realistic, Coherent)
+-- SEED KUBEX - V0.1 (Minimal, Realistic, Coherent)
 -- ============================================================
 -- Seed minimalista para testes básicos
 -- Estrutura: 1 org, 1 tenant, 2 users, 3 roles, 6 permissions

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2155,SC2207
 # ==========================================
-# CANALIZE META-SEEDER v1.0.0
+# KUBEX META-SEEDER v1.0.0
 # ==========================================
 # Versão: 1.0.0
 # Data: 2025-12-02
@@ -310,7 +310,7 @@ main() {
   mkdir -p "$LOG_DIR"
 
   # Header
-  print_header "🚀 CANALIZE HYDRATION v0.0.1 - INICIANDO"
+  print_header "🚀 KUBEX HYDRATION v0.0.1 - INICIANDO"
 
   log_info "Timestamp: $(date)"
   log_info "Database: ${DATABASE_URL//:*@/:***@}"
@@ -360,7 +360,7 @@ main() {
 # ==========================================
 
 show_help() {
-  print_header "🧙‍♂️ CANALIZE META-SEEDER v1.0.0"
+  print_header "🧙‍♂️ KUBEX META-SEEDER v1.0.0"
 
   echo "Uso: ./run_bootstrap.sh [comando] [opções]"
   echo ""

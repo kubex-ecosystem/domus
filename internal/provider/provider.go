@@ -38,7 +38,7 @@ type Capabilities struct {
 type StartSpec struct {
 	Services      []ServiceRef // quais serviços subir/anexar
 	PreferredPort map[string]int
-	Secrets       map[string]string // senhas já geradas pelo GoBE
+	Secrets       map[string]string // senhas já geradas pelo GNyx
 	Labels        map[string]string // rastreabilidade
 }
 

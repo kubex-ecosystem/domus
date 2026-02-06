@@ -1,5 +1,5 @@
 \ echo '🚀 ETAPA 8: Inserindo dados iniciais (seed)...' -- ============================================================================
--- CANALIZE PRM - Seed Data v1.0
+-- KUBEX PRM - Seed Data v1.0
 -- ============================================================================
 -- Dados iniciais para roles, permissions e org/tenant de exemplo
 -- Data: 2025-11-10

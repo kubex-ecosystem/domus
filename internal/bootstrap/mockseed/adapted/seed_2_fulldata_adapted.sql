@@ -1,6 +1,6 @@
 SELECT seed_utils.set_search_path('public');
 -- ============================================================
--- SEED CANALIZE - V2.0 (Full Data - Realistic Scenario)
+-- SEED KUBEX - V2.0 (Full Data - Realistic Scenario)
 -- ============================================================
 -- Cenário completo com múltiplas orgs, tenants, usuários,
 -- roles, permissions, teams, leads e estrutura de parceiros

@@ -21,7 +21,7 @@ func ConfigCmd() *cobra.Command {
 		Use:         "config",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config, err := ReadConfig(initArgs.ConfigFile)
 			if err != nil {

@@ -1,4 +1,4 @@
-// Package module provides internal types and functions for the GoBE application.
+// Package module provides internal types and functions for the GNyx application.
 package module
 
 import (

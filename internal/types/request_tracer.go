@@ -206,7 +206,7 @@ func (r *RequestsTracer) Mu() ci.IMutexes {
 	return r.Mutexes
 }
 
-func LoadRequestsTracerFromFile(g ci.IGoBE) (map[string]ci.IRequestsTracer, error) {
+func LoadRequestsTracerFromFile(g ci.IGNyx) (map[string]ci.IRequestsTracer, error) {
 	if RequestTracers == nil {
 		RequestTracers = make(map[string]ci.IRequestsTracer)
 	}
@@ -242,7 +242,7 @@ func LoadRequestsTracerFromFile(g ci.IGoBE) (map[string]ci.IRequestsTracer, erro
 	decoder.DisallowUnknownFields()
 
 	g.Mu().MuAdd(1)
-	go func(g ci.IGoBE) {
+	go func(g ci.IGNyx) {
 		defer g.Mu().MuDone()
 		logz.Log("info", "Decoding request tracers from file")
 		for decoder.More() {
@@ -270,7 +270,7 @@ func LoadRequestsTracerFromFile(g ci.IGoBE) (map[string]ci.IRequestsTracer, erro
 
 	return RequestTracers, nil
 }
-func updateRequestTracer(g ci.IGoBE, updatedTracer ci.IRequestsTracer) error {
+func updateRequestTracer(g ci.IGNyx, updatedTracer ci.IRequestsTracer) error {
 	var decoder *json.Decoder
 	var outputFile *os.File
 	var err error
@@ -338,7 +338,7 @@ func updateRequestTracer(g ci.IGoBE, updatedTracer ci.IRequestsTracer) error {
 	}
 	return nil
 }
-func isDuplicateRequest(g ci.IGoBE, rt ci.IRequestsTracer, logger *logz.LoggerZ) bool {
+func isDuplicateRequest(g ci.IGNyx, rt ci.IRequestsTracer, logger *logz.LoggerZ) bool {
 	env := g.Environment()
 	strategy := screeningByRAMSize(env, rt.GetFilePath())
 

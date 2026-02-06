@@ -1,6 +1,6 @@
 SELECT seed_utils.set_search_path('public');
 -- ============================================================
--- SEED CANALIZE - AUTH USERS (Usuários para Teste de Auth)
+-- SEED KUBEX - AUTH USERS (Usuários para Teste de Auth)
 -- ============================================================
 -- Adiciona usuários específicos para testar autenticação
 -- Garante que todas as 8 roles tenham pelo menos um usuário

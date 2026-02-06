@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==========================================
-# CANALIZE META-SEEDER: Mock Generator
+# KUBEX META-SEEDER: Mock Generator
 # ==========================================
 # Gera mocks TypeScript a partir dos dados reais do PostgreSQL
 # Entrada: schema.json + DATABASE_URL

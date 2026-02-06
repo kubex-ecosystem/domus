@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==========================================
-# CANALIZE META-SEEDER: Schema Extractor
+# KUBEX META-SEEDER: Schema Extractor
 # ==========================================
 # Extrai estrutura completa do PostgreSQL para JSON
 # Saída: schema.json com tabelas, colunas, tipos, relações, constraints, enums

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==========================================
-# CANALIZE BOOTSTRAP EXECUTOR v3.0
+# KUBEX BOOTSTRAP EXECUTOR v3.0
 # ==========================================
 # Versão: 3.0.0
 # Data: 2025-11-10
@@ -228,7 +228,7 @@ main() {
   mkdir -p "$LOG_DIR"
 
   # Header
-  print_header "🚀 CANALIZE SCHEMA HÍBRIDO v3.0 - INICIANDO"
+  print_header "🚀 KUBEX SCHEMA HÍBRIDO v3.0 - INICIANDO"
 
   log_info "Timestamp: $(date)"
   log_info "Database: ${DATABASE_URL//:*@/:***@}"

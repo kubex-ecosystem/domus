@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==========================================
-# CANALIZE META-SEEDER: Bidirectional Sync
+# KUBEX META-SEEDER: Bidirectional Sync
 # ==========================================
 # Sincroniza dados entre PostgreSQL e Mocks TypeScript
 # Modos: diff, dry-run, pg-to-mock, mock-to-pg

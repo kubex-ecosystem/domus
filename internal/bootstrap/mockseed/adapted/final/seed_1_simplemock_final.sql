@@ -1,7 +1,7 @@
 BEGIN;
 SELECT seed_utils.set_search_path('public');
 -- ============================================================
--- SEED CANALIZE - V0.1 (Minimal, Realistic, Coherent)
+-- SEED KUBEX - V0.1 (Minimal, Realistic, Coherent)
 -- ============================================================
 -- User
 -- kubex_adm

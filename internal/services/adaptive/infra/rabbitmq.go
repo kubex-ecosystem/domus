@@ -27,7 +27,7 @@ func SetupRabbitMQ(config *types.DBConfig, dockerService ci.IDockerService) erro
 	}
 
 	if config.User == "" {
-		config.User = "gobe"
+		config.User = "gnyx"
 	}
 	// if config.Pass == "" {
 	// TODO: Mudar para usar o serviço de fileKeyring do kbx, REMOVER COMPLETAMENTE keyring (dbus) do projeto
@@ -42,7 +42,7 @@ func SetupRabbitMQ(config *types.DBConfig, dockerService ci.IDockerService) erro
 	// }
 
 	// if config.Vhost == "" {
-	// 	config.Vhost = "gobe"
+	// 	config.Vhost = "gnyx"
 	// }
 	// if config.Port == "" {
 	// 	config.Port = "5672"

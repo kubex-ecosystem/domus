@@ -5,14 +5,14 @@ const (
 	KeyringService        = "gnyx"
 	DefaultKubexConfigDir = "$HOME/.gnyx"
 
-	DefaultGNyxKeyPath    = "$HOME/.gnyxalize_be/github.com/kubex-ecosystem/gdnyx-key.pem"
-	DefaultGNyxCertPath   = "$HOME/.gnyxalize_be/github.com/kubex-ecosystem/gdnyx-cert.pem"
-	DefaultGNyxCAPath     = "$HOME/.gnyxalize_be/ca-cert.pem"
-	DefaultGNyxConfigPath = "$HOME/.gnyxalize_be/config/config.json"
+	DefaultGNyxKeyPath    = "$HOME/.gnyx/github.com/kubex-ecosystem/gnyx-key.pem"
+	DefaultGNyxCertPath   = "$HOME/.gnyx/github.com/kubex-ecosystem/gnyx-cert.pem"
+	DefaultGNyxCAPath     = "$HOME/.gnyx/ca-cert.pem"
+	DefaultGNyxConfigPath = "$HOME/.gnyx/config/config.json"
 
-	DefaultConfigDir            = "$HOME/.gnyxalize_ds/config"
-	DefaultConfigFile           = "$HOME/.gnyxalize_ds/config.json"
-	DefaultKubexDomusConfigPath = "$HOME/.gnyxalize_ds/config/config.json"
+	DefaultConfigDir            = "$HOME/.domus/config"
+	DefaultConfigFile           = "$HOME/.domus/config.json"
+	DefaultKubexDomusConfigPath = "$HOME/.domus/config/config.json"
 )
 
 const (
