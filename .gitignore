@@ -80,3 +80,7 @@ configs/*.toml
 configs/**/*.yaml
 configs/**/*.yml
 configs/**/*.json
+*/internal/bootstrap/**/*.json
+internal/**/*.txt
+*/**/*.lkt.txt
+*/**/config.yaml
