@@ -10,18 +10,18 @@ const (
 	DefaultGNyxCAPath     = "$HOME/.kubex/gnyx/ca-cert.pem"
 	DefaultGNyxConfigPath = "$HOME/.kubex/gnyx/config/config.json"
 
-	DefaultConfigDir            = "$HOME/.kubex/domus/config"
-	DefaultConfigFile           = "$HOME/.kubex/domus/config.json"
+	DefaultConfigDir            = "$HOME/.kubex/gnyx/config"
+	DefaultConfigFile           = "$HOME/.kubex/gnyx/config/config.json"
 	DefaultKubexDomusConfigPath = "$HOME/.kubex/domus/config/config.json"
 )
 
 const (
-	DefaultVolumesDir     = "$HOME/.kubex/gnyx/volumes"
-	DefaultRedisVolume    = "$HOME/.kubex/gnyx/volumes/redis"
-	DefaultPostgresVolume = "$HOME/.kubex/gnyx/volumes/postgresql"
-	DefaultMongoDBVolume  = "$HOME/.kubex/gnyx/volumes/mongodb"
-	DefaultMongoVolume    = "$HOME/.kubex/gnyx/volumes/mongo"
-	DefaultRabbitMQVolume = "$HOME/.kubex/gnyx/volumes/rabbitmq"
+	DefaultVolumesDir     = "$HOME/.kubex/domus/volumes"
+	DefaultRedisVolume    = "$HOME/.kubex/domus/volumes/redis"
+	DefaultPostgresVolume = "$HOME/.kubex/domus/volumes/postgresql"
+	DefaultMongoDBVolume  = "$HOME/.kubex/domus/volumes/mongodb"
+	DefaultMongoVolume    = "$HOME/.kubex/domus/volumes/mongo"
+	DefaultRabbitMQVolume = "$HOME/.kubex/domus/volumes/rabbitmq"
 )
 
 const (

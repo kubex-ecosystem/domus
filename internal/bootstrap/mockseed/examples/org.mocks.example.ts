@@ -7,7 +7,7 @@ import { Org } from '../org';
 export const orgMocks: Org[] = [
   {
     "id": "01JHX4ZCP3G2T4JC3P8VBA5N3A",
-    "name": "Kubex PRM",
+    "name": "Kubex Ecosystem",
     "created_at": "2025-11-26T12:00:00.000Z"
   }
 ];

@@ -11,7 +11,7 @@ SET search_path TO public;
 INSERT INTO org (id, name, created_at)
 VALUES (
     '10000000-0000-0000-0000-000000000001',
-    'Kubex PRM',
+    'Kubex Ecosystem',
     now()
   ) ON CONFLICT (id) DO NOTHING;
 -- ================

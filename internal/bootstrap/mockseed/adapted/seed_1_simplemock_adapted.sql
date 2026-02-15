@@ -17,7 +17,7 @@ SET search_path TO public;
 insert into orgs (id, name, created_at)
 values (
       seed_utils.get_mapped_uuid('01JHX4ZCP3G2T4JC3P8VBA5N3A'),
-      'Kubex PRM',
+      'Kubex Ecosystem',
       now()
    );
 -- ================
