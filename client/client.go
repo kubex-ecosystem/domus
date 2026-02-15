@@ -9,6 +9,7 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/adapter"
 	st "github.com/kubex-ecosystem/domus/internal/datastore"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
+	integration "github.com/kubex-ecosystem/domus/internal/datastore/integration_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	pendingaccess "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
@@ -28,6 +29,7 @@ type (
 	InviteStore        = invite.InviteStore
 	CompanyStore       = company.CompanyStore
 	PendingAccessStore = pendingaccess.PendingAccessStore
+	IntegrationStore   = integration.IntegrationStore
 )
 
 // BackendConnections is an alias for the database manager type.
@@ -68,8 +70,6 @@ type DSClient interface {
 	NewStoreOnlyAdapterFactory(ctx context.Context, dbName string) (*adapter.AdapterFactory, error)
 	NewORMOnlyAdapterFactory(db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)
 }
-
-
 
 // DSClientImpl represents the data service client managing multiple backend connections.
 type DSClientImpl struct {

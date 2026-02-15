@@ -9,7 +9,6 @@ import (
 	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
-
 // Repository define operações CRUD genéricas para qualquer entidade.
 // Implementações concretas podem adicionar métodos específicos ao domínio.
 type Repository[T any] interface {

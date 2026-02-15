@@ -1,7 +1,7 @@
 {
-  "version": "3.0.0",
+  "version": "4.0.0",
   "generated_at": "2025-11-10T00:00:00Z",
-  "generated_by": "Rafael Mori (Desenvolvedor) + Claude Code (Anthropic)",
+  "generated_by": "Rafael Mori (Desenvolvedor)",
   "database": {
     "target": "PostgreSQL 17.6+",
     "compatibility": ["PostgreSQL 14+", "PostgreSQL 15+", "PostgreSQL 16+", "PostgreSQL 17+"],
@@ -170,16 +170,35 @@
       ],
       "critical": false,
       "rollback_safe": true
+    },
+    {
+      "step": 11,
+      "name": "Integrations",
+      "file": "core/etapa_11_integrations.sql",
+      "description": "Cria tabela para integrações com terceiros (ex: API keys, webhooks)",
+      "estimated_duration_seconds": 2,
+      "dependencies": ["etapa_2_users_rbac.sql"],
+      "creates": [
+        "table: integration_config",
+        "table: sync_job",
+        "table: integration_query",
+        "index: idx_integration_config_tenant",
+        "index: idx_integration_config_type",
+        "index: idx_integration_config_created_at",
+        "index: idx_sync_job_tenant"
+      ],
+      "critical": false,
+      "rollback_safe": true
     }
   ],
-  "total_estimated_duration_seconds": 23,
+  "total_estimated_duration_seconds": 20,
   "statistics": {
     "total_tables": 20,
     "total_functions": 1,
     "total_triggers": 14,
     "total_indexes": 63,
     "total_roles_created": 8,
-    "total_permissions_configured": 35
+    "total_permissions_configured": 33
   },
   "validation": {
     "pre_execution_checks": [

@@ -9,6 +9,7 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/provider/flavors"
 
 	c "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
+	integration "github.com/kubex-ecosystem/domus/internal/datastore/integration_store"
 	i "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	p "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
 	s "github.com/kubex-ecosystem/domus/internal/datastore/schemas_store"
@@ -16,8 +17,6 @@ import (
 	t "github.com/kubex-ecosystem/domus/internal/types"
 	gl "github.com/kubex-ecosystem/logz"
 )
-
-
 
 func init() {
 	if registry == nil {
@@ -124,6 +123,18 @@ func (f *StoreFactory) PendingAccessStore(ctx context.Context) (p.PendingAccessS
 	return pendingStore, nil
 }
 
+func (f *StoreFactory) IntegrationStore(ctx context.Context, mKey []byte) (integration.IntegrationStore, error) {
+	store, err := f.Create(ctx, "integration")
+	if err != nil {
+		return nil, err
+	}
+	integrationStore, ok := store.(integration.IntegrationStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not an IntegrationStore")
+	}
+	return integrationStore, nil
+}
+
 // GetDriverName retorna o nome do driver usando reflection.
 func GetDriverName(drv t.Driver) string {
 	// Tenta usar Driver.Name() se disponível
@@ -203,4 +214,18 @@ func NewPendingAccessStoreFromExecutor(exec execution.Executor) (p.PendingAccess
 		return nil, fmt.Errorf("PGExecutor is nil")
 	}
 	return p.NewPGPendingAccessStore(pgExec), nil
+}
+
+func NewIntegrationStoreFromExecutor(exec execution.Executor, mKey []byte) (integration.IntegrationStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("integration store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return integration.NewPGIntegrationStore(pgExec, mKey), nil
 }
