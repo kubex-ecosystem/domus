@@ -5,9 +5,9 @@ const (
 	KeyringService        = "gnyx"
 	DefaultKubexConfigDir = "$HOME/.kubex/gnyx"
 
-	DefaultGNyxKeyPath    = "$HOME/.kubex/gnyx/github.com/kubex-ecosystem/gnyx-key.pem"
-	DefaultGNyxCertPath   = "$HOME/.kubex/gnyx/github.com/kubex-ecosystem/gnyx-cert.pem"
-	DefaultGNyxCAPath     = "$HOME/.kubex/gnyx/ca-cert.pem"
+	DefaultGNyxKeyPath    = "$HOME/.kubex/gnyx/cert/gnyx-key.pem"
+	DefaultGNyxCertPath   = "$HOME/.kubex/gnyx/cert/gnyx-cert.pem"
+	DefaultGNyxCAPath     = "$HOME/.kubex/gnyx/cert/ca-cert.pem"
 	DefaultGNyxConfigPath = "$HOME/.kubex/gnyx/config/config.json"
 
 	DefaultConfigDir            = "$HOME/.kubex/gnyx/config"
