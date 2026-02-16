@@ -27,7 +27,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000011',
-    'viewer@gnyx.app',
+    'viewer@gnyx.kubex.world',
     'Test',
     'Viewer',
     crypt('kubex123', gen_salt('bf')),
@@ -66,7 +66,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000012',
-    'multi@gnyx.app',
+    'multi@gnyx.kubex.world',
     'Multi',
     'Tenant User',
     crypt('kubex123', gen_salt('bf')),
@@ -111,7 +111,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000013',
-    'inactive@gnyx.app',
+    'inactive@gnyx.kubex.world',
     'Inactive',
     'User',
     crypt('kubex123', gen_salt('bf')),
@@ -147,7 +147,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000014',
-    'reset@gnyx.app',
+    'reset@gnyx.kubex.world',
     'Password',
     'Reset',
     crypt('temp123', gen_salt('bf')),
@@ -185,7 +185,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000015',
-    'test.superadmin@gnyx.app',
+    'test.superadmin@gnyx.kubex.world',
     'Test',
     'Super Admin',
     crypt('test123', gen_salt('bf')),
@@ -218,7 +218,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000016',
-    'test.admin@gnyx.app',
+    'test.admin@gnyx.kubex.world',
     'Test',
     'Admin',
     crypt('test123', gen_salt('bf')),
@@ -251,7 +251,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000017',
-    'test.manager@gnyx.app',
+    'test.manager@gnyx.kubex.world',
     'Test',
     'Manager',
     crypt('test123', gen_salt('bf')),
@@ -284,7 +284,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000018',
-    'test.salesrep@gnyx.app',
+    'test.salesrep@gnyx.kubex.world',
     'Test',
     'Sales Rep',
     crypt('test123', gen_salt('bf')),
@@ -317,7 +317,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000019',
-    'test.partneradmin@gnyx.app',
+    'test.partneradmin@gnyx.kubex.world',
     'Test',
     'Partner Admin',
     crypt('test123', gen_salt('bf')),
@@ -350,7 +350,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000020',
-    'test.partner@gnyx.app',
+    'test.partner@gnyx.kubex.world',
     'Test',
     'Partner',
     crypt('test123', gen_salt('bf')),
@@ -383,7 +383,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000021',
-    'test.analyst@gnyx.app',
+    'test.analyst@gnyx.kubex.world',
     'Test',
     'Analyst',
     crypt('test123', gen_salt('bf')),
@@ -416,7 +416,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000022',
-    'test.viewer@gnyx.app',
+    'test.viewer@gnyx.kubex.world',
     'Test',
     'Viewer',
     crypt('test123', gen_salt('bf')),

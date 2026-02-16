@@ -134,7 +134,7 @@ insert into postgres.users (
 values -- Usuário principal (você)
    (
       seed_utils.get_mapped_uuid('01JHX54TJEGW95WNH9TEG10M4H'),
-      'rafael@gnyx.app',
+      'rafael@gnyx.kubex.world',
       'Rafael Mori',
       crypt(
          seed_utils.get_mapped_uuid('kubex123'),
@@ -145,7 +145,7 @@ values -- Usuário principal (você)
    -- Usuário secundário (Thiago)
    (
       seed_utils.get_mapped_uuid('01JHX54TJQBV8Z7RPKT4HR8X7N'),
-      'thiago@gnyx.app',
+      'thiago@gnyx.kubex.world',
       'Thiago CTO',
       crypt(
          seed_utils.get_mapped_uuid('kubex123'),
@@ -216,7 +216,7 @@ insert into postgres.invites (
    )
 values (
       seed_utils.get_mapped_uuid('01JHX5AHDV7H8T6C2911CKGHEC'),
-      'novo-user@gnyx.app',
+      'novo-user@gnyx.kubex.world',
       seed_utils.get_mapped_uuid('01JHX5237J1TQ5J0V8B4CWVZ4N'),
       -- viewer
       seed_utils.get_mapped_uuid('01JHX4ZH8Z9AGF1AFM7V0E7EAQ'),
