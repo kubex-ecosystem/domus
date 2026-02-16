@@ -17,7 +17,7 @@ import (
 // LoadRootConfig carrega um arquivo JSON simples de config.
 func LoadRootConfig(path string) (kbx.RootConfig, error) {
 	if path == "" {
-		path = os.ExpandEnv(kbxGet.EnvOr("KUBEX_DS_CONFIG_PATH", kbx.DefaultKubexDomusConfigPath))
+		path = os.ExpandEnv(kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_PATH", kbx.DefaultKubexDomusConfigPath))
 	}
 
 	if _, err := os.Stat(path); err != nil {

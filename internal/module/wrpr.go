@@ -6,10 +6,10 @@ import (
 )
 
 func RegX() *CanalizeDB {
-	var configPath = os.Getenv("DOMUS_CONFIGFILE")
-	var keyPath = os.Getenv("DOMUS_KEYFILE")
-	var certPath = os.Getenv("DOMUS_CERTFILE")
-	var hideBannerV = os.Getenv("DOMUS_HIDEBANNER")
+	var configPath = os.Getenv("KUBEX_DOMUS_CONFIGFILE")
+	var keyPath = os.Getenv("KUBEX_DOMUS_KEYFILE")
+	var certPath = os.Getenv("KUBEX_DOMUS_CERTFILE")
+	var hideBannerV = os.Getenv("KUBEX_DOMUS_HIDEBANNER")
 
 	return &CanalizeDB{
 		configPath: configPath,

@@ -115,7 +115,7 @@ func (c *DSClientImpl) Init(ctx context.Context) error {
 
 	if c.dsConfig.FilePath == "" {
 		gl.Debug("DS config path not set, using default path from env or default constant")
-		c.dsConfig.FilePath = os.ExpandEnv(kbxGet.EnvOr("KUBEX_DS_CONFIG_PATH", kbxMod.DefaultKubexDomusConfigPath))
+		c.dsConfig.FilePath = os.ExpandEnv(kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_PATH", kbxMod.DefaultKubexDomusConfigPath))
 	}
 
 	// Load the configuration for the DS client.
