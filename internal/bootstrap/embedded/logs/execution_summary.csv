@@ -5,7 +5,7 @@ step,name,duration_seconds,status
 4,Invites,0,success
 5,Business Entities,0,success
 6,Índices de Performance,0,success
-7,Triggers,1,success
+7,Triggers,0,success
 8,Seed Data,0,success
 9,Seed Data,0,success
 10,Seed Data,0,success

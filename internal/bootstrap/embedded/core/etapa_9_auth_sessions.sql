@@ -11,7 +11,8 @@
 -- public
 -- Garante que estamos no schema correto
 SET search_path TO public;
-\ echo 'ETAPA 9: Criando tabela auth_sessions...' CREATE TABLE IF NOT EXISTS auth_sessions (
+\ echo 'ETAPA 9: Criando tabela auth_sessions...' 
+CREATE TABLE IF NOT EXISTS auth_sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
   refresh_token_hash TEXT NOT NULL,
