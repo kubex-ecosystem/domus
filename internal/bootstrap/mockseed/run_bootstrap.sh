@@ -408,7 +408,7 @@ run_extract() {
 run_generate_types() {
   local output_dir="${1:-${SCRIPT_DIR}/types}"
 
-  print_header "📝 GERANDO TYPESCRIPT TYPES"
+  print_header "GERANDO TYPESCRIPT TYPES"
 
   if [ ! -f "${SCRIPT_DIR}/generate_types.sh" ]; then
     log_error "generate_types.sh não encontrado"

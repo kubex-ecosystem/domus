@@ -129,7 +129,7 @@ fi
 	// Obtém o terminal do usuário (stdin ativo)
 	tty, err := os.OpenFile("/dev/tty", os.O_WRONLY, 0)
 	if err != nil {
-		fmt.Println("⚠️ Não foi possível acessar o terminal:", err)
+		fmt.Println("Não foi possível acessar o terminal:", err)
 		fmt.Printf("Por favor, execute manualmente: . %s\n", shellRC)
 		return
 	}

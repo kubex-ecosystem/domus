@@ -2,29 +2,29 @@ package helpers
 
 const cdxBashEnvTemplate = `#!/usr/bin/env bash
 
-## 🚀 Auto-loading Node.js (via NVM)
+## Auto-loading Node.js (via NVM)
 if [[ -d "$HOME/.nvm" ]]; then
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
   [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 fi
 
-## 🚀 Load Mori Logger, if available
+## Load Mori Logger, if available
 if [[ ! $(command -v mri_log) && -f "${HOME}/.mori_logger_env" ]]; then
 	. "${HOME}/.mori_logger_env" || true
 fi
 
-## 🚀 Fix broken packages in APT
+## Fix broken packages in APT
 function mri_handle_apt_unmet() {
 	if [ "$1" -eq 100 ]; then
 		sudo apt --fix-broken install
 	fi
 }
 
-## 🚀 Interactive installer (APT/DPKG)
+## Interactive installer (APT/DPKG)
 function mri_installer() {
 	if [[ -z "$1" ]]; then
-		mri_log error "❌ You need to specify a package to install!"
+		mri_log error "You need to specify a package to install!"
 		return 1
 	fi
 
@@ -96,52 +96,52 @@ function mri_installer() {
 	fi
 }
 
-## 🚀 Enhanced file listing
+## Enhanced file listing
 function la() {
 	local dir="${1:-.}"
 	if [[ ! -d "$dir" ]]; then
-		mri_log error "❌ '$dir' is not a valid directory!"
+		mri_log error "'$dir' is not a valid directory!"
 		return 1
 	fi
 	ls -lAh --color=always --group-directories-first "$dir"
 }
 
-## 🚀 Get public IP
+## Get public IP
 function get_public_ip() {
 	curl -s https://api.ipify.org || {
-		mri_log error "❌ Failed to get public IP."
+		mri_log error "Failed to get public IP."
 		return 1
 	}
 }
 
-## 🚀 Copy output to clipboard (XClip)
+## Copy output to clipboard (XClip)
 function xcp() {
 	if command -v xclip &>/dev/null; then
 		echo -e "$*" | xclip -selection clipboard
 	else
-		mri_log error "❌ xclip is not installed."
+		mri_log error "xclip is not installed."
 		return 1
 	fi
 }
 
-## 🚀 Reload shell configuration
+## Reload shell configuration
 function reloadrc() {
 	local shell_rc="$HOME/.${SHELL##*/}rc"
 	if [[ -f "$shell_rc" ]]; then
 		. "$shell_rc"
-		mri_log success "✅ $USER Configurations reloaded!"
+		mri_log success "$USER Configurations reloaded!"
 	else
-		mri_log error "❌ Configuration file not found: $shell_rc"
+		mri_log error "Configuration file not found: $shell_rc"
 		return 1
 	fi
 }
 
-## 🚀 Clear the screen
+## Clear the screen
 function cls() {
 	tput reset || clear
 }
 
-## 🚀 Find information about a command/program
+## Find information about a command/program
 function wtf_is_that() {
 	local cmd="$1"
 	local response=""
@@ -153,18 +153,18 @@ function wtf_is_that() {
 	if [[ -n "$response" ]]; then
 		mri_log info "🔍 $response"
 	else
-		mri_log error "❌ No information found for '$cmd'."
+		mri_log error "No information found for '$cmd'."
 		return 1
 	fi
 }
 
-## 🚀 Update and clean the system (enhanced)
+## Update and clean the system (enhanced)
 function upgrade-fix() {
 	mri_log info "🔄 Updating packages..."
 	sudo apt-get update -y && sudo apt full-upgrade -y --fix-broken
 	mri_log info "🧹 Cleaning unnecessary packages..."
 	sudo apt autoremove -y && sudo apt autoclean -y && sudo apt purge -y
-	mri_log success "✅ Update completed!"
+	mri_log success "Update completed!"
 }
 
 ## 🔹 Ask before updating the system

@@ -65,7 +65,7 @@ func SetupRabbitMQ(config *types.DBConfig, dockerService ci.IDockerService) erro
 	// }
 	// // Cria o volume, se necessário
 	// if err := dockerService.CreateVolume(config.Name, config.Volume); err != nil {
-	// 	logz.Log("error", fmt.Sprintf("❌ Erro ao criar volume do RabbitMQ: %v", err))
+	// 	logz.Log("error", fmt.Sprintf("Erro ao criar volume do RabbitMQ: %v", err))
 	// 	return err
 	// }
 

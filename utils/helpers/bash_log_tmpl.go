@@ -89,7 +89,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
 		mri_log warn "💡 (Example: 'source kubex_helpers.sh')"
 		touch $HOME/.cache/.mri_usage_warning
 	fi
-	mri_log info "✅ Kubex Helpers loaded successfully."
+	mri_log info "Kubex Helpers loaded successfully."
   fi
 fi
 

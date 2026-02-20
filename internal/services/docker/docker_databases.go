@@ -20,7 +20,7 @@ import (
 
 func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, rootConfig *kbx.RootConfig) error {
 	if rootConfig == nil {
-		return fmt.Errorf("❌ Configuração do banco de dados não encontrada")
+		return fmt.Errorf("Configuração do banco de dados não encontrada")
 	}
 	if !kbx.DefaultTrue(rootConfig.Enabled) {
 		logz.Log("debug", "Database services are disabled in config, skipping DB setup")
@@ -39,11 +39,11 @@ func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, rootConfig 
 				// Check if the database is already running
 				ok := IsServiceRunning("kubexdb-pg")
 				if ok {
-					logz.Log("debug", fmt.Sprintf("✅ %s já está rodando!", "kubexdb-pg"))
+					logz.Log("debug", fmt.Sprintf("%s já está rodando!", "kubexdb-pg"))
 					continue
 				} else {
 					if err := d.StartContainerByName("kubexdb-pg"); err == nil {
-						logz.Log("debug", fmt.Sprintf("✅ %s já está rodando!", "kubexdb-pg"))
+						logz.Log("debug", fmt.Sprintf("%s já está rodando!", "kubexdb-pg"))
 						continue
 					} else {
 						// Check if Password is empty, if so, try to retrieve it from keyring
@@ -98,7 +98,7 @@ func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, rootConfig 
 						counter := 0
 						for volName := range volsTmp {
 							if err := d.CreateVolume("kubexdb-pg-vol-"+fmt.Sprint(counter), volName); err != nil {
-								logz.Log("error", fmt.Sprintf("❌ Erro ao criar volume do PostgreSQL: %v", err))
+								logz.Log("error", fmt.Sprintf("Erro ao criar volume do PostgreSQL: %v", err))
 								continue
 							}
 							counter++
@@ -112,7 +112,7 @@ func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, rootConfig 
 						nPort, _ := strconv.Atoi(dbConfig.Port)
 						port, err := svc.FindAvailablePort(nPort, 10)
 						if err != nil {
-							logz.Log("error", fmt.Sprintf("❌ Erro ao encontrar porta disponível: %v", err))
+							logz.Log("error", fmt.Sprintf("Erro ao encontrar porta disponível: %v", err))
 							continue
 						}
 						dbConfig.Port = port
@@ -229,28 +229,28 @@ func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, rootConfig 
 		for _, port := range srv.Ports {
 			pt := svc.ExtractPort(port)
 			if pt == "" {
-				logz.Log("error", fmt.Sprintf("❌ Erro ao mapear porta %s", pt))
+				logz.Log("error", fmt.Sprintf("Erro ao mapear porta %s", pt))
 				continue
 			}
 			if _, ok := pt.(map[string]string); !ok {
-				logz.Log("error", fmt.Sprintf("❌ Erro ao mapear porta %s", pt))
+				logz.Log("error", fmt.Sprintf("Erro ao mapear porta %s", pt))
 				continue
 			}
 			// Verifica se a porta já está mapeada
 			ptStr, ok := pt.(map[string]string)
 			if !ok || ptStr["port"] == "" || ptStr["protocol"] == "" {
-				logz.Log("error", fmt.Sprintf("❌ Erro ao mapear porta: tipo inválido ou campos ausentes: %v", pt))
+				logz.Log("error", fmt.Sprintf("Erro ao mapear porta: tipo inválido ou campos ausentes: %v", pt))
 				continue
 			}
 			portKey := nat.Port(fmt.Sprintf("%s/%s", ptStr["port"], ptStr["protocol"]))
 			if _, exists := mapPorts[portKey]; exists {
-				logz.Log("error", fmt.Sprintf("❌ Erro ao mapear porta %s", portKey))
+				logz.Log("error", fmt.Sprintf("Erro ao mapear porta %s", portKey))
 				continue
 			}
 			// Adiciona a porta ao mapa
 			portMap, ok := pt.(map[string]string)
 			if !ok {
-				logz.Log("error", fmt.Sprintf("❌ Erro ao converter porta: %v", pt))
+				logz.Log("error", fmt.Sprintf("Erro ao converter porta: %v", pt))
 				continue
 			}
 			portKey = nat.Port(fmt.Sprintf("%s/%s", portMap["port"], portMap["protocol"]))
@@ -259,7 +259,7 @@ func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, rootConfig 
 		// Verifica se o serviço já está rodando
 		// Isso já está dentro do StartContainer
 		// if IsServiceRunning(srv.Name) {
-		// 	logz.Log("info", fmt.Sprintf("✅ %s já está rodando!", srv.Name))
+		// 	logz.Log("info", fmt.Sprintf("%s já está rodando!", srv.Name))
 		// 	continue
 		// }
 		if err := d.StartContainer(srv.Name, srv.Image, srv.Env, mapPorts, srv.Volumes, srv.Cmd); err != nil {
