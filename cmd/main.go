@@ -9,7 +9,7 @@ var (
 	logger = gl.GetLoggerZ("domus")
 )
 
-// main initializes the logger and creates a new CanalizeDB instance.
+// main initializes the logger and creates a new Domus instance.
 func main() {
 	if err := module.RegX().Command().Execute(); err != nil {
 		logger.Fatal(err.Error())

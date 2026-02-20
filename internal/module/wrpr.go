@@ -5,13 +5,13 @@ import (
 	"strings"
 )
 
-func RegX() *CanalizeDB {
+func RegX() *Domus {
 	var configPath = os.Getenv("KUBEX_DOMUS_CONFIGFILE")
 	var keyPath = os.Getenv("KUBEX_DOMUS_KEYFILE")
 	var certPath = os.Getenv("KUBEX_DOMUS_CERTFILE")
 	var hideBannerV = os.Getenv("KUBEX_DOMUS_HIDEBANNER")
 
-	return &CanalizeDB{
+	return &Domus{
 		configPath: configPath,
 		keyPath:    keyPath,
 		certPath:   certPath,

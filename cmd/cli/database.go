@@ -22,8 +22,8 @@ var logger = gl.GetLoggerZ("Migration")
 func DatabaseCmd() *cobra.Command {
 	var initArgs = &kbx.InitArgs{}
 
-	shortDesc := "Database management commands for CanalizeDB"
-	longDesc := "Database management commands for CanalizeDB"
+	shortDesc := "Database management commands for Domus"
+	longDesc := "Database management commands for Domus"
 	cmd := &cobra.Command{
 		Use:         "database",
 		Short:       shortDesc,
@@ -33,7 +33,7 @@ func DatabaseCmd() *cobra.Command {
 			if initArgs.Debug {
 				gl.SetDebugMode(initArgs.Debug)
 			}
-			gl.Info("CanalizeDB", "Database management commands for CanalizeDB")
+			gl.Info("Domus", "Database management commands for Domus")
 			if err := cmd.Help(); err != nil {
 				gl.Errorf("Error displaying help: %v", err)
 			}
@@ -72,7 +72,7 @@ func startDatabaseCmd() *cobra.Command {
 			if err := systemservice.StartSystemService(initArgs); err != nil {
 				return gl.Errorf("Error starting database services: %v", err)
 			}
-			gl.Info("CanalizeDB", "Database services started successfully.")
+			gl.Info("Domus", "Database services started successfully.")
 			return nil
 		},
 	}

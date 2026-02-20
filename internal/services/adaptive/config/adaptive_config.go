@@ -1,4 +1,4 @@
-// Package adaptive provides configurations for adaptive services in CanalizeDB.
+// Package adaptive provides configurations for adaptive services in Domus.
 package adaptive
 
 import (
