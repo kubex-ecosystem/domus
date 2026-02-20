@@ -113,29 +113,29 @@ func GenerateDefaultPostgresConfig() kbx.RootConfig {
 
 	db := kbx.DBConfig{
 		// ID:        "postgres",
-		Name:      kbxGet.EnvOr("KUBEX_DB_NAME", "domus"),
+		Name:      kbxGet.EnvOr("KUBEX_DOMUS_DB_NAME", "domus"),
 		IsDefault: true,
 		Enabled: kbxGet.ValueOrIf(
-			kbxGet.EnvOr("KUBEX_DB_ENABLED", "") != "",
+			kbxGet.EnvOr("KUBEX_DOMUS_DB_ENABLED", "") != "",
 			kbxGet.EnvOrType(
-				"KUBEX_DB_ENABLED",
+				"KUBEX_DOMUS_DB_ENABLED",
 				kbxGet.BlPtr(true),
 			),
 			kbxGet.BlPtr(true),
 		),
 		// Type:      DBTypePostgres,
-		Host:   kbxGet.EnvOr("KUBEX_DB_HOST", "127.0.0.1"),
-		Port:   kbxGet.EnvOr("KUBEX_DB_PORT", "5432"),
-		User:   kbxGet.EnvOr("KUBEX_DB_USER", "kubex_adm"),
+		Host:   kbxGet.EnvOr("KUBEX_DOMUS_DB_HOST", "127.0.0.1"),
+		Port:   kbxGet.EnvOr("KUBEX_DOMUS_DB_PORT", "5432"),
+		User:   kbxGet.EnvOr("KUBEX_DOMUS_DB_USER", "kubex_adm"),
 		Pass:   pass,
-		DBName: kbxGet.EnvOr("KUBEX_DB_NAME", "domus"),
-		Schema: kbxGet.EnvOr("KUBEX_DB_SCHEMA", "public"),
+		DBName: kbxGet.EnvOr("KUBEX_DOMUS_DB_NAME", "domus"),
+		Schema: kbxGet.EnvOr("KUBEX_DOMUS_DB_SCHEMA", "public"),
 		Options: map[string]any{
-			"sslmode":           kbxGet.EnvOr("KUBEX_DB_SSLMODE", "disable"),
-			"max_connections":   kbxGet.EnvOrType("KUBEX_DB_MAX_CONNECTIONS", 50),
-			"connect_timeout":   kbxGet.EnvOrType("KUBEX_DB_CONNECT_TIMEOUT", 10),
-			"application_name":  kbxGet.EnvOr("KUBEX_DB_APPLICATION_NAME", "domus"),
-			"pool_max_lifetime": kbxGet.EnvOr("KUBEX_DB_POOL_MAX_LIFETIME", "30m"),
+			"sslmode":           kbxGet.EnvOr("KUBEX_DOMUS_DB_SSLMODE", "disable"),
+			"max_connections":   kbxGet.EnvOrType("KUBEX_DOMUS_DB_MAX_CONNECTIONS", 50),
+			"connect_timeout":   kbxGet.EnvOrType("KUBEX_DOMUS_DB_CONNECT_TIMEOUT", 10),
+			"application_name":  kbxGet.EnvOr("KUBEX_DOMUS_DB_APPLICATION_NAME", "domus"),
+			"pool_max_lifetime": kbxGet.EnvOr("KUBEX_DOMUS_DB_POOL_MAX_LIFETIME", "30m"),
 		},
 	}
 
