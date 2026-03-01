@@ -1,6 +1,6 @@
 step,name,duration_seconds,status
 1,Extensions + Multi-Tenancy,0,success
-2,Users + RBAC,0,success
+2,Users + RBAC,1,success
 3,Memberships + FKs Circulares,0,success
 4,Invites,0,success
 5,Business Entities,0,success
