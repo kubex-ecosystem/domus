@@ -17,7 +17,7 @@ import (
 // LoadRootConfig carrega um arquivo JSON simples de config.
 func LoadRootConfig(path string) (kbx.RootConfig, error) {
 	if path == "" {
-		path = os.ExpandEnv(kbxGet.EnvOr("CANALIZE_DS_CONFIG_PATH", kbx.DefaultKubexDomusConfigPath))
+		path = os.ExpandEnv(kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_PATH", kbx.DefaultKubexDomusConfigPath))
 	}
 
 	if _, err := os.Stat(path); err != nil {
@@ -113,35 +113,52 @@ func GenerateDefaultPostgresConfig() kbx.RootConfig {
 
 	db := kbx.DBConfig{
 		// ID:        "postgres",
-		Name:      "domus",
+		Name:      kbxGet.EnvOr("KUBEX_DOMUS_DB_NAME", "domus"),
 		IsDefault: true,
-		Enabled:   kbx.BoolPtr(true),
+		Enabled: kbxGet.ValueOrIf(
+			kbxGet.EnvOr("KUBEX_DOMUS_DB_ENABLED", "") != "",
+			kbxGet.EnvOrType(
+				"KUBEX_DOMUS_DB_ENABLED",
+				kbxGet.BlPtr(true),
+			),
+			kbxGet.BlPtr(true),
+		),
 		// Type:      DBTypePostgres,
-		Host:   "127.0.0.1",
-		Port:   "5432",
-		User:   "kubex_adm",
+		Host:   kbxGet.EnvOr("KUBEX_DOMUS_DB_HOST", "127.0.0.1"),
+		Port:   kbxGet.EnvOr("KUBEX_DOMUS_DB_PORT", "5432"),
+		User:   kbxGet.EnvOr("KUBEX_DOMUS_DB_USER", "kubex_adm"),
 		Pass:   pass,
-		DBName: "postgres",
-		Schema: "public",
+		DBName: kbxGet.EnvOr("KUBEX_DOMUS_DB_NAME", "domus"),
+		Schema: kbxGet.EnvOr("KUBEX_DOMUS_DB_SCHEMA", "public"),
 		Options: map[string]any{
-			"sslmode":           "disable",
-			"max_connections":   50,
-			"connect_timeout":   10,
-			"application_name":  "domus",
-			"pool_max_lifetime": "30m",
+			"sslmode":           kbxGet.EnvOr("KUBEX_DOMUS_DB_SSLMODE", "disable"),
+			"max_connections":   kbxGet.EnvOrType("KUBEX_DOMUS_DB_MAX_CONNECTIONS", 50),
+			"connect_timeout":   kbxGet.EnvOrType("KUBEX_DOMUS_DB_CONNECT_TIMEOUT", 10),
+			"application_name":  kbxGet.EnvOr("KUBEX_DOMUS_DB_APPLICATION_NAME", "domus"),
+			"pool_max_lifetime": kbxGet.EnvOr("KUBEX_DOMUS_DB_POOL_MAX_LIFETIME", "30m"),
 		},
 	}
 
-	// DSN simples, o driver pode refinar
-	db.DSN = fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=%s",
-		db.User,
-		db.Pass,
-		db.Host,
-		db.Port,
-		db.DBName,
-		db.Options["sslmode"],
+	// // DSN simples, o driver pode refinar
+	// db.DSN =
+
+	dsn := types.NewDSN(
+		kbxGet.StrPtr(
+			fmt.Sprintf(
+				"postgres://%s:%s@%s:%s/%s?sslmode=%s",
+				db.User,
+				db.Pass,
+				db.Host,
+				db.Port,
+				db.DBName,
+				db.Options["sslmode"],
+			),
+		),
 	)
+
+	if err := dsn.Validate(); err != nil {
+		return kbx.RootConfig{} //, fmt.Errorf("failed to validate DSN: %s", dsn.Redact())
+	}
 
 	return kbx.RootConfig{
 		Name:      "domus",

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==========================================
-# CANALIZE META-SEEDER: Bidirectional Sync
+# KUBEX META-SEEDER: Bidirectional Sync
 # ==========================================
 # Sincroniza dados entre PostgreSQL e Mocks TypeScript
 # Modos: diff, dry-run, pg-to-mock, mock-to-pg
@@ -24,19 +24,19 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 log_info() {
-  echo -e "${BLUE}ℹ️  [SYNC]${NC} $1"
+  echo -e "${BLUE} [SYNC]${NC} $1"
 }
 
 log_success() {
-  echo -e "${GREEN}✅ [SYNC]${NC} $1"
+  echo -e "${GREEN}[SYNC]${NC} $1"
 }
 
 log_warning() {
-  echo -e "${YELLOW}⚠️  [SYNC]${NC} $1"
+  echo -e "${YELLOW} [SYNC]${NC} $1"
 }
 
 log_error() {
-  echo -e "${RED}❌ [SYNC]${NC} $1"
+  echo -e "${RED}[SYNC]${NC} $1"
 }
 
 log_diff() {
@@ -193,7 +193,7 @@ sync_mock_to_pg() {
     return
   fi
 
-  log_error "  ⚠️  ATENÇÃO: Sincronização Mock → PG pode causar conflitos"
+  log_error "   ATENÇÃO: Sincronização Mock → PG pode causar conflitos"
   log_error "  Esta funcionalidade requer implementação cuidadosa de:"
   log_error "    - Resolução de conflitos de ID"
   log_error "    - Validação de constraints"
@@ -242,7 +242,7 @@ if [ "$MODE" = "diff" ] || [ "$MODE" = "dry-run" ]; then
   log_info "   Sincronizadas: $SYNCED"
   log_info "   Dessincronizadas: $OUT_OF_SYNC"
 
-  if [ $OUT_OF_SYNC -gt 0 ]; then
+  if [ "$OUT_OF_SYNC" -gt 0 ]; then
     echo ""
     log_warning "Para sincronizar, execute:"
     log_info "   PG → Mock: ./sync_data.sh [dir] pg-to-mock"
@@ -251,4 +251,4 @@ if [ "$MODE" = "diff" ] || [ "$MODE" = "dry-run" ]; then
 fi
 
 echo ""
-log_success "✨ Sincronização concluída!"
+log_success "Sincronização concluída!"

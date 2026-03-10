@@ -3,9 +3,11 @@ package schemasstore
 
 import (
 	"encoding/json"
+	"os"
 
 	"github.com/kubex-ecosystem/domus/internal/bootstrap" // onde está o embed
 
+	kbxget "github.com/kubex-ecosystem/kbx/get"
 	gl "github.com/kubex-ecosystem/logz"
 )
 
@@ -13,20 +15,27 @@ import (
 
 type SchemaRegistry struct{ Entities map[string]string }
 
+type BootstrapManifest struct {
+	ExecutionOrder []struct {
+		Name    string   `json:"name"`
+		Creates []string `json:"creates"` // Lista o que cada step cria
+	} `json:"execution_order"`
+}
+
 func NewSchemaRegistry() (*SchemaRegistry, error) {
+	bsFile := kbxget.ValOrType(
+		os.ExpandEnv(kbxget.EnvOr("BOOTSTRAP_MANIFEST", "")),
+		"embedded/bootstrap.manifest.json",
+	)
+
 	// 1. Lê o manifesto que já está embedado no binário
-	data, err := bootstrap.MigrationFiles.ReadFile("embedded/bootstrap.manifest.json")
+	data, err := bootstrap.MigrationFiles.ReadFile(bsFile)
 	if err != nil {
 		return nil, gl.Errorf("falha ao ler manifesto: %v", err)
 	}
 
 	// 2. Decodifica a estrutura que você já definiu no manifest
-	var manifest struct {
-		ExecutionOrder []struct {
-			Name    string   `json:"name"`
-			Creates []string `json:"creates"` // Lista o que cada step cria
-		} `json:"execution_order"`
-	}
+	var manifest BootstrapManifest
 
 	if err := json.Unmarshal(data, &manifest); err != nil {
 		gl.Errorf("falha ao decodificar manifesto: %v", err)

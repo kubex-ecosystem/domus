@@ -1,5 +1,5 @@
 -- ============================================================
--- SEED CANALIZE - V0.1 (Minimal, Realistic, Coherent)
+-- SEED KUBEX - V0.1 (Minimal, Realistic, Coherent)
 -- ============================================================
 -- Seed minimalista para testes básicos
 -- Estrutura: 1 org, 1 tenant, 2 users, 3 roles, 6 permissions
@@ -11,7 +11,7 @@ SET search_path TO public;
 INSERT INTO org (id, name, created_at)
 VALUES (
     '10000000-0000-0000-0000-000000000001',
-    'Kubex PRM',
+    'Kubex Ecosystem',
     now()
   ) ON CONFLICT (id) DO NOTHING;
 -- ================
@@ -170,7 +170,7 @@ INSERT INTO "user" (
 VALUES -- Usuário principal (Rafael)
   (
     '50000000-0000-0000-0000-000000000001',
-    'rafael@gnyx.app',
+    'rafael@kubex.world',
     'Rafael',
     'Mori',
     crypt('kubex123', gen_salt('bf')),
@@ -180,7 +180,7 @@ VALUES -- Usuário principal (Rafael)
   -- Usuário secundário (Thiago)
   (
     '50000000-0000-0000-0000-000000000002',
-    'thiago@gnyx.app',
+    'thiago@kubex.world',
     'Thiago',
     'CTO',
     crypt('kubex123', gen_salt('bf')),

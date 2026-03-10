@@ -39,7 +39,7 @@ type (
 	CompanyFilters     = company.CompanyFilters
 
 	// Pending access types
-	
+
 	PendingAccessRequest            = pendingaccess.PendingAccessRequest
 	CreatePendingAccessRequestInput = pendingaccess.CreatePendingAccessRequestInput
 	UpdatePendingAccessRequestInput = pendingaccess.UpdatePendingAccessRequestInput
@@ -141,6 +141,11 @@ func NewCompanyStore(ctx context.Context, conn *BackendConnection) (CompanyStore
 func NewPendingAccessStore(ctx context.Context, conn *BackendConnection) (PendingAccessStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.PendingAccessStore(ctx)
+}
+
+func NewIntegrationStore(ctx context.Context, conn *BackendConnection, mKey []byte) (IntegrationStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.IntegrationStore(ctx, mKey)
 }
 
 // DefaultRepositoryConfig retorna a configuração padrão do adapter.

@@ -3,25 +3,25 @@ package kbx
 
 const (
 	KeyringService        = "gnyx"
-	DefaultKubexConfigDir = "$HOME/.gnyx"
+	DefaultKubexConfigDir = "$HOME/.kubex/gnyx"
 
-	DefaultGNyxKeyPath    = "$HOME/.gnyxalize_be/github.com/kubex-ecosystem/gdnyx-key.pem"
-	DefaultGNyxCertPath   = "$HOME/.gnyxalize_be/github.com/kubex-ecosystem/gdnyx-cert.pem"
-	DefaultGNyxCAPath     = "$HOME/.gnyxalize_be/ca-cert.pem"
-	DefaultGNyxConfigPath = "$HOME/.gnyxalize_be/config/config.json"
+	DefaultGNyxKeyPath    = "$HOME/.kubex/gnyx/cert/gnyx-key.pem"
+	DefaultGNyxCertPath   = "$HOME/.kubex/gnyx/cert/gnyx-cert.pem"
+	DefaultGNyxCAPath     = "$HOME/.kubex/gnyx/cert/ca-cert.pem"
+	DefaultGNyxConfigPath = "$HOME/.kubex/gnyx/config/config.json"
 
-	DefaultConfigDir            = "$HOME/.gnyxalize_ds/config"
-	DefaultConfigFile           = "$HOME/.gnyxalize_ds/config.json"
-	DefaultKubexDomusConfigPath = "$HOME/.gnyxalize_ds/config/config.json"
+	DefaultConfigDir            = "$HOME/.kubex/gnyx/config"
+	DefaultConfigFile           = "$HOME/.kubex/gnyx/config/config.json"
+	DefaultKubexDomusConfigPath = "$HOME/.kubex/domus/config/config.json"
 )
 
 const (
-	DefaultVolumesDir     = "$HOME/.gnyxumes"
-	DefaultRedisVolume    = "$HOME/.gnyxumes/redis"
-	DefaultPostgresVolume = "$HOME/.gnyxumes/postgresql"
-	DefaultMongoDBVolume  = "$HOME/.gnyxumes/mongodb"
-	DefaultMongoVolume    = "$HOME/.gnyxumes/mongo"
-	DefaultRabbitMQVolume = "$HOME/.gnyxumes/rabbitmq"
+	DefaultVolumesDir     = "$HOME/.kubex/domus/volumes"
+	DefaultRedisVolume    = "$HOME/.kubex/domus/volumes/redis"
+	DefaultPostgresVolume = "$HOME/.kubex/domus/volumes/postgresql"
+	DefaultMongoDBVolume  = "$HOME/.kubex/domus/volumes/mongodb"
+	DefaultMongoVolume    = "$HOME/.kubex/domus/volumes/mongo"
+	DefaultRabbitMQVolume = "$HOME/.kubex/domus/volumes/rabbitmq"
 )
 
 const (

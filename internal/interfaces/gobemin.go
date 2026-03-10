@@ -1,4 +1,4 @@
-// Package interfaces provides the interfaces for the GoBE application
+// Package interfaces provides the interfaces for the GNyx application
 package interfaces
 
 import (
@@ -7,8 +7,8 @@ import (
 	logz "github.com/kubex-ecosystem/logz"
 )
 
-type IGoBE interface {
-	StartGoBE()
+type IGNyx interface {
+	StartGNyx()
 	HandleValidate(w http.ResponseWriter, r *http.Request)
 	HandleContact(w http.ResponseWriter, r *http.Request)
 	RateLimit(w http.ResponseWriter, r *http.Request) bool

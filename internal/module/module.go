@@ -1,4 +1,4 @@
-// Package module provides internal types and functions for the GoBE application.
+// Package module provides internal types and functions for the GNyx application.
 package module
 
 import (
@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type CanalizeDB struct {
+type Domus struct {
 	parentCmdName string
 	hideBanner    bool
 	certPath      string
@@ -21,28 +21,28 @@ type CanalizeDB struct {
 	configPath    string
 }
 
-func (m *CanalizeDB) Alias() string {
+func (m *Domus) Alias() string {
 	return ""
 }
-func (m *CanalizeDB) ShortDescription() string {
+func (m *Domus) ShortDescription() string {
 	return "KubexDomus: GKBX Database and Docker manager/service. "
 }
-func (m *CanalizeDB) LongDescription() string {
+func (m *Domus) LongDescription() string {
 	return `KubexDomus: Is a tool to manage GKBX database and Docker services. It provides many DB flavors like MySQL, PostgreSQL, MongoDB, Redis, etc. It also provides Docker services like Docker Swarm, Docker Compose, etc. It is a command line tool that can be used to manage GKBX database and Docker services.`
 }
-func (m *CanalizeDB) Usage() string {
+func (m *Domus) Usage() string {
 	return "domus [command] [args]"
 }
-func (m *CanalizeDB) Examples() []string {
+func (m *Domus) Examples() []string {
 	return []string{"domus [command] [args]", "domus database user auth'", "domus db roles list"}
 }
-func (m *CanalizeDB) Active() bool {
+func (m *Domus) Active() bool {
 	return true
 }
-func (m *CanalizeDB) Module() string {
+func (m *Domus) Module() string {
 	return "domus"
 }
-func (m *CanalizeDB) Execute() error {
+func (m *Domus) Execute() error {
 	dbChanData := make(chan interface{})
 	defer close(dbChanData)
 
@@ -53,7 +53,7 @@ func (m *CanalizeDB) Execute() error {
 		return nil
 	}
 }
-func (m *CanalizeDB) Command() *cobra.Command {
+func (m *Domus) Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: m.Module(),
 		//Aliases:     []string{m.Alias(), "w", "wb", "webServer", "http"},
@@ -84,10 +84,10 @@ func (m *CanalizeDB) Command() *cobra.Command {
 	return cmd
 }
 
-func (m *CanalizeDB) SetParentCmdName(rtCmd string) {
+func (m *Domus) SetParentCmdName(rtCmd string) {
 	m.parentCmdName = rtCmd
 }
-func (m *CanalizeDB) concatenateExamples() string {
+func (m *Domus) concatenateExamples() string {
 	examples := ""
 	rtCmd := m.parentCmdName
 	if rtCmd != "" {

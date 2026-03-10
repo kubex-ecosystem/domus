@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==========================================
-# CANALIZE META-SEEDER: Mock Generator
+# KUBEX META-SEEDER: Mock Generator
 # ==========================================
 # Gera mocks TypeScript a partir dos dados reais do PostgreSQL
 # Entrada: schema.json + DATABASE_URL
@@ -22,19 +22,19 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 log_info() {
-  echo -e "${BLUE}ℹ️  [GEN-MOCK]${NC} $1"
+  echo -e "${BLUE} [GEN-MOCK]${NC} $1"
 }
 
 log_success() {
-  echo -e "${GREEN}✅ [GEN-MOCK]${NC} $1"
+  echo -e "${GREEN}[GEN-MOCK]${NC} $1"
 }
 
 log_warning() {
-  echo -e "${YELLOW}⚠️  [GEN-MOCK]${NC} $1"
+  echo -e "${YELLOW} [GEN-MOCK]${NC} $1"
 }
 
 log_error() {
-  echo -e "${RED}❌ [GEN-MOCK]${NC} $1"
+  echo -e "${RED}[GEN-MOCK]${NC} $1"
 }
 
 # Validar DATABASE_URL
@@ -166,7 +166,7 @@ EOF
   ((PROCESSED++))
 done
 
-log_success "✨ Mocks gerados: $MOCKS_DIR/ ($PROCESSED tabelas)"
+log_success "Mocks gerados: $MOCKS_DIR/ ($PROCESSED tabelas)"
 
 # ==========================================
 # GERAR HELPER DE ACESSO

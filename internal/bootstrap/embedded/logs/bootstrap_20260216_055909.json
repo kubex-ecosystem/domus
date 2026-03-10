@@ -1,10 +1,10 @@
 {
-  "execution_timestamp": "2025-12-21T23:55:26+03:00",
+  "execution_timestamp": "2026-02-16T05:59:10+03:00",
   "database_url": "postgres:***@localhost:5432/postgres?sslmode=disable",
   "total_duration_seconds": 1,
   "status": "success",
-  "log_file": "/ALL/CANALIZE/projects/DATABASE/domus/internal/bootstrap/embedded/logs/bootstrap_20251221_235525.log",
-  "steps_executed": 9,
+  "log_file": "/ALL/KUBEX/SHOWCASE/projects/domus/internal/bootstrap/embedded/logs/bootstrap_20260216_055909.log",
+  "steps_executed": 11,
   "manifest_version": "3.0.0",
   "schema_version": "hybrid-v1.0",
   "features": {

@@ -16,14 +16,14 @@ import (
 func DockerCmd() *cobra.Command {
 	var configFile string
 
-	shortDesc := "Docker management commands for CanalizeDB"
-	longDesc := "Docker management commands for CanalizeDB"
+	shortDesc := "Docker management commands for Domus"
+	longDesc := "Docker management commands for Domus"
 
 	cmd := &cobra.Command{
 		Use:         "docker",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			err := cmd.Help()
 			if err != nil {
@@ -60,22 +60,22 @@ func startDockerCmd() *cobra.Command {
 		Use:         "start",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			loggers := logz.GetLoggerZ("CanalizeDB")
+			loggers := logz.GetLoggerZ("Domus")
 			dkr, dkrErr := docker.NewDockerService(loggers)
 			if dkrErr != nil {
-				loggers.Log("error", "CanalizeDB", fmt.Sprintf("Error starting Docker service: %v", dkrErr))
+				loggers.Log("error", "Domus", fmt.Sprintf("Error starting Docker service: %v", dkrErr))
 				return
 			}
 			dkrErr = dkr.Initialize()
 			if dkrErr != nil {
-				loggers.Log("error", "CanalizeDB", fmt.Sprintf("Error initializing Docker service: %v", dkrErr))
+				loggers.Log("error", "Domus", fmt.Sprintf("Error initializing Docker service: %v", dkrErr))
 				return
 			}
 			dkrErr = docker.SetupDatabaseServices(context.Background(), dkr, nil)
 			if dkrErr != nil {
-				loggers.Log("error", "CanalizeDB", fmt.Sprintf("Error setting up database services: %v", dkrErr))
+				loggers.Log("error", "Domus", fmt.Sprintf("Error setting up database services: %v", dkrErr))
 				return
 			}
 		},
@@ -92,17 +92,17 @@ func stopDockerCmd() *cobra.Command {
 		Use:         "stop",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			logger := logz.GetLoggerZ("CanalizeDB")
+			logger := logz.GetLoggerZ("Domus")
 			dkr, dkrErr := docker.NewDockerService(logger)
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error stopping Docker service: %v", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error stopping Docker service: %v", dkrErr))
 				return
 			}
 			dkrErr = dkr
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error stopping Docker service: %v", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error stopping Docker service: %v", dkrErr))
 				return
 			}
 		},
@@ -119,9 +119,9 @@ func statusDockerCmd() *cobra.Command {
 		Use:         "status",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("CanalizeDB"))
+			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("Domus"))
 			//if dkrErr != nil {
 			//	fmt.Printf("Error getting Docker status: %v\n", dkrErr)
 			//	return
@@ -146,22 +146,22 @@ func restartDockerCmd() *cobra.Command {
 		Use:         "restart",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			logger := logz.GetLoggerZ("CanalizeDB")
+			logger := logz.GetLoggerZ("Domus")
 			dkr, dkrErr := docker.NewDockerService(logger)
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error restarting Docker service: %v", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error restarting Docker service: %v", dkrErr))
 				return
 			}
 			dkrErr = dkr.Initialize()
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error initializing Docker service: %v", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error initializing Docker service: %v", dkrErr))
 				return
 			}
 			dkrErr = docker.SetupDatabaseServices(context.Background(), dkr, nil)
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error setting up database services: %v", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error setting up database services: %v", dkrErr))
 				return
 			}
 		},
@@ -177,17 +177,17 @@ func getContainerLogs() *cobra.Command {
 		Use:         "logs",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			logger := logz.GetLoggerZ("CanalizeDB")
+			logger := logz.GetLoggerZ("Domus")
 			dkr, dkrErr := docker.NewDockerService(logger)
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error getting container logs: %v\n", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error getting container logs: %v\n", dkrErr))
 				return
 			}
 			dkrErr = dkr.GetContainerLogs(context.Background(), "container_name", true)
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error getting container logs: %v\n", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error getting container logs: %v\n", dkrErr))
 				return
 			}
 			_ = cmd.Help()
@@ -206,12 +206,12 @@ func startContainerCmd() *cobra.Command {
 		Use:         "start",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			logger := logz.GetLoggerZ("CanalizeDB")
+			logger := logz.GetLoggerZ("Domus")
 			dkr, dkrErr := docker.NewDockerService(logger)
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error starting container: %v\n", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error starting container: %v\n", dkrErr))
 				return
 			}
 			dkrErr = dkr.StartContainer(
@@ -223,7 +223,7 @@ func startContainerCmd() *cobra.Command {
 				nil, // initArgs.Cmd,
 			)
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error starting container: %v\n", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error starting container: %v\n", dkrErr))
 				return
 			}
 		},
@@ -252,9 +252,9 @@ func createVolumeCmd() *cobra.Command {
 		Use:         "create",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("CanalizeDB"))
+			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("Domus"))
 			//if dkrErr != nil {
 			//	fmt.Printf("Error creating volume: %v\n", dkrErr)
 			//	return
@@ -279,9 +279,9 @@ func getContainersListCmd() *cobra.Command {
 		Use:         "list",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("CanalizeDB"))
+			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("Domus"))
 			//if dkrErr != nil {
 			//	fmt.Printf("Error getting containers list: %v\n", dkrErr)
 			//	return
@@ -308,17 +308,17 @@ func getVolumesListCmd() *cobra.Command {
 		Aliases:     []string{"list-vol", "volumes", "vol"},
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			logger := logz.GetLoggerZ("CanalizeDB")
+			logger := logz.GetLoggerZ("Domus")
 			dkr, dkrErr := docker.NewDockerService(logger)
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error getting volumes list: %v", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error getting volumes list: %v", dkrErr))
 				return
 			}
 			volList, dkrErr := dkr.GetVolumesList()
 			if dkrErr != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error getting volumes list: %v", dkrErr))
+				logger.Log("error", "Domus", fmt.Sprintf("Error getting volumes list: %v", dkrErr))
 				return
 			}
 			logger.Log("info", "Volumes list:")
@@ -346,22 +346,22 @@ func startContainerByNameCmd() *cobra.Command {
 		Use:         "start",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			logger := logz.GetLoggerZ("CanalizeDB")
+			logger := logz.GetLoggerZ("Domus")
 			//dkr, dkrErr := factory.NewDockerService(nil, logger)
 			//if dkrErr != nil {
-			//	logger.Log("error", "CanalizeDB", fmt.Sprintf("Error starting container by name: %v", dkrErr))
+			//	logger.Log("error", "Domus", fmt.Sprintf("Error starting container by name: %v", dkrErr))
 			//	return
 			//}
 			//dkrErr = dkr.StartContainerByName("container_name")
 			//if dkrErr != nil {
-			//	logger.Log("error", "CanalizeDB", fmt.Sprintf("Error starting container by name: %v", dkrErr))
+			//	logger.Log("error", "Domus", fmt.Sprintf("Error starting container by name: %v", dkrErr))
 			//	return
 			//}
 
 			if err := cmd.Help(); err != nil {
-				logger.Log("error", "CanalizeDB", fmt.Sprintf("Error displaying help: %v", err))
+				logger.Log("error", "Domus", fmt.Sprintf("Error displaying help: %v", err))
 				return
 			}
 		},
@@ -378,9 +378,9 @@ func stopContainerByNameCmd() *cobra.Command {
 		Use:         "stop",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("CanalizeDB"))
+			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("Domus"))
 			//if dkrErr != nil {
 			//	fmt.Printf("Error stopping container by name: %v\n", dkrErr)
 			//	return
@@ -405,9 +405,9 @@ func addServiceCmd() *cobra.Command {
 		Use:         "add",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("CANALIZEDS_HIDEBANNER") == "true")),
+		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("CanalizeDB"))
+			//dkr, dkrErr := factory.NewDockerService(nil, logz.GetLogger("Domus"))
 			//if dkrErr != nil {
 			//	fmt.Printf("Error adding service: %v\n", dkrErr)
 			//	return

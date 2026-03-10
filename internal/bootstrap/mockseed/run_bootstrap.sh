@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2155,SC2207
 # ==========================================
-# CANALIZE META-SEEDER v1.0.0
+# KUBEX META-SEEDER v1.0.0
 # ==========================================
 # Versão: 1.0.0
 # Data: 2025-12-02
@@ -61,23 +61,23 @@ NC='\033[0m' # No Color
 # ==========================================
 
 log_info() {
-  echo -e "${BLUE}ℹ️  [INFO]${NC} $1" | tee -a "$LOG_FILE"
+  echo -e "${BLUE} [INFO]${NC} $1" | tee -a "$LOG_FILE"
 }
 
 log_success() {
-  echo -e "${GREEN}✅ [SUCCESS]${NC} $1" | tee -a "$LOG_FILE"
+  echo -e "${GREEN}[SUCCESS]${NC} $1" | tee -a "$LOG_FILE"
 }
 
 log_warning() {
-  echo -e "${YELLOW}⚠️  [WARNING]${NC} $1" | tee -a "$LOG_FILE"
+  echo -e "${YELLOW} [WARNING]${NC} $1" | tee -a "$LOG_FILE"
 }
 
 log_error() {
-  echo -e "${RED}❌ [ERROR]${NC} $1" | tee -a "$LOG_FILE"
+  echo -e "${RED}[ERROR]${NC} $1" | tee -a "$LOG_FILE"
 }
 
 log_step() {
-  echo -e "${PURPLE}🚀 [STEP $1]${NC} $2" | tee -a "$LOG_FILE"
+  echo -e "${PURPLE}[STEP $1]${NC} $2" | tee -a "$LOG_FILE"
 }
 
 print_header() {
@@ -196,7 +196,7 @@ validate_installation() {
     elif [ "$count" -gt 0 ]; then
       log_info "✓ $table: $count registros"
     else
-      log_warning "⚠️ $table: vazia"
+      log_warning "$table: vazia"
       ((warnings++))
     fi
   done
@@ -310,7 +310,7 @@ main() {
   mkdir -p "$LOG_DIR"
 
   # Header
-  print_header "🚀 CANALIZE HYDRATION v0.0.1 - INICIANDO"
+  print_header "KUBEX HYDRATION v0.0.1 - INICIANDO"
 
   log_info "Timestamp: $(date)"
   log_info "Database: ${DATABASE_URL//:*@/:***@}"
@@ -334,7 +334,7 @@ main() {
       local end_time=$(date +%s)
       local total_duration=$((end_time - start_time))
 
-      print_header "✅ BOOTSTRAP CONCLUÍDO COM SUCESSO"
+      print_header "BOOTSTRAP CONCLUÍDO COM SUCESSO"
       log_success "Tempo total: ${total_duration}s"
       log_info "Log completo: $LOG_FILE"
 
@@ -344,7 +344,7 @@ main() {
       local end_time=$(date +%s)
       local total_duration=$((end_time - start_time))
 
-      print_header "⚠️  BOOTSTRAP CONCLUÍDO COM AVISOS"
+      print_header " BOOTSTRAP CONCLUÍDO COM AVISOS"
       log_warning "Tempo total: ${total_duration}s"
       log_warning "Revise o log: $LOG_FILE"
 
@@ -360,7 +360,7 @@ main() {
 # ==========================================
 
 show_help() {
-  print_header "🧙‍♂️ CANALIZE META-SEEDER v1.0.0"
+  print_header "🧙‍♂️ KUBEX META-SEEDER v1.0.0"
 
   echo "Uso: ./run_bootstrap.sh [comando] [opções]"
   echo ""
@@ -408,7 +408,7 @@ run_extract() {
 run_generate_types() {
   local output_dir="${1:-${SCRIPT_DIR}/types}"
 
-  print_header "📝 GERANDO TYPESCRIPT TYPES"
+  print_header "GERANDO TYPESCRIPT TYPES"
 
   if [ ! -f "${SCRIPT_DIR}/generate_types.sh" ]; then
     log_error "generate_types.sh não encontrado"
@@ -448,7 +448,7 @@ run_sync() {
 run_full_pipeline() {
   local output_dir="${1:-${SCRIPT_DIR}/types}"
 
-  print_header "🚀 EXECUTANDO PIPELINE COMPLETO"
+  print_header "EXECUTANDO PIPELINE COMPLETO"
 
   local pipeline_start=$(date +%s)
 
@@ -478,7 +478,7 @@ run_full_pipeline() {
   local pipeline_end=$(date +%s)
   local pipeline_duration=$((pipeline_end - pipeline_start))
 
-  print_header "✅ PIPELINE CONCLUÍDO"
+  print_header "PIPELINE CONCLUÍDO"
   log_success "Tempo total: ${pipeline_duration}s"
   log_info "Arquivos gerados em: $output_dir"
   echo ""

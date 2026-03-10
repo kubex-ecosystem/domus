@@ -9,6 +9,7 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/adapter"
 	st "github.com/kubex-ecosystem/domus/internal/datastore"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
+	integration "github.com/kubex-ecosystem/domus/internal/datastore/integration_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	pendingaccess "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
@@ -16,6 +17,7 @@ import (
 	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
 	t "github.com/kubex-ecosystem/domus/internal/types"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
+	kbxIs "github.com/kubex-ecosystem/kbx/is"
 	gl "github.com/kubex-ecosystem/logz"
 )
 
@@ -28,6 +30,7 @@ type (
 	InviteStore        = invite.InviteStore
 	CompanyStore       = company.CompanyStore
 	PendingAccessStore = pendingaccess.PendingAccessStore
+	IntegrationStore   = integration.IntegrationStore
 )
 
 // BackendConnections is an alias for the database manager type.
@@ -68,8 +71,6 @@ type DSClient interface {
 	NewStoreOnlyAdapterFactory(ctx context.Context, dbName string) (*adapter.AdapterFactory, error)
 	NewORMOnlyAdapterFactory(db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)
 }
-
-
 
 // DSClientImpl represents the data service client managing multiple backend connections.
 type DSClientImpl struct {
@@ -113,10 +114,16 @@ func (c *DSClientImpl) Init(ctx context.Context) error {
 		return err
 	}
 
-	if c.dsConfig.FilePath == "" {
-		gl.Debug("DS config path not set, using default path from env or default constant")
-		c.dsConfig.FilePath = os.ExpandEnv(kbxGet.EnvOr("CANALIZE_DS_CONFIG_PATH", kbxMod.DefaultKubexDomusConfigPath))
-	}
+	c.dsConfig.FilePath = os.ExpandEnv(
+		kbxGet.ValOrType(
+			c.dsConfig.FilePath,
+			kbxGet.ValueOrIf(
+				kbxIs.Valid(c.Reference.Name),
+				c.Reference.Name,
+				kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_PATH", kbxMod.DefaultKubexDomusConfigPath),
+			),
+		),
+	)
 
 	// Load the configuration for the DS client.
 	rootConfig, err := en.LoadRootConfig(c.dsConfig.FilePath)

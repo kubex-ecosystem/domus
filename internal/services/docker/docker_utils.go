@@ -375,7 +375,7 @@ func IsServiceRunning(serviceName string) bool {
 	cmd := exec.Command("docker", "ps", "--filter", fmt.Sprintf("name=%s", serviceName), "--format", "{{.Names}}")
 	output, err := cmd.Output()
 	if err != nil {
-		logz.Log("error", fmt.Sprintf("❌ Error checking containers: %v\n", err))
+		logz.Log("error", fmt.Sprintf("Error checking containers: %v\n", err))
 	}
 	return string(output) != ""
 
@@ -406,7 +406,7 @@ func IsDockerRunning() bool {
 	// }
 
 	// if err := cmd.Start(); err != nil {
-	// 	logz.Log("error", fmt.Sprintf("❌ Error checking Docker status: %v\n", err))
+	// 	logz.Log("error", fmt.Sprintf("Error checking Docker status: %v\n", err))
 	// 	return false
 	// }
 
@@ -420,7 +420,7 @@ func IsDockerRunning() bool {
 	// 	// No Windows, o comando retorna "Running" se o serviço estiver ativo
 	// 	output, err := cmd.Output()
 	// 	if err != nil {
-	// 		logz.Log("error", fmt.Sprintf("❌ Error checking Docker status output: %v\n", err))
+	// 		logz.Log("error", fmt.Sprintf("Error checking Docker status output: %v\n", err))
 	// 		return false
 	// 	}
 	// 	outputStr := strings.TrimSpace(string(output))
@@ -432,12 +432,12 @@ func IsDockerRunning() bool {
 	// logz.Log("debug", fmt.Sprintf("Docker status check process PID: %d", pid))
 	// outputErr, err := cmd.Output()
 	// if err != nil {
-	// 	logz.Log("error", fmt.Sprintf("❌ Error checking Docker status output: %v\n", err))
+	// 	logz.Log("error", fmt.Sprintf("Error checking Docker status output: %v\n", err))
 	// 	return false
 	// }
 	// errOutput, _ := io.ReadAll(strings.NewReader(string(outputErr)))
 	// if len(errOutput) > 0 {
-	// 	logz.Log("error", fmt.Sprintf("❌ Error checking Docker status output: %s\n", string(errOutput)))
+	// 	logz.Log("error", fmt.Sprintf("Error checking Docker status output: %s\n", string(errOutput)))
 	// 	return false
 	// }
 
@@ -538,7 +538,7 @@ func StartDockerService() error {
 	}
 
 	if err := cmd.Start(); err != nil {
-		return logz.Errorf("❌ Error checking Docker status: %v\n", err)
+		return logz.Errorf("Error checking Docker status: %v\n", err)
 	}
 
 	chanWait := make(chan error, 1)
@@ -551,11 +551,11 @@ func StartDockerService() error {
 	logz.Debugf("Docker status check process PID: %d", pid)
 	outputErr, err := cmd.Output()
 	if err != nil {
-		return logz.Errorf("❌ Error checking Docker status output: %v\n", err)
+		return logz.Errorf("Error checking Docker status output: %v\n", err)
 	}
 	errOutput, _ := io.ReadAll(strings.NewReader(string(outputErr)))
 	if len(errOutput) > 0 {
-		return logz.Errorf("❌ Error checking Docker status output: %s\n", string(errOutput))
+		return logz.Errorf("Error checking Docker status output: %s\n", string(errOutput))
 	}
 
 	return <-chanWait

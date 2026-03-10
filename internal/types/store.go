@@ -5,8 +5,6 @@ import (
 	"reflect"
 )
 
-
-
 // SchemaType define a interface base para todos os stores/repositories.
 // Fornece métodos para introspecção e validação em runtime.
 type SchemaType interface {

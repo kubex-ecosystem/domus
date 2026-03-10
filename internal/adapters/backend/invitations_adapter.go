@@ -1,5 +1,5 @@
-// Package backend provides adapters for the github.com/kubex-ecosystem/gdnyx backend.
-// This package implements the interfaces defined in github.com/kubex-ecosystem/gdnyx and bridges them
+// Package backend provides adapters for the github.com/kubex-ecosystem/gnyx backend.
+// This package implements the interfaces defined in github.com/kubex-ecosystem/gnyx and bridges them
 // to the actual database implementation (GORM + PostgreSQL).
 package backend
 
@@ -17,7 +17,7 @@ import (
 // ===========================================================================
 // TYPE MAPPINGS
 // These types mirror the BE interface types to avoid circular imports.
-// In production, you'd import them from github.com/kubex-ecosystem/gdnyx.
+// In production, you'd import them from github.com/kubex-ecosystem/gnyx.
 // ===========================================================================
 
 type InvitationStatus string

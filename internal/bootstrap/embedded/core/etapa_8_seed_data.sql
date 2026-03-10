@@ -1,5 +1,5 @@
-\ echo '🚀 ETAPA 8: Inserindo dados iniciais (seed)...' -- ============================================================================
--- CANALIZE PRM - Seed Data v1.0
+\ echo 'ETAPA 8: Inserindo dados iniciais (seed)...' -- ============================================================================
+-- KUBEX Ecosystem - Seed Data v1.0
 -- ============================================================================
 -- Dados iniciais para roles, permissions e org/tenant de exemplo
 -- Data: 2025-11-10
@@ -419,7 +419,7 @@ VALUES (
         '10000000-0000-0000-0000-000000000001',
         'Kubex Demo Corp',
         'gnyx-demo',
-        'demo.gnyx.app',
+        'demo.kubex.world',
         'professional',
         true,
         false,
@@ -561,7 +561,7 @@ SELECT COUNT(*) INTO permission_count
 FROM permission;
 SELECT COUNT(*) INTO role_permission_count
 FROM role_permission;
-RAISE NOTICE '✅ Seed concluído com sucesso!';
+RAISE NOTICE 'Seed concluído com sucesso!';
 RAISE NOTICE '   - % roles criadas',
 role_count;
 RAISE NOTICE '   - % permissions criadas',

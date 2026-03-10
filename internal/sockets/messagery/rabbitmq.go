@@ -170,16 +170,16 @@ package messagery
 // 		return errors.New("channel is nil")
 // 	}
 
-// 	// Declare default exchanges and queues for the GoBE application
+// 	// Declare default exchanges and queues for the GNyx application
 // 	exchanges := []struct {
 // 		name       string
 // 		kind       string
 // 		durable    bool
 // 		autoDelete bool
 // 	}{
-// 		{"gobe.events", "topic", true, false},
-// 		{"gobe.logs", "direct", true, false},
-// 		{"gobe.notifications", "fanout", true, false},
+// 		{"gnyx.events", "topic", true, false},
+// 		{"gnyx.logs", "direct", true, false},
+// 		{"gnyx.notifications", "fanout", true, false},
 // 	}
 
 // 	// Declare exchanges
@@ -206,9 +206,9 @@ package messagery
 // 		autoDelete bool
 // 		exclusive  bool
 // 	}{
-// 		{"gobe.system.logs", true, false, false},
-// 		{"gobe.system.events", true, false, false},
-// 		{"gobe.mcp.tasks", true, false, false},
+// 		{"gnyx.system.logs", true, false, false},
+// 		{"gnyx.system.events", true, false, false},
+// 		{"gnyx.mcp.tasks", true, false, false},
 // 	}
 
 // 	for _, queue := range queues {
@@ -232,9 +232,9 @@ package messagery
 // 		exchange string
 // 		key      string
 // 	}{
-// 		{"gobe.system.logs", "gobe.logs", "system"},
-// 		{"gobe.system.events", "gobe.events", "system.*"},
-// 		{"gobe.mcp.tasks", "gobe.events", "mcp.task.*"},
+// 		{"gnyx.system.logs", "gnyx.logs", "system"},
+// 		{"gnyx.system.events", "gnyx.events", "system.*"},
+// 		{"gnyx.mcp.tasks", "gnyx.events", "mcp.task.*"},
 // 	}
 
 // 	for _, binding := range bindings {
@@ -350,7 +350,7 @@ package messagery
 // 	if dbConfig.Messagery.RabbitMQ.Username != "" {
 // 		username = dbConfig.Messagery.RabbitMQ.Username
 // 	} else {
-// 		username = "gobe"
+// 		username = "gnyx"
 // 	}
 // 	if dbConfig.Messagery.RabbitMQ.Password != "" {
 // 		password = dbConfig.Messagery.RabbitMQ.Password
@@ -365,7 +365,7 @@ package messagery
 // 	}
 
 // 	if host != "" && port != "" && username != "" && password != "" {
-// 		return fmt.Sprintf("amqp://%s:%s@%s:%s/%s", username, password, host, port, "gobe")
+// 		return fmt.Sprintf("amqp://%s:%s@%s:%s/%s", username, password, host, port, "gnyx")
 // 	}
 // postRabbit:
 // 	return ""

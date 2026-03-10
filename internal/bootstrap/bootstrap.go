@@ -33,7 +33,7 @@ type Config struct {
 }
 
 func FromEnv() Config {
-	raw := os.Getenv("CANALIZEDS_BACKENDS")
+	raw := os.Getenv("KUBEX_DOMUS_BACKENDS")
 	if raw == "" {
 		raw = "dockerstack"
 	}
@@ -41,7 +41,7 @@ func FromEnv() Config {
 	for i := range backends {
 		backends[i] = strings.TrimSpace(backends[i])
 	}
-	strict := strings.EqualFold(os.Getenv("CANALIZEDS_STRICT"), "true")
+	strict := strings.EqualFold(os.Getenv("KUBEX_DOMUS_STRICT"), "true")
 	return Config{
 		Backends: backends, Strict: strict,
 	}
