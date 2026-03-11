@@ -9,6 +9,7 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/adapter"
 	st "github.com/kubex-ecosystem/domus/internal/datastore"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
+	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
 	integration "github.com/kubex-ecosystem/domus/internal/datastore/integration_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	pendingaccess "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
@@ -26,11 +27,12 @@ type StoreType = t.StoreType
 
 // Type aliases for specific stores (re-export from stores.go)
 type (
-	UserStore          = user.UserStore
-	InviteStore        = invite.InviteStore
-	CompanyStore       = company.CompanyStore
-	PendingAccessStore = pendingaccess.PendingAccessStore
-	IntegrationStore   = integration.IntegrationStore
+	UserStore             = user.UserStore
+	InviteStore           = invite.InviteStore
+	CompanyStore          = company.CompanyStore
+	PendingAccessStore    = pendingaccess.PendingAccessStore
+	ExternalMetadataStore = externalmetadata.ExternalMetadataStore
+	IntegrationStore      = integration.IntegrationStore
 )
 
 // BackendConnections is an alias for the database manager type.
@@ -65,6 +67,7 @@ type DSClient interface {
 	GetInviteStore(ctx context.Context, dbName string) (InviteStore, error)
 	GetCompanyStore(ctx context.Context, dbName string) (CompanyStore, error)
 	GetPendingAccessStore(ctx context.Context, dbName string) (PendingAccessStore, error)
+	GetExternalMetadataStore(ctx context.Context, dbName string) (ExternalMetadataStore, error)
 
 	// Adapter factory methods
 	NewAdapterFactory(ctx context.Context, dbName string, db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)

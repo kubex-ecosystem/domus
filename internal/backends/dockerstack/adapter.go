@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/kubex-ecosystem/domus/internal/engine"
@@ -425,8 +426,16 @@ func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbx
 			}
 
 			if exists {
-				logz.Infof("Schema already exists for %s, skipping migrations", dbConf.Name)
-				continue
+				missingTables, err := mm.MissingTables("public", "external_metadata_registry")
+				if err != nil {
+					logz.Warnf("Could not check required tables for %s: %v", dbConf.Name, err)
+				}
+				if len(missingTables) == 0 {
+					logz.Infof("Schema already exists for %s, skipping migrations", dbConf.Name)
+					continue
+				}
+
+				logz.Infof("Schema already exists for %s, but required tables are missing (%s). Running idempotent migrations.", dbConf.Name, strings.Join(missingTables, ", "))
 			}
 
 			// Run migrations with error recovery

@@ -547,6 +547,37 @@ func (m *MigrationManager) SchemaExists() (bool, error) {
 	return exists, nil
 }
 
+// MissingTables returns which required base tables are missing from the target schema.
+func (m *MigrationManager) MissingTables(schema string, tables ...string) ([]string, error) {
+	db, err := sql.Open("postgres", m.dsn)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	missing := make([]string, 0)
+	for _, table := range tables {
+		var exists bool
+		query := `
+			SELECT EXISTS (
+				SELECT 1
+				FROM information_schema.tables
+				WHERE table_schema = $1
+				  AND table_name = $2
+				  AND table_type = 'BASE TABLE'
+			)
+		`
+		if err := db.QueryRow(query, schema, table).Scan(&exists); err != nil {
+			return nil, err
+		}
+		if !exists {
+			missing = append(missing, table)
+		}
+	}
+
+	return missing, nil
+}
+
 // ValidateConnection tests the database connection
 func (m *MigrationManager) ValidateConnection() error {
 	db, err := sql.Open("postgres", m.dsn)
