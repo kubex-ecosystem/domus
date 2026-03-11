@@ -1,469 +1,233 @@
 # Domus
 
-Domus is the data-service foundation of the Kubex ecosystem.
+English version: [../README.md](../README.md)
 
-It is responsible for provisioning local data infrastructure, bootstrapping the core database schema, exposing a typed datastore client for consuming applications, and centralizing the data model conventions used by projects such as `GNyx`.
+## Sumário
 
-Today, Domus is not just a folder of SQL files or a set of models. It is a combined CLI, bootstrap engine, provider abstraction, and datastore layer that already powers real local development and integration flows.
-
-> Current posture: functional and operational, but still evolving. PostgreSQL is the most mature runtime path today. MongoDB, Redis, and RabbitMQ already exist in the architecture and local stack model, but their typed datastore surface is not yet at the same maturity level as PostgreSQL.
-
-## Table of Contents
-
-- [What Domus Is](#what-domus-is)
-- [Current Product Scope](#current-product-scope)
-- [Current Operational Status](#current-operational-status)
-- [Core Capabilities](#core-capabilities)
-- [Architecture Overview](#architecture-overview)
-- [Repository Layout](#repository-layout)
-- [Runtime Model](#runtime-model)
-- [Configuration and Runtime Home](#configuration-and-runtime-home)
-- [CLI Overview](#cli-overview)
-- [Real Local Development Flow](#real-local-development-flow)
-- [Embedded Schema and Data Domains](#embedded-schema-and-data-domains)
-- [Typed Store Surface](#typed-store-surface)
-- [Using Domus as a Go Dependency](#using-domus-as-a-go-dependency)
-- [Ecosystem Role](#ecosystem-role)
-- [Current Limitations](#current-limitations)
-- [Roadmap Direction](#roadmap-direction)
+- [Visão Geral](#visão-geral)
+- [Escopo Atual do Produto](#escopo-atual-do-produto)
+- [Estado Operacional Atual](#estado-operacional-atual)
+- [Capacidades Principais](#capacidades-principais)
+- [Visão Geral da Arquitetura](#visão-geral-da-arquitetura)
+- [Estrutura do Repositório](#estrutura-do-repositório)
+- [Modelo de Runtime](#modelo-de-runtime)
+- [Configuração e Runtime Home](#configuração-e-runtime-home)
+- [Comandos Principais](#comandos-principais)
+- [Schema Embarcado](#schema-embarcado)
+- [Superfície de Stores Tipados](#superfície-de-stores-tipados)
+- [Registry de Metadados Externos](#registry-de-metadados-externos)
+- [Papel no Ecossistema](#papel-no-ecossistema)
+- [Limitações Atuais](#limitações-atuais)
+- [Documentação e Notas](#documentação-e-notas)
 - [Screenshots](#screenshots)
-- [License](#license)
 
-## What Domus Is
+## Visão Geral
 
-Domus is the data layer runtime for Kubex projects.
+`Domus` é o substrate de data-service do ecossistema Kubex.
 
-In practical terms, it currently covers four responsibilities:
+Ele é responsável por:
 
-1. Provision local infrastructure for data backends, currently centered on Docker-based flows.
-2. Bootstrap and migrate the core schema used by the ecosystem.
-3. Expose a typed datastore client (`client/`) that other applications can consume.
-4. Provide a domain-aligned schema foundation for multi-tenant access, invitations, sessions, integrations, and business entities.
+- provisionar infraestrutura local de dados
+- bootstrapping e migração do schema principal
+- expor clients e stores tipados
+- hospedar o runtime PostgreSQL ativo usado por outros projetos
+- servir como substrate persistente para frentes multi-tenant e de metadados externos
 
-Domus should be read as a platform component, not as a standalone SaaS product UI. Its main consumers are backend applications and integration services that need a stable data-service boundary.
+`Domus` deve ser lido como um componente de plataforma, não como um produto final para usuário.
 
-## Current Product Scope
+## Escopo Atual do Produto
 
-As of the current codebase state, Domus is strongest in these areas:
+No estágio atual, o `Domus` é mais forte em:
 
-- local PostgreSQL provisioning and migration bootstrap
-- embedded SQL schema orchestration
-- typed datastore access for a subset of core entities
-- Docker-based runtime orchestration via the `dockerstack` backend
-- foundational support for multi-tenant access structures and integration-oriented schema
+- provisionamento de PostgreSQL e bootstrap de migrações
+- orquestração local baseada em Docker
+- gerenciamento de schema por SQL embarcado
+- exposição de stores tipados para um subconjunto de entidades centrais
+- fundações de schema para acesso multi-tenant
+- estruturas persistentes de sessão e convites
+- suporte a registry de metadados externos para novas frentes de integração
 
-Domus also contains architectural support for:
+Existe suporte arquitetural para outros backends como MongoDB, Redis e RabbitMQ, mas o PostgreSQL continua sendo o caminho de runtime mais maduro e operacional hoje.
 
-- MongoDB
-- Redis
-- RabbitMQ
-- provider-style backend abstraction
-- adaptive services and repository adapters
+## Estado Operacional Atual
 
-However, these broader capabilities are not all equally consolidated yet. The actual typed datastore surface exposed to consumers is still intentionally narrower than the full schema or infrastructure ambition.
+O fluxo local mais repetido hoje está centrado em:
 
-## Current Operational Status
-
-Operationally, the real and repeatedly used flow today is centered on:
-
-- `domus database migrate -C ./configs/config.json`
-- a runtime home under `~/.kubex/domus`
-- PostgreSQL as the active data backend
-- Docker-managed local services
-- embedded schema bootstrap that creates the current core tables if needed
-
-That means Domus is already functioning as a real development and integration foundation, even though some parts of the architecture still represent forward-looking expansion rather than equally mature surface area.
-
-## Core Capabilities
-
-### 1. Local data infrastructure bootstrap
-
-Domus can start and manage local backend services through its provider/backend model, currently with `dockerstack` as the effective operational path.
-
-Supported at the infrastructure layer:
-
-- PostgreSQL
-- MongoDB
-- Redis
-- RabbitMQ
-
-### 2. Embedded schema bootstrap
-
-The repository ships embedded SQL bootstrap stages under `internal/bootstrap/embedded/core/`, including:
-
-- multi-tenancy primitives (`org`, `tenant`, `team`)
-- users and RBAC (`user`, `role`, `permission`, `role_permission`)
-- memberships (`tenant_membership`, `team_membership`)
-- invitations (`partner_invitation`, `internal_invitation`)
-- auth sessions (`auth_sessions`)
-- pending access requests (`pending_access_requests`)
-- integration engine tables (`integration_config`, `sync_job`, `integration_query`)
-
-### 3. Typed datastore client
-
-The `client/` package exposes a DS client that can be embedded in other Go applications to:
-
-- load a Domus root config
-- initialize backend connections
-- retrieve typed stores
-- create repository adapters
-
-### 4. Store registry and factory model
-
-Domus maintains an internal store registry keyed by driver and store name. This allows consumer applications to resolve stores dynamically while still using typed helpers for common domains.
-
-### 5. Ecosystem-aligned data modeling
-
-The project already encodes the access and tenancy model used by `GNyx` and related services, even where the consuming applications still complete some workflows with local SQL composition.
-
-## Architecture Overview
-
-At a high level, Domus is organized like this:
-
-```text
-CLI / Module Layer
-  -> cmd/, internal/module/
-
-Bootstrap + Provider Layer
-  -> internal/bootstrap/
-  -> internal/provider/
-  -> internal/backends/dockerstack/
-
-Connection / Engine Layer
-  -> internal/engine/
-  -> internal/types/
-  -> internal/execution/
-
-Datastore Layer
-  -> internal/datastore/
-  -> client/
-
-Embedded Schema + Models
-  -> internal/bootstrap/embedded/core/
-  -> internal/model/
-  -> types/models/
+```bash
+domus database migrate -C ./configs/config.json
 ```
 
-The current execution model is pragmatic:
+Verdades operacionais atuais:
 
-- use a JSON root config to describe enabled backends
-- initialize the Docker-based backend provider
-- bring the required services up
-- wait for readiness
-- run embedded migrations
-- expose typed connection/store access to consuming Go services
+- PostgreSQL é o backend ativo e comprovado
+- o runtime local gerenciado por Docker faz parte do fluxo normal
+- o bootstrap embarcado cria e evolui o schema principal atual
+- o `Domus` já é usado pelo `GNyx` como boundary real de data-service
+- novas frentes orientadas por metadados também passaram a depender do `Domus` como substrate de banco
 
-## Repository Layout
+## Capacidades Principais
 
-```text
-cmd/                           Cobra CLI entrypoints
-client/                        Public DS client and typed store helpers
-config/                        Project-local config artifacts
-configs/                       Example/used runtime config files
-internal/bootstrap/            Embedded bootstrap orchestration and SQL stages
-internal/backends/dockerstack/ Active local backend provider
-internal/provider/             Provider abstractions and contracts
-internal/engine/               Connection manager and config bootstrap logic
-internal/datastore/            Store registry, factories, and concrete stores
-internal/model/                Internal domain models
-types/                         Exported/shared type helpers
-support/                       Build, install, validation, and docs scripts
-```
+Capacidades concretas atuais incluem:
 
-## Runtime Model
+- provisionamento local de banco
+- orquestração de migração/bootstrap embarcada
+- exposição de factories de stores tipados
+- package client reutilizável para consumidores Go
+- tabelas fundacionais para usuários, roles, memberships, convites, sessões e entidades relacionadas
+- evolução aditiva de schema por etapas SQL embarcadas
+- suporte a registry de datasets de metadados externos
 
-Domus currently operates in two complementary modes.
+## Visão Geral da Arquitetura
 
-### CLI/runtime mode
+O `Domus` se organiza em algumas camadas principais:
 
-This is the operational mode used in local development and integration setup:
+- `cmd/` para entrypoints da CLI
+- `internal/bootstrap/embedded/` para etapas de bootstrap do schema
+- `internal/backends/` para orquestração específica de backend
+- `internal/datastore/` para interfaces, factories e implementações de stores
+- `client/` para acesso consumível por outras aplicações
+- `configs/` para configuração de runtime
 
-- read config
-- provision/attach local services
-- run migrations
-- leave the data layer ready for consuming applications
+A arquitetura atual é propositalmente mais ampla do que a superfície de stores tipados já exposta aos consumidores.
 
-### Library/client mode
-
-This is the embedded mode used by other Go applications:
-
-- initialize a DS client from config
-- resolve connections by logical database name
-- request typed stores or repository adapters
-- use Domus as a single integration point for data access
-
-## Configuration and Runtime Home
-
-The active runtime home is expected to live under:
+## Estrutura do Repositório
 
 ```text
-~/.kubex/domus
+cmd/                               entrypoints da CLI
+client/                            client público e exports de stores
+configs/                           config de runtime do Domus
+internal/backends/                 orquestração de backends, incluindo dockerstack
+internal/bootstrap/embedded/       etapas SQL embarcadas e manifest
+internal/datastore/                interfaces e implementações de stores
 ```
 
-Typical structure:
+## Modelo de Runtime
+
+A postura local normal é:
+
+- stack local baseada em Docker
+- PostgreSQL como banco principal ativo
+- runtime home em `~/.kubex/domus`
+- bootstrap/migração aditiva por SQL embarcado
+
+Isso faz do `Domus` ao mesmo tempo um substrate de runtime e um portador de schema para produtos de nível mais alto.
+
+## Configuração e Runtime Home
+
+O `Domus` usa um modelo de runtime home em:
 
 ```text
 ~/.kubex/domus/
-├── config/
-│   └── config.json
-└── volumes/
-    └── postgresql/
-        └── init/
 ```
 
-Important operational expectations:
+Essa área de runtime deve ser tratada como estado operacional durável.
 
-- `~/.kubex/domus` should be treated as active runtime state.
-- Missing config should be materialized there when bootstrapping a fresh environment.
-- Existing runtime files should not be destructively overwritten during repeated or parallel executions.
-- Volume directories inside `~/.kubex/domus/volumes` are runtime state and should generally be treated as managed operational storage, not as documentation targets.
+Regra prática importante:
 
-Relevant default path constants currently point to:
+- o estado operacional gerado não deve ser sobrescrito destrutivamente em execuções repetidas ou paralelas
 
-- `KUBEX_DOMUS_CONFIG_PATH`
-- `$HOME/.kubex/domus/config/config.json`
-
-There are also older fallback traces in the codebase referencing `.gnyx`-style config paths. The intended active runtime home for current work should be read as `~/.kubex/domus`.
-
-## CLI Overview
-
-The root CLI is implemented with Cobra and currently exposes these top-level command groups:
-
-- `domus docker`
-- `domus database`
-- `domus utils`
-- `domus ssh`
-- `domus config`
-- `domus version`
-
-The most relevant path today is `database`.
-
-### Database commands
-
-Representative commands:
+Um fluxo de config local do repositório ainda dirige a maior parte do uso local:
 
 ```bash
-domus database migrate -C ./configs/config.json
-domus database start --config-file config.yaml
-domus database stop --config-file config.yaml
-domus database status --config-file config.yaml
+./configs/config.json
 ```
 
-### Docker commands
+## Comandos Principais
 
-Representative commands:
+Rodar migrações:
 
 ```bash
-domus docker start
-domus docker restart
-domus docker logs
-domus docker list
-domus docker list-volumes
+go run ./cmd/main.go database migrate -C ./configs/config.json
 ```
 
-Not every CLI area has the same maturity level. The most reliable and operationally relevant command path today is still the migration/bootstrap flow.
-
-## Real Local Development Flow
-
-The repeatedly used local flow currently looks like this:
+Compilar:
 
 ```bash
-go fmt ./...
-go vet ./...
-go build -v ./...
-go mod tidy
-make build-dev
-domus database migrate -C ./configs/config.json
+go build ./...
 ```
 
-In practice, this does the following:
+## Schema Embarcado
 
-1. validates and builds the project
-2. uses the configured backend stack
-3. initializes Docker-backed services when needed
-4. waits for database readiness
-5. executes the migration/bootstrap pipeline
-6. leaves the schema ready for consumers such as `GNyx`
+O schema embarcado hoje cobre mais do que o núcleo original de acesso.
 
-If the target schema already exists, the pipeline behaves conservatively and skips redundant bootstrap work.
+Áreas ativas importantes incluem:
 
-## Embedded Schema and Data Domains
+- users e auth sessions
+- roles, permissions e memberships
+- tabelas relacionadas a convites e pending access
+- tabelas mais amplas de tenant e domínio de negócio
+- uma tabela de registry para datasets de metadados externos
 
-The embedded core schema is organized in numbered stages.
+Evolução aditiva recente inclui:
 
-### Foundational access and tenancy
+- `public.external_metadata_registry`
 
-- `etapa_1_extensions_tenancy.sql`
-- `etapa_2_users_rbac.sql`
-- `etapa_3_memberships.sql`
-- `etapa_4_invites.sql`
-- `etapa_9_auth_sessions.sql`
-- `etapa_10_pending_access_requests.sql`
+Essa tabela dá suporte à governança de metadados externos carregados no PostgreSQL ativo por outras ferramentas.
 
-This gives Domus a real foundation for:
+## Superfície de Stores Tipados
 
-- organizations and tenants
-- teams
-- users
-- RBAC roles and permissions
-- tenant and team memberships
-- invitation flows
-- refresh-session storage
-- pending access workflows
+A superfície de stores tipados continua intencionalmente menor que a largura total do schema.
 
-### Business and integration layer
+Ela já é significativa para:
 
-Additional bootstrap stages cover:
+- stores relacionados a usuários
+- stores relacionados a convites
+- caminhos de acesso relacionados a company / tenant
+- estruturas de pending access
+- comportamento do session repository
+- acesso ao external metadata registry
 
-- business entities
-- indices and triggers
-- seed data
-- integration engine tables
+Essa superfície tipada mais estreita não é um problema por si só. Ela é um boundary pragmático entre a largura do schema e a estabilidade voltada ao consumidor.
 
-The integration engine stage currently introduces:
+## Registry de Metadados Externos
 
-- `integration_config`
-- `sync_job`
-- `integration_query`
+Uma adição recente ao `Domus` é o registry genérico para datasets de metadados externos.
 
-This is important because it means Domus is already carrying the schema foundation for the integration-oriented features being consumed or planned elsewhere in the ecosystem.
+Propósito atual:
 
-## Typed Store Surface
+- registrar datasets carregados de sistemas externos
+- rastrear onde eles foram materializados no PostgreSQL
+- capturar status, readiness e metadados orientados a manifest
+- suportar features de produto/runtime que dependem da disponibilidade de metadados grounded
 
-The current typed store surface exposed through the public DS client is intentionally narrower than the full schema.
+Uso real atual:
 
-Today, the strongest PostgreSQL-backed stores are:
+- ingestão do catálogo BI do Sankhya no schema `sankhya_catalog`
+- checks de readiness consumidos pelo `GNyx` para o fluxo de geração BI
 
-- `user`
-- `invite`
-- `company`
-- `pending_access_request`
+Isso mantém a governança de ingestão externa dentro do substrate ativo de dados sem forçar o `Domus` a virar a própria ferramenta de ingestão.
 
-The client package provides typed helpers such as:
+## Papel no Ecossistema
 
-- `GetUserStore(...)`
-- `GetInviteStore(...)`
-- `GetCompanyStore(...)`
-- `GetPendingAccessStore(...)`
+Hoje o `Domus` é o substrate ativo para:
 
-This distinction matters:
+- persistência de acesso e sessão do `GNyx`
+- fundações de schema para multi-tenant e RBAC
+- readiness e registry de metadados externos
+- futura expansão de features grounded e sustentadas por dados
 
-- the schema is broader than the typed store API
-- the infrastructure ambition is broader than the current typed store API
-- the consumer-safe surface is therefore smaller than the total architectural footprint
+Ele não é apenas “uma camada de banco futura”. Ele já está no caminho crítico.
 
-That is not a bug in the README. It is the current reality of the codebase.
+## Limitações Atuais
 
-## Using Domus as a Go Dependency
+Limitações e restrições atuais incluem:
 
-Consumer applications can use Domus as a library.
+- PostgreSQL é muito mais maduro do que os outros backends
+- a superfície de stores tipados ainda é menor que a superfície total do schema
+- alguns consumidores ainda combinam stores tipados com composição de SQL pontual
+- ambições mais amplas de plataforma existem, mas nem todos os caminhos estão igualmente endurecidos ainda
 
-Minimal example:
+## Documentação e Notas
 
-```go
-package main
+Docs úteis incluem:
 
-import (
-    "context"
-
-    dsclient "github.com/kubex-ecosystem/domus/client"
-    logz "github.com/kubex-ecosystem/logz"
-)
-
-func main() {
-    ctx := context.Background()
-    logger := logz.GetLoggerZ("example")
-
-    cfg := dsclient.NewDSClientConfig(
-        "domus",
-        "$HOME/.kubex/domus/config/config.json",
-    )
-
-    client := dsclient.NewDSClient(ctx, cfg.FilePath, cfg, logger)
-    if err := client.Init(ctx); err != nil {
-        panic(err)
-    }
-    defer client.Close(ctx)
-
-    userStore, err := client.GetUserStore(ctx, "domus")
-    if err != nil {
-        panic(err)
-    }
-
-    _ = userStore
-}
-```
-
-Domus also exposes adapter helpers for mixed store/ORM repository patterns where consumer applications need a transition layer instead of a pure store-only integration.
-
-## Ecosystem Role
-
-Domus sits inside a broader system, but it should be understood on its own terms.
-
-### In relation to GNyx
-
-`GNyx` uses Domus as its data-service boundary for core domains such as:
-
-- users
-- invitations
-- pending access
-- company-like tenancy references
-
-At the moment, `GNyx` still completes some access workflows locally with direct SQL around memberships and role lookups. That means the Domus schema is already foundational, while parts of the full application behavior are still being consolidated at the service boundary.
-
-### In relation to Kbx
-
-`Kbx` supplies cross-project helpers, utilities, security primitives, and shared infrastructure abstractions. Domus depends on this layer for parts of configuration, defaults, and supporting services.
-
-### In relation to Logz
-
-`Logz` is the shared logging foundation used throughout the runtime.
-
-## Current Limitations
-
-Domus is functional, but the boundary between what is architecturally present and what is fully consolidated must be stated clearly.
-
-Current limitations include:
-
-- PostgreSQL is the only clearly consolidated typed datastore path today.
-- MongoDB, Redis, and RabbitMQ exist in the provider/runtime model, but not with an equivalently mature typed store surface.
-- Some config/default path logic still carries older path conventions alongside the intended `~/.kubex/domus` runtime home.
-- The typed store registry does not yet expose the full breadth of the multi-tenant/RBAC schema.
-- Some CLI areas exist but are not as mature or operationally important as the migration/bootstrap flow.
-- The `company` surface does not fully eliminate broader tenancy-model ambiguity in downstream consumers.
-
-## Roadmap Direction
-
-The practical direction for Domus is clear.
-
-### Near-term consolidation
-
-- strengthen the DS client as the preferred integration point
-- keep PostgreSQL bootstrap and store surface stable
-- expand typed store coverage for access and tenancy domains where needed
-- keep local runtime behavior safe and non-destructive in `~/.kubex/domus`
-
-### Mid-term expansion
-
-- deepen the multi-tenant and RBAC service boundary
-- formalize more of the schema as consumer-safe stores
-- support broader PostgreSQL-compatible deployments such as Supabase-backed Postgres
-
-### Future infrastructure expansion
-
-- treat Redis and RabbitMQ as explicit, use-case-driven expansions
-- avoid expanding backend abstractions without a clear consumer path
-- continue separating “available in architecture” from “consolidated in public surface”
+- [`../README.md`](../README.md)
+- notas de análise no repositório `GNyx` sob `.notes/analyzis/`
 
 ## Screenshots
 
-Placeholders for future documentation assets:
+Sugestões de placeholders:
 
-- `[Placeholder] CLI migration flow screenshot`
-- `[Placeholder] Runtime home structure screenshot`
-- `[Placeholder] Schema/bootstrap flow diagram`
-- `[Placeholder] DS client usage example diagram`
-
-## License
-
-This repository is licensed under the [MIT License](./LICENSE).
+- `[Screenshot Placeholder: saída de migração]`
+- `[Screenshot Placeholder: visão do schema no PostgreSQL]`
+- `[Screenshot Placeholder: linhas de external_metadata_registry]`
