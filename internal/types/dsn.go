@@ -6,8 +6,6 @@ import (
 	"strings"
 
 	"github.com/kubex-ecosystem/domus/internal/module/kbx"
-
-	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	gl "github.com/kubex-ecosystem/logz"
 )
 
@@ -70,7 +68,7 @@ func NewDSNFromDBConfig(dbConfig kbx.DBConfig) DSN {
 		dbName:   dbConfig.DBName,
 		schema:   dbConfig.Schema,
 		tls:      dbConfig.TLSEnabled,
-		options:  kbxGet.ValOrType(dbConfig.Options, make(map[string]any)),
+		options:  kbx.GetValueOrDefaultSimple(dbConfig.Options, make(map[string]any)),
 	}
 }
 
@@ -85,7 +83,7 @@ func NewDSN(protocol, user, pass, host, port, dbName, schema string, tls bool, o
 		dbName:   dbName,
 		schema:   schema,
 		tls:      tls,
-		options:  kbxGet.ValOrType(options, make(map[string]any)),
+		options:  kbx.GetValueOrDefaultSimple(options, make(map[string]any)),
 	}
 }
 
@@ -95,7 +93,7 @@ func (d *DSNImpl) String() string {
 	strBuilder.WriteString("://")
 	strBuilder.WriteString(d.user)
 	strBuilder.WriteString(":")
-	strBuilder.WriteString(kbxGet.EnvOr(os.ExpandEnv(d.pass), d.pass))
+	strBuilder.WriteString(kbx.GetValueOrDefaultSimple(os.ExpandEnv(d.pass), d.pass))
 	strBuilder.WriteString("@")
 	strBuilder.WriteString(d.host)
 	strBuilder.WriteString(":")
@@ -137,16 +135,16 @@ func (d *DSNImpl) GetOption(key string) (any, bool) {
 }
 
 func (d *DSNImpl) SetOption(key string, value any) {
-	d.options = kbxGet.ValOrType(d.options, make(map[string]any))
+	d.options = kbx.GetValueOrDefaultSimple(d.options, make(map[string]any))
 	d.options[key] = value
 }
 
 func (d *DSNImpl) SetOptions(options map[string]any) {
-	d.options = kbxGet.ValOrType(options, make(map[string]any))
+	d.options = kbx.GetValueOrDefaultSimple(options, make(map[string]any))
 }
 
 func (d *DSNImpl) GetOptions() map[string]any {
-	return kbxGet.ValOrType(d.options, make(map[string]any))
+	return kbx.GetValueOrDefaultSimple(d.options, make(map[string]any))
 }
 
 func (d *DSNImpl) Validate(opts ...string) error {

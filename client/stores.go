@@ -12,6 +12,7 @@ import (
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	"github.com/kubex-ecosystem/domus/internal/execution"
 	t "github.com/kubex-ecosystem/domus/internal/types"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 // Type aliases para exports públicos dos stores (entidades e inputs)
@@ -80,10 +81,10 @@ const (
 )
 
 // GetUserStore é um helper para obter UserStore diretamente.
-func (c *DSClientImpl) GetUserStore(ctx context.Context, dbName string) (UserStore, error) {
-	conn, err := c.GetConn(ctx, dbName)
-	if err != nil {
-		return nil, err
+func (c *DSClientImpl) GetUserStore(ctx context.Context) (UserStore, error) {
+	conn, ok := c.mgr.GetDefault()
+	if !ok {
+		return nil, gl.Errorf("no default connection found")
 	}
 
 	factory := store.NewStoreFactory(conn.Driver)
@@ -91,10 +92,10 @@ func (c *DSClientImpl) GetUserStore(ctx context.Context, dbName string) (UserSto
 }
 
 // GetInviteStore é um helper para obter InviteStore diretamente.
-func (c *DSClientImpl) GetInviteStore(ctx context.Context, dbName string) (InviteStore, error) {
-	conn, err := c.GetConn(ctx, dbName)
-	if err != nil {
-		return nil, err
+func (c *DSClientImpl) GetInviteStore(ctx context.Context) (InviteStore, error) {
+	conn, ok := c.mgr.GetDefault()
+	if !ok {
+		return nil, gl.Errorf("no default connection found")
 	}
 
 	factory := store.NewStoreFactory(conn.Driver)
@@ -102,10 +103,10 @@ func (c *DSClientImpl) GetInviteStore(ctx context.Context, dbName string) (Invit
 }
 
 // GetCompanyStore é um helper para obter CompanyStore diretamente.
-func (c *DSClientImpl) GetCompanyStore(ctx context.Context, dbName string) (CompanyStore, error) {
-	conn, err := c.GetConn(ctx, dbName)
-	if err != nil {
-		return nil, err
+func (c *DSClientImpl) GetCompanyStore(ctx context.Context) (CompanyStore, error) {
+	conn, ok := c.mgr.GetDefault()
+	if !ok {
+		return nil, gl.Errorf("no default connection found")
 	}
 
 	factory := store.NewStoreFactory(conn.Driver)
@@ -113,10 +114,10 @@ func (c *DSClientImpl) GetCompanyStore(ctx context.Context, dbName string) (Comp
 }
 
 // GetPendingAccessStore é um helper para obter PendingAccessStore diretamente.
-func (c *DSClientImpl) GetPendingAccessStore(ctx context.Context, dbName string) (PendingAccessStore, error) {
-	conn, err := c.GetConn(ctx, dbName)
-	if err != nil {
-		return nil, err
+func (c *DSClientImpl) GetPendingAccessStore(ctx context.Context) (PendingAccessStore, error) {
+	conn, ok := c.mgr.GetDefault()
+	if !ok {
+		return nil, gl.Errorf("no default connection found")
 	}
 
 	factory := store.NewStoreFactory(conn.Driver)
@@ -124,10 +125,10 @@ func (c *DSClientImpl) GetPendingAccessStore(ctx context.Context, dbName string)
 }
 
 // GetExternalMetadataStore é um helper para obter ExternalMetadataStore diretamente.
-func (c *DSClientImpl) GetExternalMetadataStore(ctx context.Context, dbName string) (ExternalMetadataStore, error) {
-	conn, err := c.GetConn(ctx, dbName)
-	if err != nil {
-		return nil, err
+func (c *DSClientImpl) GetExternalMetadataStore(ctx context.Context) (ExternalMetadataStore, error) {
+	conn, ok := c.mgr.GetDefault()
+	if !ok {
+		return nil, gl.Errorf("no default connection found")
 	}
 
 	factory := store.NewStoreFactory(conn.Driver)

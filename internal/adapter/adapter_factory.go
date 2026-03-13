@@ -189,7 +189,7 @@ func CreateStoreAdapter[T any](f *AdapterFactory, ctx context.Context, storeName
 		ForceORM:      false,
 	}
 
-	return NewDSRepository[T](storeRepo, nil, config)
+	return NewDSRepository(storeRepo, nil, config)
 }
 
 // CreateORMAdapter cria um adapter que usa APENAS ORM (ignora Store).

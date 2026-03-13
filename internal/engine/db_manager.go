@@ -196,18 +196,26 @@ func (m *DatabaseManager) GetDefault() (types.DBConnection, bool) {
 	if m.Mutexes == nil {
 		m.Mutexes = types.NewMutexesType()
 	}
-	m.MuRLock()
-	defer m.MuUnlock()
+
+	m.Mutexes.MuRLock()
+	defer func(mm *types.Mutexes) {
+		if !mm.MuTryRLock() {
+			mm.MuUnlock()
+		}
+	}(m.Mutexes)
+
 	if m.DefaultID != "" {
 		conn, ok := m.Conns[m.DefaultID]
 		if ok {
 			return conn, true
 		}
 	}
+
 	// fallback para o primeiro
 	for _, conn := range m.Conns {
 		return conn, true
 	}
+
 	conn, ok := m.Conns[m.DefaultID]
 	return conn, ok
 }

@@ -63,11 +63,11 @@ type DSClient interface {
 	GetStore(ctx context.Context, dbName, storeName string) (StoreType, error)
 
 	// Typed store helpers
-	GetUserStore(ctx context.Context, dbName string) (UserStore, error)
-	GetInviteStore(ctx context.Context, dbName string) (InviteStore, error)
-	GetCompanyStore(ctx context.Context, dbName string) (CompanyStore, error)
-	GetPendingAccessStore(ctx context.Context, dbName string) (PendingAccessStore, error)
-	GetExternalMetadataStore(ctx context.Context, dbName string) (ExternalMetadataStore, error)
+	GetUserStore(ctx context.Context) (UserStore, error)
+	GetInviteStore(ctx context.Context) (InviteStore, error)
+	GetCompanyStore(ctx context.Context) (CompanyStore, error)
+	GetPendingAccessStore(ctx context.Context) (PendingAccessStore, error)
+	GetExternalMetadataStore(ctx context.Context) (ExternalMetadataStore, error)
 
 	// Adapter factory methods
 	NewAdapterFactory(ctx context.Context, dbName string, db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)
@@ -195,7 +195,7 @@ func (c *DSClientImpl) GetStore(ctx context.Context, dbName, storeName string) (
 		return nil, err
 	}
 	if conn == nil {
-		return nil, gl.Error("Database connection is nil for db: %s", dbName)
+		return nil, gl.Errorf("Database connection is nil for db: %s", dbName)
 	}
 
 	// Cria factory para o driver
@@ -204,12 +204,12 @@ func (c *DSClientImpl) GetStore(ctx context.Context, dbName, storeName string) (
 	// Cria store usando factory
 	store, err := factory.Create(ctx, storeName)
 	if err != nil {
-		return nil, gl.Error("Failed to create store %s: %v", storeName, err)
+		return nil, gl.Errorf("Failed to create store %s: %v", storeName, err)
 	}
 
 	// Valida store antes de retornar
 	if err := c.validateBasics(); err != nil {
-		return nil, gl.Error("Store validation failed: %v", err)
+		return nil, gl.Errorf("Store validation failed: %v", err)
 	}
 
 	return store, nil
@@ -227,7 +227,7 @@ func (c *DSClientImpl) GetDriver(ctx context.Context, name string) (BackendCurre
 		return nil, err
 	}
 	if drv == nil {
-		return nil, gl.Error("Database connection is nil for db: %s", name)
+		return nil, gl.Errorf("Database connection is nil for db: %s", name)
 	}
 	return drv.Driver, nil
 }
@@ -266,7 +266,7 @@ func (c *DSClientImpl) NewAdapterFactory(ctx context.Context, dbName string, db 
 	// Obtém driver para o dbName
 	driver, err := c.GetDriver(ctx, dbName)
 	if err != nil {
-		return nil, gl.Error("Failed to get driver for db %s: %v", dbName, err)
+		return nil, gl.Errorf("Failed to get driver for db %s: %v", dbName, err)
 	}
 
 	// Cria factory com driver e opcionalmente db
@@ -290,7 +290,7 @@ func (c *DSClientImpl) NewStoreOnlyAdapterFactory(ctx context.Context, dbName st
 
 	driver, err := c.GetDriver(ctx, dbName)
 	if err != nil {
-		return nil, gl.Error("Failed to get driver for db %s: %v", dbName, err)
+		return nil, gl.Errorf("Failed to get driver for db %s: %v", dbName, err)
 	}
 
 	return adapter.NewStoreOnlyFactory(driver)

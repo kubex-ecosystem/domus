@@ -155,7 +155,7 @@ func migrateDatabaseCmd() *cobra.Command {
 			gl.SetDebugMode(initArgs.Debug)
 
 			// ========== STEP 1: LOAD CONFIG ==========
-			configPath := kbxGet.ValOrType(initArgs.ConfigFile, kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_FILE", kbxMod.DefaultConfigFile))
+			configPath := kbxGet.ValOrType(initArgs.ConfigFile, kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_PATH", kbxMod.DefaultConfigFile))
 			gl.Debugf("Loading configuration from path: %s", configPath)
 			rootConfig, err := engine.LoadRootConfig(configPath)
 			if err != nil {

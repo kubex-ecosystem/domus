@@ -58,3 +58,9 @@ type Driver interface {
 	Close() error
 	Executor(ctx context.Context) (execution.Executor, error)
 }
+
+// type DSN = kbxTypes.DSN
+
+// func NewDSNFromDBConfig(cfg *kbx.DBConfig) *kbxTypes.DSN {
+// 	return kbxTypes.NewDSNFromDBConfig(cfg)
+// }

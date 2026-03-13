@@ -115,7 +115,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/kubex-ecosystem/kbx v1.0.3
+	github.com/kubex-ecosystem/kbx v1.0.4
 	github.com/kubex-ecosystem/xtui v1.3.3
 	github.com/lucasb-eyer/go-colorful v1.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
@@ -144,4 +144,4 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
-// replace kbx => /projects/kubex/kbx
+replace kbx => /projects/kubex/kbx

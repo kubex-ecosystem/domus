@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/kubex-ecosystem/domus/internal/engine"
 	"github.com/kubex-ecosystem/domus/internal/execution"
 	"github.com/kubex-ecosystem/domus/internal/provider/flavors"
 
@@ -87,11 +88,17 @@ func (f *StoreFactory) InviteStore(ctx context.Context) (i.InviteStore, error) {
 	if !found {
 		gl.Warnf("InviteStore not available for driver %s", f.driverName)
 	}
-	executor, err := f.driver.Executor(ctx)
+
+	mgr := engine.NewDatabaseManagerType(gl.GetLoggerZ("invite-store"))
+	cnn, ok := mgr.GetDefault()
+	if !ok {
+		return nil, fmt.Errorf("default connection not found")
+	}
+	exec, err := cnn.Driver.Executor(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get executor from driver: %v", err)
 	}
-	store, err := NewInviteStoreFromExecutor(executor)
+	store, err := NewInviteStoreFromExecutor(exec)
 	if err != nil {
 		return nil, err
 	}
@@ -175,6 +182,10 @@ func GetDriverName(drv t.Driver) string {
 
 // NewUserStoreFromExecutor cria UserStore diretamente de um Executor.
 func NewUserStoreFromExecutor(exec execution.Executor) (u.UserStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+
 	if exec.Kind() != execution.BackendPostgres {
 		return nil, fmt.Errorf("user store requires Postgres backend, got %s", exec.Kind())
 	}
@@ -189,13 +200,17 @@ func NewUserStoreFromExecutor(exec execution.Executor) (u.UserStore, error) {
 
 // NewInviteStoreFromExecutor cria InviteStore diretamente de um Executor.
 func NewInviteStoreFromExecutor(exec execution.Executor) (i.InviteStore, error) {
+	if exec == nil {
+		return nil, gl.Error("executor is nil (invite store from executor)")
+	}
+
 	if exec.Kind() != execution.BackendPostgres {
-		return nil, fmt.Errorf("invite store requires Postgres backend, got %s", exec.Kind())
+		return nil, gl.Error("invite store requires Postgres backend, got %s", exec.Kind())
 	}
 
 	pgExec := exec.PG()
 	if pgExec == nil {
-		return nil, fmt.Errorf("PGExecutor is nil")
+		return nil, gl.Error("PGExecutor is nil (invite store from executor)")
 	}
 
 	return i.NewPGInviteStore(pgExec), nil
@@ -203,6 +218,10 @@ func NewInviteStoreFromExecutor(exec execution.Executor) (i.InviteStore, error) 
 
 // NewCompanyStoreFromExecutor cria CompanyStore diretamente de um Executor.
 func NewCompanyStoreFromExecutor(exec execution.Executor) (c.CompanyStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+
 	if exec.Kind() != execution.BackendPostgres {
 		return nil, fmt.Errorf("company store requires Postgres backend, got %s", exec.Kind())
 	}
@@ -220,6 +239,7 @@ func NewPendingAccessStoreFromExecutor(exec execution.Executor) (p.PendingAccess
 	if exec == nil {
 		return nil, fmt.Errorf("executor is nil")
 	}
+
 	if exec.Kind() != execution.BackendPostgres {
 		return nil, fmt.Errorf("pending access store requires Postgres, got %s", exec.Kind())
 	}
