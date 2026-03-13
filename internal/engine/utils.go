@@ -7,58 +7,59 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
-	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 	"github.com/kubex-ecosystem/domus/internal/types"
+
+	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
+	kbxIs "github.com/kubex-ecosystem/kbx/is"
 	logz "github.com/kubex-ecosystem/logz"
 )
 
 // LoadRootConfig carrega um arquivo JSON simples de config.
-func LoadRootConfig(path string) (kbx.RootConfig, error) {
-	if path == "" {
-		path = os.ExpandEnv(kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_PATH", kbx.DefaultKubexDomusConfigPath))
-	}
+func LoadRootConfig(path string) (kbxMod.RootConfig, error) {
+	path = strings.TrimSpace(kbxGet.ValOrType(path, kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_PATH", kbxMod.DefaultKubexDomusConfigPath)))
 
-	if _, err := os.Stat(path); err != nil {
+	if _, err := os.Stat(path); err != nil && !errors.Is(err, os.ErrNotExist) {
 		logz.Fatalf("Failed to load DS RootConfig %s: %v", path, err)
-		// return kbx.RootConfig{}, err
 	} else if errors.Is(err, os.ErrNotExist) {
-		logz.Infof("Config file %s does not exist, generating default config", path)
+		// TODO: Review this logic and improve
+		logz.Warnf("Config file %s does not exist, generating default config", path)
 		defaultCfg := GenerateDefaultPostgresConfig()
 		defaultCfg.FilePath = path
 		if err := SaveRootConfig(&defaultCfg); err != nil {
-			return kbx.RootConfig{}, fmt.Errorf("failed to save default config to %s: %v", path, err)
+			return kbxMod.RootConfig{}, fmt.Errorf("failed to save default config to %s: %v", path, err)
 		}
 		logz.Infof("Default config saved to %s", path)
 	}
 
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return kbx.RootConfig{}, err
+		return kbxMod.RootConfig{}, err
 	}
 	// var cfg *RootConfig
-	cfgMp := types.NewMapperType(&kbx.RootConfig{}, path)
+	cfgMp := types.NewMapperType(&kbxMod.RootConfig{}, path)
 	cfgObj, err := cfgMp.Deserialize(data, filepath.Ext(path)[1:])
 	if err != nil {
-		return kbx.RootConfig{}, err
+		return kbxMod.RootConfig{}, err
 	}
 	if cfgObj != nil {
 		return *cfgObj, nil
 	}
 
-	newPath := filepath.Join(os.ExpandEnv(kbx.DefaultConfigDir), "domus", "config", filepath.Base(path))
+	newPath := filepath.Join(os.ExpandEnv(kbxMod.DefaultConfigDir), "domus", "config", filepath.Base(path))
 	cfgMpC := types.NewMapperType(cfgMp.GetObject(), os.ExpandEnv(newPath))
 	cfgMpC.SerializeToFile(filepath.Ext(path)[1:])
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-		return kbx.RootConfig{}, fmt.Errorf("config file not found at %s", path)
+		return kbxMod.RootConfig{}, fmt.Errorf("config file not found at %s", path)
 	}
 
-	return kbx.RootConfig{}, errors.New("failed to deserialize root config")
+	return kbxMod.RootConfig{}, errors.New("failed to deserialize root config")
 }
 
 // SaveRootConfig salva o arquivo JSON.
-func SaveRootConfig(cfg *kbx.RootConfig) error {
+func SaveRootConfig(cfg *kbxMod.RootConfig) error {
 	if cfg.FilePath == "" {
 		return errors.New("root config FilePath is empty")
 	}
@@ -72,19 +73,27 @@ func SaveRootConfig(cfg *kbx.RootConfig) error {
 	return os.WriteFile(cfg.FilePath, data, 0o640)
 }
 
+func GetDefaultDBConfig(cfg *kbxMod.RootConfig) *kbxMod.DBConfig {
+	for _, db := range cfg.Databases {
+		if db.IsDefault && kbxGet.ValueOrIf(kbxIs.NilPtr(db.Enabled), true, *db.Enabled) {
+			return &db
+		}
+	}
+	return nil
+}
+
+func GetDBConfig(cfg *kbxMod.RootConfig, id string) *kbxMod.DBConfig {
+	for _, db := range cfg.Databases {
+		if db.ID == id {
+			return &db
+		}
+	}
+	return nil
+}
+
 // GetDefaultConfigPath calcula o path padrão $HOME/.gnyx/database/postgres/config.json
 func GetDefaultConfigPath() (string, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join(
-		home,
-		".gnyx",
-		"database",
-		"domus",
-		"config.json",
-	), nil
+	return kbxMod.DefaultKubexDomusConfigPath, nil
 }
 
 // GenerateRandomPassword é só um helper simples (pode trocar pela sua versão oficial).
@@ -108,10 +117,10 @@ func GenerateRandomPassword(n int) string {
 }
 
 // GenerateDefaultPostgresConfig gera uma única config de Postgres básica.
-func GenerateDefaultPostgresConfig() kbx.RootConfig {
+func GenerateDefaultPostgresConfig() kbxMod.RootConfig {
 	pass := GenerateRandomPassword(40)
 
-	db := kbx.DBConfig{
+	db := kbxMod.DBConfig{
 		// ID:        "postgres",
 		Name:      kbxGet.EnvOr("KUBEX_DOMUS_DB_NAME", "domus"),
 		IsDefault: true,
@@ -139,45 +148,30 @@ func GenerateDefaultPostgresConfig() kbx.RootConfig {
 		},
 	}
 
-	// // DSN simples, o driver pode refinar
-	// db.DSN =
-
-	dsn := types.NewDSN(
-		kbxGet.StrPtr(
-			fmt.Sprintf(
-				"postgres://%s:%s@%s:%s/%s?sslmode=%s",
-				db.User,
-				db.Pass,
-				db.Host,
-				db.Port,
-				db.DBName,
-				db.Options["sslmode"],
-			),
-		),
-	)
+	dsn := types.NewDSNFromDBConfig(db)
 
 	if err := dsn.Validate(); err != nil {
-		return kbx.RootConfig{} //, fmt.Errorf("failed to validate DSN: %s", dsn.Redact())
+		return kbxMod.RootConfig{} //, fmt.Errorf("failed to validate DSN: %s", dsn.Redact())
 	}
 
-	return kbx.RootConfig{
+	return kbxMod.RootConfig{
 		Name:      "domus",
-		Enabled:   kbx.BoolPtr(true),
-		Databases: []kbx.DBConfig{db},
+		Enabled:   new(true),
+		Databases: []kbxMod.DBConfig{db},
 	}
 }
 
 // BootstrapDatabaseManager é o entrypoint que o main do DS pode chamar.
-func BootstrapDatabaseManager(ctx context.Context, logger *logz.LoggerZ, cfgPath string) (kbx.RootConfig, error) {
+func BootstrapDatabaseManager(ctx context.Context, logger *logz.LoggerZ, cfgPath string) (kbxMod.RootConfig, error) {
 	mgr := NewDatabaseManager(logger)
 
 	root, err := mgr.LoadOrBootstrap(cfgPath)
 	if err != nil {
-		return kbx.RootConfig{}, err
+		return kbxMod.RootConfig{}, err
 	}
 
 	if err := mgr.InitFromRootConfig(ctx, &root); err != nil {
-		return kbx.RootConfig{}, err
+		return kbxMod.RootConfig{}, err
 	}
 
 	return root, nil

@@ -12,6 +12,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 	"github.com/kubex-ecosystem/domus/internal/types"
 
 	logz "github.com/kubex-ecosystem/logz"
@@ -22,7 +23,7 @@ import (
 // - segura o manager de conexões
 // - oferece helpers de uso direto pro resto do serviço.
 type Runtime struct {
-	cfg    *types.DBConfig
+	cfg    *kbx.DBConfig
 	mgr    *DatabaseManager
 	logger *logz.LoggerZ
 }
@@ -45,7 +46,7 @@ type Options struct {
 //   - aqui a gente só valida + instancia o Manager + dá Init.
 //   - se der erro aqui, o DS não tem que subir.
 func Bootstrap(ctx context.Context,
-	cfg *types.DBConfig,
+	cfg *kbx.DBConfig,
 	logger *logz.LoggerZ,
 	opts *Options,
 ) (Runtime, error) {
@@ -93,7 +94,7 @@ func Bootstrap(ctx context.Context,
 
 // Config retorna a configuração consolidada usada pelo runtime.
 // Útil pra introspecção, debug, endpoints de /debug/config (sem segredos, claro), etc.
-func (r *Runtime) Config() *types.DBConfig {
+func (r *Runtime) Config() *kbx.DBConfig {
 	return r.cfg
 }
 

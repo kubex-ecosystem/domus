@@ -6,6 +6,7 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/adapter"
 	store "github.com/kubex-ecosystem/domus/internal/datastore"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
+	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	pendingaccess "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
@@ -44,6 +45,11 @@ type (
 	CreatePendingAccessRequestInput = pendingaccess.CreatePendingAccessRequestInput
 	UpdatePendingAccessRequestInput = pendingaccess.UpdatePendingAccessRequestInput
 	PendingAccessFilters            = pendingaccess.PendingAccessFilters
+
+	// External metadata types
+	ExternalMetadataRecord      = externalmetadata.ExternalMetadataRecord
+	UpsertExternalMetadataInput = externalmetadata.UpsertExternalMetadataInput
+	ExternalMetadataFilters     = externalmetadata.ExternalMetadataFilters
 
 	// Adapter types - apenas os não-genéricos
 
@@ -117,6 +123,17 @@ func (c *DSClientImpl) GetPendingAccessStore(ctx context.Context, dbName string)
 	return factory.PendingAccessStore(ctx)
 }
 
+// GetExternalMetadataStore é um helper para obter ExternalMetadataStore diretamente.
+func (c *DSClientImpl) GetExternalMetadataStore(ctx context.Context, dbName string) (ExternalMetadataStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.ExternalMetadataStore(ctx)
+}
+
 // Funções standalone para criação de stores a partir de BackendConnection
 
 // NewUserStore cria um UserStore a partir de uma conexão.
@@ -141,6 +158,12 @@ func NewCompanyStore(ctx context.Context, conn *BackendConnection) (CompanyStore
 func NewPendingAccessStore(ctx context.Context, conn *BackendConnection) (PendingAccessStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.PendingAccessStore(ctx)
+}
+
+// NewExternalMetadataStore cria um ExternalMetadataStore a partir de uma conexão.
+func NewExternalMetadataStore(ctx context.Context, conn *BackendConnection) (ExternalMetadataStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.ExternalMetadataStore(ctx)
 }
 
 func NewIntegrationStore(ctx context.Context, conn *BackendConnection, mKey []byte) (IntegrationStore, error) {

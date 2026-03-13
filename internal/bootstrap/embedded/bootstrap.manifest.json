@@ -189,14 +189,31 @@
       ],
       "critical": false,
       "rollback_safe": true
+    },
+    {
+      "step": 12,
+      "name": "External Metadata Registry",
+      "file": "core/etapa_12_external_metadata_registry.sql",
+      "description": "Cria registry de datasets externos carregados no mesmo PostgreSQL",
+      "estimated_duration_seconds": 1,
+      "dependencies": ["etapa_7_triggers.sql"],
+      "creates": [
+        "table: external_metadata_registry",
+        "index: idx_external_metadata_registry_source_domain",
+        "index: idx_external_metadata_registry_schema_dataset",
+        "index: idx_external_metadata_registry_status",
+        "index: idx_external_metadata_registry_last_loaded"
+      ],
+      "critical": false,
+      "rollback_safe": true
     }
   ],
-  "total_estimated_duration_seconds": 20,
+  "total_estimated_duration_seconds": 21,
   "statistics": {
-    "total_tables": 20,
+    "total_tables": 21,
     "total_functions": 1,
-    "total_triggers": 14,
-    "total_indexes": 63,
+    "total_triggers": 15,
+    "total_indexes": 67,
     "total_roles_created": 8,
     "total_permissions_configured": 33
   },

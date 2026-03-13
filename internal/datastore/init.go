@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
+	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	pendingaccess "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
 	userstore "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
@@ -186,6 +187,42 @@ func registerPostgresStores() {
 
 	if err := RegisterStore(driverName, "pending_access_request", pendingMetadata, pendingFactory); err != nil {
 		gl.Errorf("Failed to register pending access store: %v", err)
+	}
+
+	externalMetadata := &t.StoreMetadata{
+		Name:        "external_metadata",
+		Type:        reflect.TypeFor[externalmetadata.ExternalMetadataRecord](),
+		DriverName:  driverName,
+		Description: "External metadata registry store",
+		Version:     "1.0.0",
+		Capabilities: []string{
+			"upsert",
+			"dataset_lookup",
+			"pagination",
+			"filtering",
+		},
+	}
+
+	externalMetadataFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("external metadata store requires Postgres, got %s", exec.Kind())
+		}
+
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+
+		return externalmetadata.NewPGExternalMetadataStore(pgExec), nil
+	}
+
+	if err := RegisterStore(driverName, "external_metadata", externalMetadata, externalMetadataFactory); err != nil {
+		gl.Errorf("Failed to register external metadata store: %v", err)
 	}
 
 	gl.Noticef("Registered %d stores for driver: %s", len(ListStoresByDriver(driverName)), driverName)

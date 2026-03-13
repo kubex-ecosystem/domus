@@ -1,7 +1,7 @@
 {
   "name": "Kubex DS",
   "application": "domus",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "published": false,
   "aliases": [
@@ -10,7 +10,7 @@
   "repository": "https://github.com/kubex-ecosystem/domus",
   "homepage": "https://github.com/kubex-ecosystem/domus",
   "description": "Kubex DS: A complete tool for managing databases, data models, and more.",
-  "go_version": "1.26.0",
+  "go_version": "1.26.1",
   "main": "cmd/main.go",
   "bin": "domus",
   "author": "Rafael Mori <faelmori@gmail.com>",

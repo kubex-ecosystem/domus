@@ -9,6 +9,7 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/provider/flavors"
 
 	c "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
+	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
 	integration "github.com/kubex-ecosystem/domus/internal/datastore/integration_store"
 	i "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	p "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
@@ -123,6 +124,19 @@ func (f *StoreFactory) PendingAccessStore(ctx context.Context) (p.PendingAccessS
 	return pendingStore, nil
 }
 
+// ExternalMetadataStore cria um ExternalMetadataStore (helper específico).
+func (f *StoreFactory) ExternalMetadataStore(ctx context.Context) (externalmetadata.ExternalMetadataStore, error) {
+	store, err := f.Create(ctx, "external_metadata")
+	if err != nil {
+		return nil, err
+	}
+	externalMetadataStore, ok := store.(externalmetadata.ExternalMetadataStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not an ExternalMetadataStore")
+	}
+	return externalMetadataStore, nil
+}
+
 func (f *StoreFactory) IntegrationStore(ctx context.Context, mKey []byte) (integration.IntegrationStore, error) {
 	store, err := f.Create(ctx, "integration")
 	if err != nil {
@@ -214,6 +228,21 @@ func NewPendingAccessStoreFromExecutor(exec execution.Executor) (p.PendingAccess
 		return nil, fmt.Errorf("PGExecutor is nil")
 	}
 	return p.NewPGPendingAccessStore(pgExec), nil
+}
+
+// NewExternalMetadataStoreFromExecutor cria ExternalMetadataStore diretamente de um Executor.
+func NewExternalMetadataStoreFromExecutor(exec execution.Executor) (externalmetadata.ExternalMetadataStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("external metadata store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return externalmetadata.NewPGExternalMetadataStore(pgExec), nil
 }
 
 func NewIntegrationStoreFromExecutor(exec execution.Executor, mKey []byte) (integration.IntegrationStore, error) {

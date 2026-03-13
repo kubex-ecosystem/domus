@@ -10,6 +10,7 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/engine"
 	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
 	"github.com/kubex-ecosystem/domus/internal/services/docker"
+	"github.com/kubex-ecosystem/domus/internal/types"
 
 	"github.com/docker/docker/client"
 	logz "github.com/kubex-ecosystem/logz"
@@ -84,10 +85,10 @@ func NewDockerStackProvider(dockerService ci.IDockerService) *DockerStackProvide
 	return dksk.New(dockerService)
 }
 
-func NewMigrationManager(dsn string, logger *logz.LoggerZ) *MigrationManager {
+func NewMigrationManager(dsn types.DSN, logger *logz.LoggerZ) *MigrationManager {
 	return dksk.NewMigrationManager(dsn, logger)
 }
 
-func CreateMigrationManager(dsn string, logger *logz.LoggerZ) *MigrationManager {
+func CreateMigrationManager(dsn types.DSN, logger *logz.LoggerZ) *MigrationManager {
 	return dksk.NewMigrationManager(dsn, logger)
 }

@@ -81,6 +81,7 @@ type InitArgs struct {
 	PubCertKeyPath string
 	PubKeyPath     string
 	Pwd            string
+	DBConfigID     string
 
 	Enabled  bool
 	Port     string
@@ -119,7 +120,7 @@ type DBConfig struct {
 	IsDefault   bool           `json:"is_default,omitempty" yaml:"is_default,omitempty" mapstructure:"is_default,omitempty"`
 	Enabled     *bool          `json:"enabled,omitempty" yaml:"enabled,omitempty" mapstructure:"enabled,omitempty" default:"true"`
 	Debug       bool           `json:"debug,omitempty" yaml:"debug,omitempty" mapstructure:"debug,omitempty"`
-	Type        DBType         `json:"type,omitempty" yaml:"type,omitempty" mapstructure:"Type,omitempty" validate:"required,oneof=postgres rabbitmq redis mongodb mysql mssql sqlite oracle"`
+	Protocol    DBType         `json:"type,omitempty" yaml:"type,omitempty" mapstructure:"Type,omitempty" validate:"required,oneof=postgres rabbitmq redis mongodb mysql mssql sqlite oracle"`
 	Host        string         `json:"host,omitempty" yaml:"host,omitempty" mapstructure:"host,omitempty"`
 	Port        string         `json:"port,omitempty" yaml:"port,omitempty" mapstructure:"port,omitempty"`
 	User        string         `json:"user,omitempty" yaml:"user,omitempty" mapstructure:"user,omitempty"`

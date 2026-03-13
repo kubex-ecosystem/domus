@@ -1,5 +1,5 @@
-// Package dockerstack provides migration management for PostgreSQL
-package dockerstack
+// Package remotestack provides migration management for PostgreSQL
+package remotestack
 
 import (
 	"context"
@@ -116,11 +116,7 @@ func (m *MigrationManager) OpenCurrentPGConn() (*sql.DB, error) {
 }
 
 func (m *MigrationManager) OpenCannonicalPGConn() (*sql.DB, error) {
-	cDsn, err := getCanonicalPostgresDSN(m.dsn.String())
-	if err != nil {
-		return nil, err
-	}
-	db, err := sql.Open("postgres", cDsn)
+	db, err := sql.Open("postgres", m.dsn.String())
 	if err != nil {
 		return nil, err
 	}

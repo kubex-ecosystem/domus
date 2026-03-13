@@ -1,5 +1,5 @@
-// Package dockerstack provides Docker-based backend implementation
-package dockerstack
+// Package remotestack provides Docker-based backend implementation
+package remotestack
 
 import (
 	"context"
@@ -8,51 +8,43 @@ import (
 	"time"
 
 	"github.com/kubex-ecosystem/domus/internal/engine"
-
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 	"github.com/kubex-ecosystem/domus/internal/provider"
-	"github.com/kubex-ecosystem/domus/internal/services/docker"
 	"github.com/kubex-ecosystem/domus/internal/types"
 
-	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
-	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
-	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	logz "github.com/kubex-ecosystem/logz"
 )
 
-// DockerStackProvider wraps legacy Docker services into new Provider interface.
+// RemoteStackProvider wraps legacy Docker services into new Provider interface.
 // It implements Provider, MigratableProvider, and RootConfigProvider interfaces.
-type DockerStackProvider struct {
-	logger        *logz.LoggerZ
-	dockerService ci.IDockerService
+type RemoteStackProvider struct {
+	logger *logz.LoggerZ
 }
 
-// NewDockerStackProvider creates a new Docker-based provider with constructor injection.
-// The dockerService parameter is required and must not be nil.
-func NewDockerStackProvider(dockerService ci.IDockerService) *DockerStackProvider {
-	return &DockerStackProvider{
-		logger:        logz.NewLogger("domus"),
-		dockerService: dockerService,
+// NewRemoteStackProvider creates a new RemoteStack provider.
+func NewRemoteStackProvider() *RemoteStackProvider {
+	return &RemoteStackProvider{
+		logger: logz.NewLogger("domus"),
 	}
 }
 
 // Name returns the provider name
-func (p *DockerStackProvider) Name() string {
-	return "dockerstack"
+func (p *RemoteStackProvider) Name() string {
+	return "remotestack"
 }
 
 // Capabilities returns what this provider can do
-func (p *DockerStackProvider) Capabilities(ctx context.Context) (provider.Capabilities, error) {
+func (p *RemoteStackProvider) Capabilities(ctx context.Context) (provider.Capabilities, error) {
 	return provider.Capabilities{
-		Managed: true, // Docker managed containers
+		Managed: true, // Remote managed stack
 		Notes: []string{
-			"Zero-config local stack using Docker",
+			"Remote stack using remote database connections",
 			"Supports PostgreSQL, MongoDB, Redis, RabbitMQ",
-			"Auto-generates credentials via keyring",
 		},
 		Features: map[string]bool{
-			"network.internal": true,
-			"publish.ports":    true,
-			"volumes.persist":  true,
+			"network.internal": false,
+			"publish.ports":    false,
+			"volumes.persist":  false,
 			"migrations":       true,
 		},
 	}, nil
@@ -61,33 +53,7 @@ func (p *DockerStackProvider) Capabilities(ctx context.Context) (provider.Capabi
 // Start provisions or attaches services and returns ready endpoints.
 // This implements the Provider interface without handling migrations.
 // Use StartServices() for complete orchestration including migrations.
-func (p *DockerStackProvider) Start(ctx context.Context, spec provider.StartSpec) (map[string]provider.Endpoint, error) {
-	// Validate dockerService was injected
-	if p.dockerService == nil {
-		var err error
-		p.dockerService, err = docker.NewDockerService(p.logger)
-		if err != nil {
-			return nil, logz.Errorf("failed to create docker service: %v", err)
-		}
-
-		rootConfig := &kbxMod.RootConfig{
-			Name:     kbxGet.ValOrType(spec.Labels["app"], kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_NAME", "domus")),
-			FilePath: kbxGet.ValOrType(spec.Labels["path"], kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_PATH", kbxMod.DefaultKubexDomusConfigPath)),
-			Enabled:  new(true),
-			Databases: func() []kbxMod.DBConfig {
-				configs := make([]kbxMod.DBConfig, 0)
-				for _, svc := range spec.Configs {
-					configs = append(configs, svc)
-				}
-				return configs
-			}(),
-		}
-
-		if err := p.dockerService.InitializeWithConfig(ctx, rootConfig); err != nil {
-			return nil, logz.Errorf("failed to initialize docker service: %v", err)
-		}
-	}
-
+func (p *RemoteStackProvider) Start(ctx context.Context, spec provider.StartSpec) (map[string]provider.Endpoint, error) {
 	// 1. Convert provider.StartSpec to legacy DBConfig format
 	cfg := p.ConvertSpecToManager(spec)
 
@@ -103,7 +69,7 @@ func (p *DockerStackProvider) Start(ctx context.Context, spec provider.StartSpec
 }
 
 // ConvertSpecToManager converts new StartSpec to DatabaseManager
-func (p *DockerStackProvider) ConvertSpecToManager(spec provider.StartSpec) engine.DatabaseManager {
+func (p *RemoteStackProvider) ConvertSpecToManager(spec provider.StartSpec) engine.DatabaseManager {
 	dbManager := engine.DatabaseManager{Conns: make(map[string]types.DBConnection)}
 
 	for _, svc := range spec.Services {
@@ -130,8 +96,7 @@ func (p *DockerStackProvider) ConvertSpecToManager(spec provider.StartSpec) engi
 	return dbManager
 }
 
-// ConvertDBConfigToSpec converts DBConfig to StartSpec
-func (p *DockerStackProvider) ConvertDBConfigToSpec(dbConfig *kbxMod.DBConfig) (*provider.StartSpec, error) {
+func (p *RemoteStackProvider) ConvertDBConfigToSpec(dbConfig *kbx.DBConfig) (*provider.StartSpec, error) {
 	spec := &provider.StartSpec{
 		Services: []provider.ServiceRef{
 			{
@@ -160,7 +125,7 @@ func (p *DockerStackProvider) ConvertDBConfigToSpec(dbConfig *kbxMod.DBConfig) (
 }
 
 // ExtractEndpoints converts legacy DBConfig to new Endpoint format
-func (p *DockerStackProvider) ExtractEndpoints(cfg *engine.DatabaseManager) (map[string]provider.Endpoint, error) {
+func (p *RemoteStackProvider) ExtractEndpoints(cfg *engine.DatabaseManager) (map[string]provider.Endpoint, error) {
 	endpoints := make(map[string]provider.Endpoint)
 
 	if cfg == nil {
@@ -182,22 +147,18 @@ func (p *DockerStackProvider) ExtractEndpoints(cfg *engine.DatabaseManager) (map
 }
 
 // Health verifies connectivity to all services
-func (p *DockerStackProvider) Health(ctx context.Context, eps map[string]provider.Endpoint) error {
+func (p *RemoteStackProvider) Health(ctx context.Context, eps map[string]provider.Endpoint) error {
 	// TODO: Implement real health checks
-	// For now, just verify Docker service is initialized
-	if p.dockerService == nil {
-		return logz.Error("docker service not initialized")
-	}
 	return nil
 }
 
 // Stop stops all managed containers
-func (p *DockerStackProvider) Stop(ctx context.Context, refs []provider.ServiceRef) error {
+func (p *RemoteStackProvider) Stop(ctx context.Context, refs []provider.ServiceRef) error {
 	// TODO: Call docker service stop methods
 	return nil
 }
 
-func (p *DockerStackProvider) PrepareMigrations(ctx context.Context, conn *types.DBConnection) error {
+func (p *RemoteStackProvider) PrepareMigrations(ctx context.Context, conn *types.DBConnection) error {
 	if conn == nil {
 		return logz.Error("invalid database connection")
 	}
@@ -229,7 +190,7 @@ func (p *DockerStackProvider) PrepareMigrations(ctx context.Context, conn *types
 	return nil
 }
 
-func (p *DockerStackProvider) RunMigrations(ctx context.Context, conn *types.DBConnection, migrationInfo *kbxMod.MigrationInfo) error {
+func (p *RemoteStackProvider) RunMigrations(ctx context.Context, conn *types.DBConnection, migrationInfo *kbx.MigrationInfo) error {
 	if conn == nil {
 		return logz.Error("invalid database connection")
 	}
@@ -274,25 +235,16 @@ func (p *DockerStackProvider) RunMigrations(ctx context.Context, conn *types.DBC
 // 2. Waits for database readiness
 // 3. Runs migrations (if auto-migrate is enabled)
 // 4. Returns only when everything is ready
-func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbxMod.RootConfig) error {
+func (p *RemoteStackProvider) StartServices(ctx context.Context, rootConfig *kbx.RootConfig) error {
 	// Validate inputs
-	if p.dockerService == nil {
-		return logz.Error("dockerService not initialized (use NewDockerStackProvider with service injection)")
-	}
 	if rootConfig == nil {
 		return logz.Error("rootConfig cannot be nil")
 	}
 
-	// ========== STEP 1: START DOCKER CONTAINERS ==========
-	logz.Info("Starting Docker containers...")
-	if err := p.dockerService.InitializeWithConfig(ctx, rootConfig); err != nil {
-		return logz.Errorf("failed to start containers: %v", err)
-	}
-
-	// ========== STEP 2-6: WAIT + MIGRATE FOR EACH DATABASE ==========
+	// ========== STEP 1: WAIT + MIGRATE FOR EACH DATABASE ==========
 	for _, dbConf := range rootConfig.Databases {
 		// Skip disabled databases
-		if !kbxMod.DefaultFalse(dbConf.Enabled) {
+		if !kbx.DefaultFalse(dbConf.Enabled) {
 			logz.Debugf("Skipping disabled database: %s", dbConf.Name)
 			continue
 		}
@@ -311,7 +263,7 @@ func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbx
 		}
 
 		// Run migrations if enabled
-		if dbConf.Migration != nil && kbxMod.DefaultFalse(dbConf.Migration.Auto) {
+		if dbConf.Migration != nil && kbx.DefaultFalse(dbConf.Migration.Auto) {
 			logz.Infof("Running migrations for database: %s", dbConf.Name)
 
 			// Check if schema already exists (skip if so)
