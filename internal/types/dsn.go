@@ -1,7 +1,7 @@
 package types
 
 import (
-	"reflect"
+	"os"
 	"regexp"
 
 	"github.com/kubex-ecosystem/domus/internal/module/kbx"
@@ -11,7 +11,7 @@ import (
 )
 
 // DSN is an interface for a connection string.
-type DSN[T Driver] interface {
+type DSN interface {
 	// String returns the DSN string.
 	String() string
 
@@ -23,9 +23,6 @@ type DSN[T Driver] interface {
 	//	postgres://user:secretpass@localhost:5432/db
 	//	-> postgres://user:***@localhost:5432/db
 	Redacted() string
-
-	// Flavor returns the flavor of the DSN.
-	Driver() reflect.Type
 
 	// GetOption returns the value of the option with the given key.
 	GetOption(key string) (any, bool)
@@ -47,82 +44,88 @@ type DSN[T Driver] interface {
 
 // DSNImpl is a concrete implementation of the DSN interface.
 // All fields are private to ensure encapsulation and controlled access.
-type DSNImpl[T Driver] struct {
+type DSNImpl struct {
 	protocol string
 	user     string
 	pass     string
 	host     string
 	port     string
-	name     string
+	dbName   string
+	schema   string
+	tls      bool
 	options  map[string]any
 }
 
 // NewDSNFromDBConfig constructs a connection string from database configuration components.
 // Supports: PostgreSQL, MongoDB, Redis, RabbitMQ.
-func NewDSNFromDBConfig[T Driver](dbConfig kbx.DBConfig) DSN[T] {
+func NewDSNFromDBConfig(dbConfig kbx.DBConfig) DSN {
 	dbType := string(dbConfig.Protocol)
-	return &DSNImpl[T]{
+	return &DSNImpl{
 		protocol: dbType,
 		user:     dbConfig.User,
 		pass:     dbConfig.Pass,
 		host:     dbConfig.Host,
 		port:     dbConfig.Port,
-		name:     dbConfig.Name,
+		dbName:   dbConfig.DBName,
+		schema:   dbConfig.Schema,
+		tls:      dbConfig.TLSEnabled,
 		options:  kbxGet.ValOrType(dbConfig.Options, make(map[string]any)),
 	}
 }
 
 // NewDSN creates a new DSN from the given parameters.
-func NewDSN[T Driver](protocol, user, pass, host, port, name string, options map[string]any) DSN[T] {
-	return &DSNImpl[T]{
+func NewDSN(protocol, user, pass, host, port, dbName, schema string, tls bool, options map[string]any) DSN {
+	return &DSNImpl{
 		protocol: protocol,
 		user:     user,
 		pass:     pass,
 		host:     host,
 		port:     port,
-		name:     name,
+		dbName:   dbName,
+		schema:   schema,
+		tls:      tls,
 		options:  kbxGet.ValOrType(options, make(map[string]any)),
 	}
 }
 
-func (d *DSNImpl[T]) Driver() reflect.Type { return reflect.TypeFor[T]() }
-
-func (d *DSNImpl[T]) String() string {
-	return gl.Sprintf("%s://%s:%s@%s:%s/%s",
+func (d *DSNImpl) String() string {
+	return gl.Sprintf("%s://%s:%s@%s:%s/%s?schema=%s&tls=%t",
 		d.protocol,
 		d.user,
-		kbxGet.EnvOr(d.pass, d.pass),
+		kbxGet.EnvOr(os.ExpandEnv(d.pass), d.pass),
 		d.host,
 		d.port,
-		d.name,
+		d.dbName,
+		d.schema,
+		d.tls,
 	)
 }
 
-func (d *DSNImpl[T]) Redacted() string {
+func (d *DSNImpl) Redacted() string {
 	// Regex: match protocol://username:password@host
 	re := regexp.MustCompile(`://([^:]+):([^@]+)@`)
 	return re.ReplaceAllString(d.String(), "://$1:***@")
 }
 
-func (d *DSNImpl[T]) GetOption(key string) (any, bool) {
+func (d *DSNImpl) GetOption(key string) (any, bool) {
 	val, ok := d.GetOptions()[key]
 	return val, ok
 }
 
-func (d *DSNImpl[T]) SetOption(key string, value any) {
+func (d *DSNImpl) SetOption(key string, value any) {
 	d.options = kbxGet.ValOrType(d.options, make(map[string]any))
 	d.options[key] = value
 }
 
-func (d *DSNImpl[T]) SetOptions(options map[string]any) {
+func (d *DSNImpl) SetOptions(options map[string]any) {
 	d.options = kbxGet.ValOrType(options, make(map[string]any))
 }
 
-func (d *DSNImpl[T]) GetOptions() map[string]any {
+func (d *DSNImpl) GetOptions() map[string]any {
 	return kbxGet.ValOrType(d.options, make(map[string]any))
 }
 
-func (d *DSNImpl[T]) Validate(opts ...string) error {
+func (d *DSNImpl) Validate(opts ...string) error {
 	if len(d.protocol) == 0 {
 		return gl.Errorf("Protocol is empty")
 	}
@@ -135,13 +138,13 @@ func (d *DSNImpl[T]) Validate(opts ...string) error {
 	if len(d.port) == 0 {
 		return gl.Errorf("Port is empty")
 	}
-	if len(d.name) == 0 {
+	if len(d.dbName) == 0 {
 		return gl.Errorf("Name is empty")
 	}
 	return nil
 }
 
-func (d *DSNImpl[T]) Parse(raw string) error {
+func (d *DSNImpl) Parse(raw string) error {
 	dsn, err := parseDSN(raw)
 	if err != nil {
 		return err
@@ -151,14 +154,16 @@ func (d *DSNImpl[T]) Parse(raw string) error {
 	d.pass = dsn.pass
 	d.host = dsn.host
 	d.port = dsn.port
-	d.name = dsn.name
+	d.dbName = dsn.dbName
+	d.schema = dsn.schema
+	d.tls = dsn.tls
 	d.options = dsn.options
 	return nil
 }
 
 // ----------- Private Methods -----------
 
-func parseDSN(raw string) (*DSNImpl[Driver], error) {
+func parseDSN(raw string) (*DSNImpl, error) {
 	// TODO: Implementar parse do DSN
 	if len(raw) == 0 {
 		return nil, gl.Errorf("DSN is empty")

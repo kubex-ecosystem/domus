@@ -148,7 +148,7 @@ func GenerateDefaultPostgresConfig() kbxMod.RootConfig {
 		},
 	}
 
-	dsn := types.NewDSNFromDBConfig[types.Driver](db)
+	dsn := types.NewDSNFromDBConfig(db)
 
 	if err := dsn.Validate(); err != nil {
 		return kbxMod.RootConfig{} //, fmt.Errorf("failed to validate DSN: %s", dsn.Redact())

@@ -41,11 +41,11 @@ type StatementError struct {
 type MigrationManager struct {
 	count    int
 	attempts int
-	dsn      string
+	dsn      types.DSN
 }
 
 // NewMigrationManager creates a new migration manager
-func NewMigrationManager(dsn string, logger *logz.LoggerZ) *MigrationManager {
+func NewMigrationManager(dsn types.DSN, logger *logz.LoggerZ) *MigrationManager {
 	return &MigrationManager{
 		count:    0,
 		attempts: 5,
@@ -112,15 +112,11 @@ func (m *MigrationManager) WaitForPostgres(ctx context.Context, maxWait time.Dur
 }
 
 func (m *MigrationManager) OpenCurrentPGConn() (*sql.DB, error) {
-	return sql.Open("postgres", m.dsn)
+	return sql.Open("postgres", m.dsn.String())
 }
 
 func (m *MigrationManager) OpenCannonicalPGConn() (*sql.DB, error) {
-	cDsn, err := getCanonicalPostgresDSN(m.dsn)
-	if err != nil {
-		return nil, err
-	}
-	db, err := sql.Open("postgres", cDsn)
+	db, err := sql.Open("postgres", m.dsn.String())
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +125,7 @@ func (m *MigrationManager) OpenCannonicalPGConn() (*sql.DB, error) {
 
 // RunMigrations executes all SQL files in order with error recovery
 func (m *MigrationManager) RunMigrations(ctx context.Context, migrationInfo *kbx.MigrationInfo) ([]MigrationResult, error) {
-	db, err := sql.Open("postgres", m.dsn)
+	db, err := sql.Open("postgres", m.dsn.String())
 	if err != nil {
 		return nil, logz.Errorf("failed to connect to database: %v", err)
 	}
@@ -503,7 +499,7 @@ func (m *MigrationManager) parseSQL(content string) []SQLStatement {
 
 // SchemaExists checks if the required schema is already initialized
 func (m *MigrationManager) SchemaExists() (bool, error) {
-	db, err := sql.Open("postgres", m.dsn)
+	db, err := sql.Open("postgres", m.dsn.String())
 	if err != nil {
 		return false, err
 	}
@@ -549,7 +545,7 @@ func (m *MigrationManager) SchemaExists() (bool, error) {
 
 // MissingTables returns which required base tables are missing from the target schema.
 func (m *MigrationManager) MissingTables(schema string, tables ...string) ([]string, error) {
-	db, err := sql.Open("postgres", m.dsn)
+	db, err := sql.Open("postgres", m.dsn.String())
 	if err != nil {
 		return nil, err
 	}
@@ -580,7 +576,7 @@ func (m *MigrationManager) MissingTables(schema string, tables ...string) ([]str
 
 // ValidateConnection tests the database connection
 func (m *MigrationManager) ValidateConnection() error {
-	db, err := sql.Open("postgres", m.dsn)
+	db, err := sql.Open("postgres", m.dsn.String())
 	if err != nil {
 		return logz.Errorf("failed to connect: %v", err)
 	}

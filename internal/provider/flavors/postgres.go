@@ -51,18 +51,22 @@ func NewPostgresDriver(logger *gl.LoggerZ) types.Driver {
 func (d *PostgresDriver) Name() string { return "postgres" }
 
 func (d *PostgresDriver) Connect(ctx context.Context, cfg *kbxMod.DBConfig) error {
-	dsn := types.NewDSNFromDBConfig[*PostgresDriver](*cfg)
+	dsn := types.NewDSNFromDBConfig(*cfg)
 	if err := dsn.Validate(); err != nil {
 		if len(cfg.DSN) > 0 {
 			if err = dsn.Parse(cfg.DSN); err != nil {
 				return d.logger.Errorf("dsn parse failed: %v", err)
+			}
+			if err = dsn.Validate(); err != nil {
+				return d.logger.Errorf("dsn validation failed: %v", err)
 			}
 		} else {
 			return d.logger.Errorf("dsn validation failed: %v", err)
 		}
 	}
 
-	conf, err := pgxpool.ParseConfig(dsn.String())
+	connStr := dsn.String()
+	conf, err := pgxpool.ParseConfig(connStr)
 	if err != nil {
 		return d.logger.Errorf("pgxpool.ParseConfig: %v", err)
 	}

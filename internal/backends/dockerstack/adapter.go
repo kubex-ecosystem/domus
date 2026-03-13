@@ -3,7 +3,6 @@ package dockerstack
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -14,7 +13,6 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/types"
 
 	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
-	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	logz "github.com/kubex-ecosystem/logz"
 )
 
@@ -256,7 +254,9 @@ func (p *DockerStackProvider) PrepareMigrations(ctx context.Context, conn *types
 		return logz.Errorf("failed to connect to database: %v", err)
 	}
 
-	migrationManager := NewMigrationManager(conn.Config.Config.DSN, p.logger)
+	dsn := types.NewDSNFromDBConfig(conn.Config.Config)
+
+	migrationManager := NewMigrationManager(dsn, p.logger)
 
 	// Wait for PostgreSQL to be ready
 	if err := migrationManager.WaitForPostgres(ctx, 30*time.Second); err != nil {
@@ -280,7 +280,9 @@ func (p *DockerStackProvider) RunMigrations(ctx context.Context, conn *types.DBC
 		return logz.Error("migrations only supported for PostgreSQL")
 	}
 
-	migrationManager := NewMigrationManager(conn.Config.Config.DSN, p.logger)
+	dsn := types.NewDSNFromDBConfig(conn.Config.Config)
+
+	migrationManager := NewMigrationManager(dsn, p.logger)
 	// Wait for PostgreSQL to be ready
 	if err := migrationManager.WaitForPostgres(ctx, 30*time.Second); err != nil {
 		return err
@@ -338,20 +340,14 @@ func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbx
 			continue
 		}
 
-		// Build DSN if missing
-		if dbConf.DSN == "" {
-			dbConf.DSN = kbxGet.EnvOr("DATABASE_URL", dbConf.DSN)
-		}
-		if dbConf.DSN == "" {
-			dbConf.DSN = p.buildDSN(&dbConf)
-		}
+		dsn := types.NewDSNFromDBConfig(dbConf)
 
 		// Log database processing
 		logz.Infof("Processing database: %s (%s)", dbConf.Name, dbConf.Protocol)
 
 		// Wait for database readiness
 		logz.Infof("Waiting for database readiness: %s", dbConf.DBName)
-		mm := NewMigrationManager(dbConf.DSN, p.logger)
+		mm := NewMigrationManager(dsn, p.logger)
 
 		if err := mm.WaitForPostgres(ctx, 30*time.Second); err != nil {
 			return logz.Errorf("database %s not ready: %v", dbConf.DBName, err)
@@ -409,27 +405,6 @@ func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbx
 
 	logz.Success("All services started and migrated successfully")
 	return nil
-}
-
-// buildDSN constructs a connection string from DBConfig.
-// Helper method to avoid repeating DSN logic.
-func (p *DockerStackProvider) buildDSN(db *kbx.DBConfig) string {
-	switch db.Protocol {
-	case "postgresql", "postgres", "pg", "domus":
-		return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-			db.User, db.Pass, db.Host, db.Port, db.Name)
-	case "mongodb", "mongo", "kubex_mdb":
-		return fmt.Sprintf("mongodb://%s:%s@%s:%s",
-			db.User, db.Pass, db.Host, db.Port)
-	case "redis", "kubex_rdb":
-		return fmt.Sprintf("redis://:%s@%s:%s",
-			db.Pass, db.Host, db.Port)
-	case "rabbitmq", "rabbit", "kubex_rmq":
-		return fmt.Sprintf("amqp://%s:%s@%s:%s/",
-			db.User, db.Pass, db.Host, db.Port)
-	default:
-		return ""
-	}
 }
 
 // Note: EndpointRedacted is now available as provider.RedactDSN(dsn) utility function.

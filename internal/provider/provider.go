@@ -23,7 +23,7 @@ type ServiceRef struct {
 }
 
 type Endpoint struct {
-	types.DSN[types.Driver]
+	types.DSN
 	DBConfig kbx.DBConfig
 	Driver   types.Driver
 }

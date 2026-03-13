@@ -12,7 +12,7 @@ import (
 
 // BuildEndpoint creates an Endpoint from a DBConfig with DSN generation and redaction.
 func BuildEndpoint(dbConfig *kbxMod.DBConfig) Endpoint {
-	dsn := types.NewDSNFromDBConfig[types.Driver](*dbConfig)
+	dsn := types.NewDSNFromDBConfig(*dbConfig)
 	return Endpoint{
 		DSN:      dsn,
 		DBConfig: *dbConfig,
