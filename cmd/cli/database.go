@@ -155,11 +155,13 @@ func migrateDatabaseCmd() *cobra.Command {
 			gl.SetDebugMode(initArgs.Debug)
 
 			// ========== STEP 1: LOAD CONFIG ==========
-			gl.Info("Loading configuration...")
-			rootConfig, err := engine.LoadRootConfig(kbxGet.ValOrType(initArgs.ConfigFile, kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_FILE", kbxMod.DefaultConfigFile)))
+			configPath := kbxGet.ValOrType(initArgs.ConfigFile, kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_FILE", kbxMod.DefaultConfigFile))
+			gl.Debugf("Loading configuration from path: %s", configPath)
+			rootConfig, err := engine.LoadRootConfig(configPath)
 			if err != nil {
 				return gl.Errorf("Failed to load config: %v", err)
 			}
+			gl.Success("Configuration loaded successfully.")
 
 			var dbConfig *kbxMod.DBConfig
 			if len(initArgs.DBConfigID) > 0 {
@@ -170,10 +172,10 @@ func migrateDatabaseCmd() *cobra.Command {
 			if dbConfig == nil {
 				return gl.Errorf("No default database configuration found")
 			}
+			gl.Debugf("Database configuration: %s/%s", dbConfig.ID, dbConfig.Name)
 
 			// ========== STEP 2: CREATE BACKEND STACK ==========
-			gl.Info("Loading backend stack...")
-
+			gl.Debug("Loading backend stack...")
 			providers := backends.ListProviders()
 			for _, provider := range providers {
 				gl.Debugf("Provider Registered: %s", provider.Name())
@@ -182,29 +184,36 @@ func migrateDatabaseCmd() *cobra.Command {
 			if !ok {
 				return gl.Errorf("Backend '%s' not found", dbConfig.Backend)
 			}
+			gl.Debugf("Backend '%s' found", dbConfig.Backend)
 			capabilities, err := backendStack.Capabilities(ctx)
 			if err != nil {
 				return gl.Errorf("Failed to get capabilities: %v", err)
 			}
+			gl.Debugf("Backend '%s' has %b capabilities", dbConfig.Backend, len(capabilities.Features))
 			if !capabilities.Managed {
 				gl.Info("Backend is not managed. Skipping migration steps.")
 				return nil
 			}
+			gl.Debugf("Backend '%s' is managed", dbConfig.Backend)
 			if hasMigrations, ok := capabilities.Features["migrations"]; !ok || !hasMigrations {
 				gl.Info("Backend does not support migrations. Skipping migration steps.")
 				return nil
 			}
+			gl.Debugf("Backend '%s' supports migrations", dbConfig.Backend)
 
 			// ========== STEP 3: GET MIGRATABLE BACKEND STACK ==========
 			migratableStack, ok := backendStack.(provider.MigratableProvider)
 			if !ok {
 				return gl.Errorf("Backend '%s' does not support migrations", dbConfig.Backend)
 			}
+
+			gl.Infof("Backend '%s' selected for migration", dbConfig.Backend)
+
 			endpoints, err := migratableStack.Start(ctx, provider.ConvertRootConfigToStartSpec(&rootConfig))
 			if err != nil {
 				return gl.Errorf("Failed to start services: %v", err)
 			}
-			gl.Info("Services started successfully.")
+			gl.Debug("Services started successfully.")
 
 			// ========== STEP 4: RUN MIGRATIONS ==========
 			mgr := engine.NewDatabaseManager(logger)
@@ -216,12 +225,15 @@ func migrateDatabaseCmd() *cobra.Command {
 				if err != nil {
 					return gl.Errorf("Failed to get connection: %v", err)
 				}
+				gl.Debugf("Connection established for database: %s", endpoint.DBConfig.ID)
 				if err := migratableStack.PrepareMigrations(ctx, &conn); err != nil {
 					return gl.Errorf("Failed to prepare migrations: %v", err)
 				}
+				gl.Debugf("Migrations prepared for database: %s", endpoint.DBConfig.ID)
 				if err := migratableStack.RunMigrations(ctx, &conn, endpoint.DBConfig.Migration); err != nil {
 					return gl.Errorf("Failed to migrate: %v", err)
 				}
+				gl.Debugf("Migrations applied to database: %s", endpoint.DBConfig.ID)
 			}
 
 			// ========== STEP 7 (OPTIONAL): ENGINE CONNECTIONS ==========
@@ -236,7 +248,7 @@ func migrateDatabaseCmd() *cobra.Command {
 				// Add graceful shutdown handling if needed.
 			}
 
-			gl.Info("Migration pipeline completed successfully!")
+			gl.Success("Migration pipeline completed successfully!")
 
 			return nil
 		},
