@@ -1,6 +1,6 @@
 module github.com/kubex-ecosystem/domus
 
-go 1.26.0
+go 1.26.1
 
 require (
 	github.com/docker/docker v28.5.2+incompatible
@@ -144,4 +144,4 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
-replace kbx => /projects/kubex/kbx
+// replace kbx => /projects/kubex/kbx
