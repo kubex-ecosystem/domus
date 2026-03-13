@@ -50,6 +50,7 @@ type DBConnection struct {
 	Driver Driver     `json:"-" yaml:"-"`
 }
 
+// Driver é a interface que define as operações que um driver de banco de dados deve implementar.
 type Driver interface {
 	Name() string
 	Connect(ctx context.Context, cfg *kbx.DBConfig) error

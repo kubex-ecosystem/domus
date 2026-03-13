@@ -38,7 +38,7 @@ func (p *RemoteStackProvider) Name() string {
 // Capabilities returns what this provider can do
 func (p *RemoteStackProvider) Capabilities(ctx context.Context) (provider.Capabilities, error) {
 	return provider.Capabilities{
-		Managed: true, // Docker managed containers
+		Managed: true, // Remote managed stack
 		Notes: []string{
 			"Remote stack using remote database connections",
 			"Supports PostgreSQL, MongoDB, Redis, RabbitMQ",
@@ -64,6 +64,8 @@ func (p *RemoteStackProvider) Start(ctx context.Context, spec provider.StartSpec
 	if err != nil {
 		return nil, logz.Errorf("failed to extract endpoints: %v", err)
 	}
+
+	logz.Debugf("Checking options and capabilities for tasks")
 
 	return endpoints, nil
 }

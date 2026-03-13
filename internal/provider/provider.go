@@ -23,8 +23,9 @@ type ServiceRef struct {
 }
 
 type Endpoint struct {
-	// *types.DSNImpl[types.Driver]
 	types.DSN[types.Driver]
+	DBConfig kbx.DBConfig
+	Driver   types.Driver
 }
 
 type Capabilities struct {

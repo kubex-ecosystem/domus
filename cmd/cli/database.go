@@ -172,27 +172,57 @@ func migrateDatabaseCmd() *cobra.Command {
 			}
 
 			// ========== STEP 2: CREATE BACKEND STACK ==========
+			gl.Info("Loading backend stack...")
+
 			providers := backends.ListProviders()
 			for _, provider := range providers {
-				gl.Infof("Provider Registered: %s", provider.Name())
+				gl.Debugf("Provider Registered: %s", provider.Name())
 			}
-
 			backendStack, ok := backends.GetProvider(dbConfig.Backend)
 			if !ok {
 				return gl.Errorf("Backend '%s' not found", dbConfig.Backend)
 			}
-
-			startSpec := provider.ConvertRootConfigToStartSpec(&rootConfig)
-			if len(startSpec.Services) == 0 {
-				gl.Info("No services to start")
+			capabilities, err := backendStack.Capabilities(ctx)
+			if err != nil {
+				return gl.Errorf("Failed to get capabilities: %v", err)
+			}
+			if !capabilities.Managed {
+				gl.Info("Backend is not managed. Skipping migration steps.")
+				return nil
+			}
+			if hasMigrations, ok := capabilities.Features["migrations"]; !ok || !hasMigrations {
+				gl.Info("Backend does not support migrations. Skipping migration steps.")
 				return nil
 			}
 
-			gl.Info("Starting services...")
-			if _, err := backendStack.Start(ctx, startSpec); err != nil {
+			// ========== STEP 3: GET MIGRATABLE BACKEND STACK ==========
+			migratableStack, ok := backendStack.(provider.MigratableProvider)
+			if !ok {
+				return gl.Errorf("Backend '%s' does not support migrations", dbConfig.Backend)
+			}
+			endpoints, err := migratableStack.Start(ctx, provider.ConvertRootConfigToStartSpec(&rootConfig))
+			if err != nil {
 				return gl.Errorf("Failed to start services: %v", err)
 			}
 			gl.Info("Services started successfully.")
+
+			// ========== STEP 4: RUN MIGRATIONS ==========
+			mgr := engine.NewDatabaseManager(logger)
+			for _, endpoint := range endpoints {
+				if endpoint.DBConfig.Migration == nil {
+					continue
+				}
+				conn, err := mgr.LoadDBConfig(endpoint.DBConfig)
+				if err != nil {
+					return gl.Errorf("Failed to get connection: %v", err)
+				}
+				if err := migratableStack.PrepareMigrations(ctx, &conn); err != nil {
+					return gl.Errorf("Failed to prepare migrations: %v", err)
+				}
+				if err := migratableStack.RunMigrations(ctx, &conn, endpoint.DBConfig.Migration); err != nil {
+					return gl.Errorf("Failed to migrate: %v", err)
+				}
+			}
 
 			// ========== STEP 7 (OPTIONAL): ENGINE CONNECTIONS ==========
 			if keepAlive {

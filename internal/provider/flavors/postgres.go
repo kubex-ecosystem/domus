@@ -52,11 +52,13 @@ func (d *PostgresDriver) Name() string { return "postgres" }
 
 func (d *PostgresDriver) Connect(ctx context.Context, cfg *kbxMod.DBConfig) error {
 	dsn := types.NewDSNFromDBConfig[*PostgresDriver](*cfg)
-	if err := dsn.Validate(); err != nil && len(cfg.DSN) == 0 {
-		return d.logger.Errorf("dsn validation failed: %v", err)
-	} else if len(cfg.DSN) > 0 {
-		if err = dsn.Parse(cfg.DSN); err != nil {
-			return d.logger.Errorf("dsn parse failed: %v", err)
+	if err := dsn.Validate(); err != nil {
+		if len(cfg.DSN) > 0 {
+			if err = dsn.Parse(cfg.DSN); err != nil {
+				return d.logger.Errorf("dsn parse failed: %v", err)
+			}
+		} else {
+			return d.logger.Errorf("dsn validation failed: %v", err)
 		}
 	}
 

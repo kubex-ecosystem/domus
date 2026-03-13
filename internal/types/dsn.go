@@ -60,14 +60,15 @@ type DSNImpl[T Driver] struct {
 // NewDSNFromDBConfig constructs a connection string from database configuration components.
 // Supports: PostgreSQL, MongoDB, Redis, RabbitMQ.
 func NewDSNFromDBConfig[T Driver](dbConfig kbx.DBConfig) DSN[T] {
+	dbType := string(dbConfig.Protocol)
 	return &DSNImpl[T]{
-		protocol: string(dbConfig.Protocol),
+		protocol: dbType,
 		user:     dbConfig.User,
 		pass:     dbConfig.Pass,
 		host:     dbConfig.Host,
 		port:     dbConfig.Port,
 		name:     dbConfig.Name,
-		options:  dbConfig.Options,
+		options:  kbxGet.ValOrType(dbConfig.Options, make(map[string]any)),
 	}
 }
 
@@ -87,7 +88,14 @@ func NewDSN[T Driver](protocol, user, pass, host, port, name string, options map
 func (d *DSNImpl[T]) Driver() reflect.Type { return reflect.TypeFor[T]() }
 
 func (d *DSNImpl[T]) String() string {
-	return gl.Sprintf("%s://%s:%s@%s:%s/%s", d.protocol, d.user, d.pass, d.host, d.port, d.name)
+	return gl.Sprintf("%s://%s:%s@%s:%s/%s",
+		d.protocol,
+		d.user,
+		kbxGet.EnvOr(d.pass, d.pass),
+		d.host,
+		d.port,
+		d.name,
+	)
 }
 
 func (d *DSNImpl[T]) Redacted() string {

@@ -92,14 +92,14 @@ func (m *DatabaseManager) LoadDBConfig(dbConfig kbx.DBConfig) (types.DBConnectio
 	}
 
 	// Validação por tipo
-	if v, ok := validatorRegistry[kbx.DBType(dbConfig.Protocol)]; ok {
+	if v, ok := validatorRegistry[dbConfig.Protocol]; ok {
 		if err := v.Validate(dbConfig); err != nil {
 			return types.DBConnection{}, fmt.Errorf("db %s failed validation: %v", dbConfig.Name, err)
 		}
 	}
 
 	// Factory de driver
-	factory, ok := driverRegistry[kbx.DBType(dbConfig.Protocol)]
+	factory, ok := driverRegistry[dbConfig.Protocol]
 	if !ok {
 		return types.DBConnection{}, fmt.Errorf("no driver registered for type=%s, skipping db=%s", dbConfig.Protocol, dbConfig.Name)
 	}
@@ -144,7 +144,7 @@ func (m *DatabaseManager) InitFromRootConfig(ctx context.Context, root *kbx.Root
 		}
 
 		// Validação por tipo
-		if v, ok := validatorRegistry[kbx.DBType(db.Protocol)]; ok {
+		if v, ok := validatorRegistry[db.Protocol]; ok {
 			if err := v.Validate(db); err != nil {
 				logz.Error("db %s failed validation: %v", db.Name, err)
 				continue
@@ -152,7 +152,7 @@ func (m *DatabaseManager) InitFromRootConfig(ctx context.Context, root *kbx.Root
 		}
 
 		// Factory de driver
-		factory, ok := driverRegistry[kbx.DBType(db.Protocol)]
+		factory, ok := driverRegistry[db.Protocol]
 		if !ok {
 			logz.Warn("no driver registered for type=%s, skipping db=%s", db.Protocol, db.Name)
 			continue

@@ -4,29 +4,31 @@ package provider
 import (
 	"strconv"
 
-	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 	"github.com/kubex-ecosystem/domus/internal/types"
 
+	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 )
 
 // BuildEndpoint creates an Endpoint from a DBConfig with DSN generation and redaction.
-func BuildEndpoint(dbConfig *kbx.DBConfig) Endpoint {
+func BuildEndpoint(dbConfig *kbxMod.DBConfig) Endpoint {
+	dsn := types.NewDSNFromDBConfig[types.Driver](*dbConfig)
 	return Endpoint{
-		DSN: types.NewDSNFromDBConfig[types.Driver](*dbConfig),
+		DSN:      dsn,
+		DBConfig: *dbConfig,
 	}
 }
 
 // ConvertRootConfigToStartSpec translates a RootConfig into a StartSpec.
 // This helper is useful for CLI commands that need to convert high-level
 // configuration into provider-specific startup specifications.
-func ConvertRootConfigToStartSpec(rootConfig *kbx.RootConfig) StartSpec {
+func ConvertRootConfigToStartSpec(rootConfig *kbxMod.RootConfig) StartSpec {
 	spec := StartSpec{
 		Services:      []ServiceRef{},
 		PreferredPort: map[string]int{},
 		Secrets:       map[string]string{},
 		Labels:        map[string]string{},
-		Configs:       map[string]kbx.DBConfig{},
+		Configs:       map[string]kbxMod.DBConfig{},
 	}
 
 	if rootConfig == nil {
@@ -40,16 +42,16 @@ func ConvertRootConfigToStartSpec(rootConfig *kbx.RootConfig) StartSpec {
 		}
 
 		// Map database type to engine
-		var engine Engine
+		var eng Engine
 		switch db.Protocol {
 		case "postgresql", "postgres":
-			engine = EnginePostgres
+			eng = EnginePostgres
 		case "mongodb", "mongo":
-			engine = EngineMongo
+			eng = EngineMongo
 		case "redis":
-			engine = EngineRedis
+			eng = EngineRedis
 		case "rabbitmq":
-			engine = EngineRabbit
+			eng = EngineRabbit
 		default:
 			continue // Skip unknown types
 		}
@@ -57,7 +59,7 @@ func ConvertRootConfigToStartSpec(rootConfig *kbx.RootConfig) StartSpec {
 		// Add service reference
 		spec.Services = append(spec.Services, ServiceRef{
 			Name:   db.Name,
-			Engine: engine,
+			Engine: eng,
 		})
 
 		// Parse and add preferred port
@@ -79,8 +81,8 @@ func ConvertRootConfigToStartSpec(rootConfig *kbx.RootConfig) StartSpec {
 	return spec
 }
 
-func GetConfigListByService(spec StartSpec, serviceName string) []kbx.DBConfig {
-	var configs []kbx.DBConfig
+func GetConfigListByService(spec StartSpec, serviceName string) []kbxMod.DBConfig {
+	var configs []kbxMod.DBConfig
 	for _, svc := range spec.Services {
 		if svc.Name == serviceName {
 			for _, config := range spec.Configs {
