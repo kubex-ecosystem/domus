@@ -3,9 +3,12 @@ package backends
 
 import (
 	"github.com/kubex-ecosystem/domus/internal/backends/dockerstack"
+	"github.com/kubex-ecosystem/domus/internal/backends/remotestack"
 	"github.com/kubex-ecosystem/domus/internal/interfaces"
 	"github.com/kubex-ecosystem/domus/internal/provider"
 	"github.com/kubex-ecosystem/domus/internal/provider/flavors"
+
+	kbxGet "github.com/kubex-ecosystem/kbx/get"
 )
 
 func init() {
@@ -13,6 +16,7 @@ func init() {
 	// TODO: Initialize dockerService with a concrete implementation if needed
 	registerProviders(
 		dockerstack.New(dockerService),
+		remotestack.New(),
 	)
 }
 
@@ -28,25 +32,14 @@ func registerProviders(providers ...provider.Provider) {
 	}
 }
 
-func GetProvider(name string) (provider.Provider, bool) {
-	return flavors.Get(name)
-}
-
-func ListProviders() []provider.Provider {
-	return flavors.All()
-}
+func GetProvider(name string) (provider.Provider, bool) { return flavors.Get(name) }
+func ListProviders() []provider.Provider                { return flavors.All() }
+func defaultProviderName() string                       { return kbxGet.EnvOr("DOMUS_DEFAULT_PROVIDER", "dockerstack") }
+func IsDefaultProvider(name string) bool                { return name == defaultProviderName() }
 
 func DefaultProvider() provider.Provider {
-	if p, exists := flavors.Get("dockerstack"); exists {
+	if p, exists := flavors.Get(defaultProviderName()); exists {
 		return p
 	}
 	return nil
-}
-
-func DefaultProviderName() string {
-	return "dockerstack"
-}
-
-func IsDefaultProvider(name string) bool {
-	return name == DefaultProviderName()
 }

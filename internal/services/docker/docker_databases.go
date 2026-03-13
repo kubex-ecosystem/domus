@@ -35,7 +35,7 @@ func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, rootConfig 
 	// START GENERIC DATABASE CONFIGS
 	if len(rootConfig.Databases) > 0 {
 		for _, dbConfig := range rootConfig.Databases {
-			if (dbConfig.Type == "postgres" || dbConfig.Type == "postgresql") && kbx.DefaultTrue(dbConfig.Enabled) {
+			if (dbConfig.Protocol == "postgres" || dbConfig.Protocol == "postgresql") && kbx.DefaultTrue(dbConfig.Enabled) {
 				// Check if the database is already running
 				ok := IsServiceRunning("kubexdb-pg")
 				if ok {

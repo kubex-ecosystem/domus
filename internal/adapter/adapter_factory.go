@@ -162,7 +162,7 @@ func CreateAdapter[T any](
 	}
 
 	// Cria adapter com os repositories disponíveis
-	return NewDSRepository[T](storeRepo, ormRepo, f.config)
+	return NewDSRepository(storeRepo, ormRepo, f.config)
 }
 
 // CreateStoreAdapter cria um adapter que usa APENAS store (ignora ORM).
@@ -211,5 +211,5 @@ func CreateORMAdapter[T any](f *AdapterFactory, ormRepoFactory func(execution.Ex
 		ForceORM:      true,
 	}
 
-	return NewDSRepository[T](nil, ormRepo, config)
+	return NewDSRepository(nil, ormRepo, config)
 }

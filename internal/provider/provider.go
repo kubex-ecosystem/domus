@@ -18,15 +18,13 @@ const (
 )
 
 type ServiceRef struct {
-	Name   string // "pg", "mongo", "redis", "rabbit"
+	Name   string
 	Engine Engine
 }
 
 type Endpoint struct {
-	DSN      string // ex: postgres://user:pass@host:port/db?sslmode=disable
-	Redacted string
-	Host     string
-	Port     string
+	// *types.DSNImpl[types.Driver]
+	types.DSN[types.Driver]
 }
 
 type Capabilities struct {
@@ -40,6 +38,7 @@ type StartSpec struct {
 	PreferredPort map[string]int
 	Secrets       map[string]string // senhas já geradas pelo GNyx
 	Labels        map[string]string // rastreabilidade
+	Configs       map[string]kbx.DBConfig
 }
 
 // Provider is the base interface that all service providers must implement.

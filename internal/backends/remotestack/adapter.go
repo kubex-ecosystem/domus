@@ -1,5 +1,5 @@
-// Package dockerstack provides Docker-based backend implementation
-package dockerstack
+// Package remotestack provides Docker-based backend implementation
+package remotestack
 
 import (
 	"context"
@@ -13,45 +13,40 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/provider"
 	"github.com/kubex-ecosystem/domus/internal/types"
 
-	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	logz "github.com/kubex-ecosystem/logz"
 )
 
-// DockerStackProvider wraps legacy Docker services into new Provider interface.
+// RemoteStackProvider wraps legacy Docker services into new Provider interface.
 // It implements Provider, MigratableProvider, and RootConfigProvider interfaces.
-type DockerStackProvider struct {
-	logger        *logz.LoggerZ
-	dockerService ci.IDockerService
+type RemoteStackProvider struct {
+	logger *logz.LoggerZ
 }
 
-// NewDockerStackProvider creates a new Docker-based provider with constructor injection.
-// The dockerService parameter is required and must not be nil.
-func NewDockerStackProvider(dockerService ci.IDockerService) *DockerStackProvider {
-	return &DockerStackProvider{
-		logger:        logz.NewLogger("domus"),
-		dockerService: dockerService,
+// NewRemoteStackProvider creates a new RemoteStack provider.
+func NewRemoteStackProvider() *RemoteStackProvider {
+	return &RemoteStackProvider{
+		logger: logz.NewLogger("domus"),
 	}
 }
 
 // Name returns the provider name
-func (p *DockerStackProvider) Name() string {
-	return "dockerstack"
+func (p *RemoteStackProvider) Name() string {
+	return "remotestack"
 }
 
 // Capabilities returns what this provider can do
-func (p *DockerStackProvider) Capabilities(ctx context.Context) (provider.Capabilities, error) {
+func (p *RemoteStackProvider) Capabilities(ctx context.Context) (provider.Capabilities, error) {
 	return provider.Capabilities{
 		Managed: true, // Docker managed containers
 		Notes: []string{
-			"Zero-config local stack using Docker",
+			"Remote stack using remote database connections",
 			"Supports PostgreSQL, MongoDB, Redis, RabbitMQ",
-			"Auto-generates credentials via keyring",
 		},
 		Features: map[string]bool{
-			"network.internal": true,
-			"publish.ports":    true,
-			"volumes.persist":  true,
+			"network.internal": false,
+			"publish.ports":    false,
+			"volumes.persist":  false,
 			"migrations":       true,
 		},
 	}, nil
@@ -60,21 +55,11 @@ func (p *DockerStackProvider) Capabilities(ctx context.Context) (provider.Capabi
 // Start provisions or attaches services and returns ready endpoints.
 // This implements the Provider interface without handling migrations.
 // Use StartServices() for complete orchestration including migrations.
-func (p *DockerStackProvider) Start(ctx context.Context, spec provider.StartSpec) (map[string]provider.Endpoint, error) {
-	// Validate dockerService was injected
-	if p.dockerService == nil {
-		return nil, logz.Error("dockerService not initialized (use NewDockerStackProvider with service injection)")
-	}
-
+func (p *RemoteStackProvider) Start(ctx context.Context, spec provider.StartSpec) (map[string]provider.Endpoint, error) {
 	// 1. Convert provider.StartSpec to legacy DBConfig format
-	cfg := p.ConvertSpecToDBConfig(spec)
+	cfg := p.ConvertSpecToManager(spec)
 
-	// 2. Initialize services (calls legacy SetupDatabaseServices)
-	if err := p.dockerService.Initialize(); err != nil {
-		return nil, logz.Errorf("failed to initialize docker services: %v", err)
-	}
-
-	// 3. Extract endpoints from running containers
+	// 2. Extract endpoints from running containers
 	endpoints, err := p.ExtractEndpoints(&cfg)
 	if err != nil {
 		return nil, logz.Errorf("failed to extract endpoints: %v", err)
@@ -83,100 +68,35 @@ func (p *DockerStackProvider) Start(ctx context.Context, spec provider.StartSpec
 	return endpoints, nil
 }
 
-// ConvertSpecToDBConfig converts new StartSpec to legacy DBConfig
-func (p *DockerStackProvider) ConvertSpecToDBConfig(spec provider.StartSpec) engine.DatabaseManager {
-	dbConfig := engine.DatabaseManager{
-		Conns: make(map[string]types.DBConnection),
-	}
+// ConvertSpecToManager converts new StartSpec to DatabaseManager
+func (p *RemoteStackProvider) ConvertSpecToManager(spec provider.StartSpec) engine.DatabaseManager {
+	dbManager := engine.DatabaseManager{Conns: make(map[string]types.DBConnection)}
 
 	for _, svc := range spec.Services {
-		db := types.DBConfig{
-			Enabled: kbx.BoolPtr(true),
+		configs := provider.GetConfigListByService(spec, svc.Name)
+		if len(configs) == 0 {
+			continue
 		}
 
-		var key string
-		switch svc.Engine {
-		case provider.EnginePostgres:
-			vol, ok := db.Options["volume"].(string)
-			if !ok || vol == "" {
-				vol = "kubex_pgdata"
-			}
-			db.Options = map[string]interface{}{
-				"volume": vol,
-			}
-			key = "domus"
-			db.Enabled = kbx.BoolPtr(true)
-			db.Protocol = "postgresql"
-			db.Name = "postgres"
-			db.User = "kubex_adm"
-			db.Pass = spec.Secrets["pg_admin"]
-			db.Host = "127.0.0.1"
-			if port, ok := spec.PreferredPort["pg"]; ok {
-				db.Port = strconv.Itoa(port)
-			} else {
-				db.Port = "5432"
-			}
-
-		case provider.EngineMongo:
-			key = "kubex_mdb"
-			db.Enabled = kbx.BoolPtr(true)
-			db.Protocol = "mongodb"
-			db.Name = "kubexdb"
-			db.User = "root"
-			db.Pass = spec.Secrets["mongo_root"]
-			db.Host = "127.0.0.1"
-			if port, ok := spec.PreferredPort["mongo"]; ok {
-				db.Port = strconv.Itoa(port)
-			} else {
-				db.Port = "27017"
-			}
-
-		case provider.EngineRedis:
-			key = "kubex_rdb"
-			db.Enabled = kbx.BoolPtr(true)
-			db.Protocol = "redis"
-			db.Pass = spec.Secrets["redis_pass"]
-			db.Host = "127.0.0.1"
-			if port, ok := spec.PreferredPort["redis"]; ok {
-				db.Port = strconv.Itoa(port)
-			} else {
-				db.Port = "6379"
-			}
-
-		case provider.EngineRabbit:
-			key = "kubex_rmq"
-			db.Enabled = kbx.BoolPtr(true)
-			db.Protocol = "rabbitmq"
-			db.User = "admin"
-			db.Pass = spec.Secrets["rabbit_pass"]
-			db.Host = "127.0.0.1"
-			if port, ok := spec.PreferredPort["rabbit"]; ok {
-				db.Port = strconv.Itoa(port)
-			} else {
-				db.Port = "5672"
-			}
-		}
-
-		if key != "" {
-			d, ok := engine.GetDriver(key)
+		for _, dbConfig := range configs {
+			fnDrvr, ok := engine.GetDriver(string(dbConfig.Protocol))
 			if !ok {
-				return dbConfig
+				continue
 			}
-
-			dbConfig.Conns[key] = types.DBConnection{
+			dbManager.Conns[dbConfig.Name] = types.DBConnection{
 				Config: types.DBConfigRT{
-					Config:  db,
+					Config:  dbConfig,
 					Mutexes: types.NewMutexesType(),
 				},
-				Driver: d(logz.GetLoggerZ("domus")),
+				Driver: fnDrvr(p.logger),
 			}
 		}
 	}
 
-	return dbConfig
+	return dbManager
 }
 
-func (p *DockerStackProvider) ConvertDBConfigToSpec(dbConfig *kbx.DBConfig) (*provider.StartSpec, error) {
+func (p *RemoteStackProvider) ConvertDBConfigToSpec(dbConfig *kbx.DBConfig) (*provider.StartSpec, error) {
 	spec := &provider.StartSpec{
 		Services: []provider.ServiceRef{
 			{
@@ -205,7 +125,7 @@ func (p *DockerStackProvider) ConvertDBConfigToSpec(dbConfig *kbx.DBConfig) (*pr
 }
 
 // ExtractEndpoints converts legacy DBConfig to new Endpoint format
-func (p *DockerStackProvider) ExtractEndpoints(cfg *engine.DatabaseManager) (map[string]provider.Endpoint, error) {
+func (p *RemoteStackProvider) ExtractEndpoints(cfg *engine.DatabaseManager) (map[string]provider.Endpoint, error) {
 	endpoints := make(map[string]provider.Endpoint)
 
 	if cfg == nil {
@@ -227,22 +147,18 @@ func (p *DockerStackProvider) ExtractEndpoints(cfg *engine.DatabaseManager) (map
 }
 
 // Health verifies connectivity to all services
-func (p *DockerStackProvider) Health(ctx context.Context, eps map[string]provider.Endpoint) error {
+func (p *RemoteStackProvider) Health(ctx context.Context, eps map[string]provider.Endpoint) error {
 	// TODO: Implement real health checks
-	// For now, just verify Docker service is initialized
-	if p.dockerService == nil {
-		return logz.Error("docker service not initialized")
-	}
 	return nil
 }
 
 // Stop stops all managed containers
-func (p *DockerStackProvider) Stop(ctx context.Context, refs []provider.ServiceRef) error {
+func (p *RemoteStackProvider) Stop(ctx context.Context, refs []provider.ServiceRef) error {
 	// TODO: Call docker service stop methods
 	return nil
 }
 
-func (p *DockerStackProvider) PrepareMigrations(ctx context.Context, conn *types.DBConnection) error {
+func (p *RemoteStackProvider) PrepareMigrations(ctx context.Context, conn *types.DBConnection) error {
 	if conn == nil {
 		return logz.Error("invalid database connection")
 	}
@@ -272,7 +188,7 @@ func (p *DockerStackProvider) PrepareMigrations(ctx context.Context, conn *types
 	return nil
 }
 
-func (p *DockerStackProvider) RunMigrations(ctx context.Context, conn *types.DBConnection, migrationInfo *kbx.MigrationInfo) error {
+func (p *RemoteStackProvider) RunMigrations(ctx context.Context, conn *types.DBConnection, migrationInfo *kbx.MigrationInfo) error {
 	if conn == nil {
 		return logz.Error("invalid database connection")
 	}
@@ -315,22 +231,13 @@ func (p *DockerStackProvider) RunMigrations(ctx context.Context, conn *types.DBC
 // 2. Waits for database readiness
 // 3. Runs migrations (if auto-migrate is enabled)
 // 4. Returns only when everything is ready
-func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbx.RootConfig) error {
+func (p *RemoteStackProvider) StartServices(ctx context.Context, rootConfig *kbx.RootConfig) error {
 	// Validate inputs
-	if p.dockerService == nil {
-		return logz.Error("dockerService not initialized (use NewDockerStackProvider with service injection)")
-	}
 	if rootConfig == nil {
 		return logz.Error("rootConfig cannot be nil")
 	}
 
-	// ========== STEP 1: START DOCKER CONTAINERS ==========
-	logz.Info("Starting Docker containers...")
-	if err := p.dockerService.InitializeWithConfig(ctx, rootConfig); err != nil {
-		return logz.Errorf("failed to start containers: %v", err)
-	}
-
-	// ========== STEP 2-6: WAIT + MIGRATE FOR EACH DATABASE ==========
+	// ========== STEP 1: WAIT + MIGRATE FOR EACH DATABASE ==========
 	for _, dbConf := range rootConfig.Databases {
 		// Skip disabled databases
 		if !kbx.DefaultFalse(dbConf.Enabled) {
@@ -413,7 +320,7 @@ func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbx
 
 // buildDSN constructs a connection string from DBConfig.
 // Helper method to avoid repeating DSN logic.
-func (p *DockerStackProvider) buildDSN(db *kbx.DBConfig) string {
+func (p *RemoteStackProvider) buildDSN(db *kbx.DBConfig) string {
 	switch db.Protocol {
 	case "postgresql", "postgres", "pg", "domus":
 		return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",

@@ -27,5 +27,4 @@ func init() {
 	engine.RegisterDriver("mongodb", func(logger *logz.LoggerZ) types.Driver { return NewMongoDriver(logger) })
 	engine.RegisterDriver("redis", func(logger *logz.LoggerZ) types.Driver { return NewRedisDriver(logger) })
 	engine.RegisterDriver("rabbitmq", func(logger *logz.LoggerZ) types.Driver { return NewRabbitDriver(logger) })
-
 }
