@@ -3,6 +3,7 @@ package types
 import (
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 
@@ -89,16 +90,39 @@ func NewDSN(protocol, user, pass, host, port, dbName, schema string, tls bool, o
 }
 
 func (d *DSNImpl) String() string {
-	return gl.Sprintf("%s://%s:%s@%s:%s/%s?schema=%s&tls=%t",
-		d.protocol,
-		d.user,
-		kbxGet.EnvOr(os.ExpandEnv(d.pass), d.pass),
-		d.host,
-		d.port,
-		d.dbName,
-		d.schema,
-		d.tls,
-	)
+	var strBuilder strings.Builder
+	strBuilder.WriteString(d.protocol)
+	strBuilder.WriteString("://")
+	strBuilder.WriteString(d.user)
+	strBuilder.WriteString(":")
+	strBuilder.WriteString(kbxGet.EnvOr(os.ExpandEnv(d.pass), d.pass))
+	strBuilder.WriteString("@")
+	strBuilder.WriteString(d.host)
+	strBuilder.WriteString(":")
+	strBuilder.WriteString(d.port)
+	strBuilder.WriteString("/")
+	strBuilder.WriteString(d.dbName)
+	strBuilder.WriteString("?")
+
+	if len(d.schema) > 0 {
+		strBuilder.WriteString("schema=")
+		strBuilder.WriteString(d.schema)
+		strBuilder.WriteString("&")
+	}
+
+	if d.tls {
+		strBuilder.WriteString("tls=true")
+		strBuilder.WriteString("&")
+	}
+
+	for k, v := range d.options {
+		strBuilder.WriteString(k)
+		strBuilder.WriteString("=")
+		strBuilder.WriteString(gl.Sprintf("%v", v))
+		strBuilder.WriteString("&")
+	}
+
+	return strings.TrimSuffix(strBuilder.String(), "&")
 }
 
 func (d *DSNImpl) Redacted() string {

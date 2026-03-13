@@ -8,11 +8,14 @@ import (
 	"time"
 
 	"github.com/kubex-ecosystem/domus/internal/engine"
-	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+
 	"github.com/kubex-ecosystem/domus/internal/provider"
+	"github.com/kubex-ecosystem/domus/internal/services/docker"
 	"github.com/kubex-ecosystem/domus/internal/types"
 
 	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
+	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	logz "github.com/kubex-ecosystem/logz"
 )
 
@@ -61,120 +64,74 @@ func (p *DockerStackProvider) Capabilities(ctx context.Context) (provider.Capabi
 func (p *DockerStackProvider) Start(ctx context.Context, spec provider.StartSpec) (map[string]provider.Endpoint, error) {
 	// Validate dockerService was injected
 	if p.dockerService == nil {
-		return nil, logz.Error("dockerService not initialized (use NewDockerStackProvider with service injection)")
+		var err error
+		p.dockerService, err = docker.NewDockerService(p.logger)
+		if err != nil {
+			return nil, logz.Errorf("failed to create docker service: %v", err)
+		}
+
+		rootConfig := &kbxMod.RootConfig{
+			Name:     kbxGet.ValOrType(spec.Labels["app"], kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_NAME", "domus")),
+			FilePath: kbxGet.ValOrType(spec.Labels["path"], kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_PATH", kbxMod.DefaultKubexDomusConfigPath)),
+			Enabled:  new(true),
+			Databases: func() []kbxMod.DBConfig {
+				configs := make([]kbxMod.DBConfig, 0)
+				for _, svc := range spec.Configs {
+					configs = append(configs, svc)
+				}
+				return configs
+			}(),
+		}
+
+		if err := p.dockerService.InitializeWithConfig(ctx, rootConfig); err != nil {
+			return nil, logz.Errorf("failed to initialize docker service: %v", err)
+		}
 	}
 
 	// 1. Convert provider.StartSpec to legacy DBConfig format
-	cfg := p.ConvertSpecToDBConfig(spec)
+	cfg := p.ConvertSpecToManager(spec)
 
-	// 2. Initialize services (calls legacy SetupDatabaseServices)
-	if err := p.dockerService.Initialize(); err != nil {
-		return nil, logz.Errorf("failed to initialize docker services: %v", err)
-	}
-
-	// 3. Extract endpoints from running containers
+	// 2. Extract endpoints from running containers
 	endpoints, err := p.ExtractEndpoints(&cfg)
 	if err != nil {
 		return nil, logz.Errorf("failed to extract endpoints: %v", err)
 	}
 
+	logz.Debugf("Checking options and capabilities for tasks")
+
 	return endpoints, nil
 }
 
-// ConvertSpecToDBConfig converts new StartSpec to legacy DBConfig
-func (p *DockerStackProvider) ConvertSpecToDBConfig(spec provider.StartSpec) engine.DatabaseManager {
-	dbConfig := engine.DatabaseManager{
-		Conns: make(map[string]types.DBConnection),
-	}
+// ConvertSpecToManager converts new StartSpec to DatabaseManager
+func (p *DockerStackProvider) ConvertSpecToManager(spec provider.StartSpec) engine.DatabaseManager {
+	dbManager := engine.DatabaseManager{Conns: make(map[string]types.DBConnection)}
 
 	for _, svc := range spec.Services {
-		db := types.DBConfig{
-			Enabled: kbx.BoolPtr(true),
+		configs := provider.GetConfigListByService(spec, svc.Name)
+		if len(configs) == 0 {
+			continue
 		}
 
-		var key string
-		switch svc.Engine {
-		case provider.EnginePostgres:
-			vol, ok := db.Options["volume"].(string)
-			if !ok || vol == "" {
-				vol = "kubex_pgdata"
-			}
-			db.Options = map[string]interface{}{
-				"volume": vol,
-			}
-			key = "domus"
-			db.Enabled = kbx.BoolPtr(true)
-			db.Protocol = "postgresql"
-			db.Name = "postgres"
-			db.User = "kubex_adm"
-			db.Pass = spec.Secrets["pg_admin"]
-			db.Host = "127.0.0.1"
-			if port, ok := spec.PreferredPort["pg"]; ok {
-				db.Port = strconv.Itoa(port)
-			} else {
-				db.Port = "5432"
-			}
-
-		case provider.EngineMongo:
-			key = "kubex_mdb"
-			db.Enabled = kbx.BoolPtr(true)
-			db.Protocol = "mongodb"
-			db.Name = "kubexdb"
-			db.User = "root"
-			db.Pass = spec.Secrets["mongo_root"]
-			db.Host = "127.0.0.1"
-			if port, ok := spec.PreferredPort["mongo"]; ok {
-				db.Port = strconv.Itoa(port)
-			} else {
-				db.Port = "27017"
-			}
-
-		case provider.EngineRedis:
-			key = "kubex_rdb"
-			db.Enabled = kbx.BoolPtr(true)
-			db.Protocol = "redis"
-			db.Pass = spec.Secrets["redis_pass"]
-			db.Host = "127.0.0.1"
-			if port, ok := spec.PreferredPort["redis"]; ok {
-				db.Port = strconv.Itoa(port)
-			} else {
-				db.Port = "6379"
-			}
-
-		case provider.EngineRabbit:
-			key = "kubex_rmq"
-			db.Enabled = kbx.BoolPtr(true)
-			db.Protocol = "rabbitmq"
-			db.User = "admin"
-			db.Pass = spec.Secrets["rabbit_pass"]
-			db.Host = "127.0.0.1"
-			if port, ok := spec.PreferredPort["rabbit"]; ok {
-				db.Port = strconv.Itoa(port)
-			} else {
-				db.Port = "5672"
-			}
-		}
-
-		if key != "" {
-			d, ok := engine.GetDriver(key)
+		for _, dbConfig := range configs {
+			fnDrvr, ok := engine.GetDriver(string(dbConfig.Protocol))
 			if !ok {
-				return dbConfig
+				continue
 			}
-
-			dbConfig.Conns[key] = types.DBConnection{
+			dbManager.Conns[dbConfig.Name] = types.DBConnection{
 				Config: types.DBConfigRT{
-					Config:  db,
+					Config:  dbConfig,
 					Mutexes: types.NewMutexesType(),
 				},
-				Driver: d(logz.GetLoggerZ("domus")),
+				Driver: fnDrvr(p.logger),
 			}
 		}
 	}
 
-	return dbConfig
+	return dbManager
 }
 
-func (p *DockerStackProvider) ConvertDBConfigToSpec(dbConfig *kbx.DBConfig) (*provider.StartSpec, error) {
+// ConvertDBConfigToSpec converts DBConfig to StartSpec
+func (p *DockerStackProvider) ConvertDBConfigToSpec(dbConfig *kbxMod.DBConfig) (*provider.StartSpec, error) {
 	spec := &provider.StartSpec{
 		Services: []provider.ServiceRef{
 			{
@@ -272,7 +229,7 @@ func (p *DockerStackProvider) PrepareMigrations(ctx context.Context, conn *types
 	return nil
 }
 
-func (p *DockerStackProvider) RunMigrations(ctx context.Context, conn *types.DBConnection, migrationInfo *kbx.MigrationInfo) error {
+func (p *DockerStackProvider) RunMigrations(ctx context.Context, conn *types.DBConnection, migrationInfo *kbxMod.MigrationInfo) error {
 	if conn == nil {
 		return logz.Error("invalid database connection")
 	}
@@ -317,7 +274,7 @@ func (p *DockerStackProvider) RunMigrations(ctx context.Context, conn *types.DBC
 // 2. Waits for database readiness
 // 3. Runs migrations (if auto-migrate is enabled)
 // 4. Returns only when everything is ready
-func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbx.RootConfig) error {
+func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbxMod.RootConfig) error {
 	// Validate inputs
 	if p.dockerService == nil {
 		return logz.Error("dockerService not initialized (use NewDockerStackProvider with service injection)")
@@ -335,7 +292,7 @@ func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbx
 	// ========== STEP 2-6: WAIT + MIGRATE FOR EACH DATABASE ==========
 	for _, dbConf := range rootConfig.Databases {
 		// Skip disabled databases
-		if !kbx.DefaultFalse(dbConf.Enabled) {
+		if !kbxMod.DefaultFalse(dbConf.Enabled) {
 			logz.Debugf("Skipping disabled database: %s", dbConf.Name)
 			continue
 		}
@@ -354,7 +311,7 @@ func (p *DockerStackProvider) StartServices(ctx context.Context, rootConfig *kbx
 		}
 
 		// Run migrations if enabled
-		if dbConf.Migration != nil && kbx.DefaultFalse(dbConf.Migration.Auto) {
+		if dbConf.Migration != nil && kbxMod.DefaultFalse(dbConf.Migration.Auto) {
 			logz.Infof("Running migrations for database: %s", dbConf.Name)
 
 			// Check if schema already exists (skip if so)
