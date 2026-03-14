@@ -11,7 +11,7 @@
 -- Default Schema
 -- public
 -- Garante que estamos no schema correto
-SET search_path TO public;
+-- SET search_path TO public;
 -- ================
 INSERT INTO org (id, name, created_at)
 VALUES (

@@ -35,7 +35,11 @@
 #   ./run_bootstrap.sh sync diff
 # ==========================================
 
-set -euo pipefail # Exit on error, undefined vars, pipe failures
+# Exit on error, undefined vars, pipe failures
+set -euo pipefail
+if test "${KUBEX_DEBUG:-false}" = "true"; then
+  set -x
+fi
 
 # ==========================================
 # CONFIGURAÇÕES
@@ -53,7 +57,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
-# CYAN='\033[0;36m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # ==========================================
@@ -62,22 +66,27 @@ NC='\033[0m' # No Color
 
 log_info() {
   echo -e "${BLUE} [INFO]${NC} $1" | tee -a "$LOG_FILE"
+  return 0
 }
 
 log_success() {
   echo -e "${GREEN}[SUCCESS]${NC} $1" | tee -a "$LOG_FILE"
+  return 0
 }
 
 log_warning() {
   echo -e "${YELLOW} [WARNING]${NC} $1" | tee -a "$LOG_FILE"
+  return 0
 }
 
 log_error() {
   echo -e "${RED}[ERROR]${NC} $1" | tee -a "$LOG_FILE"
+  return 0
 }
 
 log_step() {
   echo -e "${PURPLE}[STEP $1]${NC} $2" | tee -a "$LOG_FILE"
+  return 0
 }
 
 print_header() {
