@@ -3,9 +3,9 @@ step,name,duration_seconds,status
 2,Users + RBAC,1,success
 3,Memberships + FKs Circulares,0,success
 4,Invites,0,success
-5,Business Entities,0,success
-6,Índices de Performance,0,success
-7,Triggers,0,success
-8,Seed Data,0,success
-9,Seed Data,0,success
+5,Business Entities,1,success
+6,Índices de Performance,1,success
+7,Triggers,1,success
+8,Seed Data,1,success
+9,Seed Data,1,success
 10,Seed Data,0,success

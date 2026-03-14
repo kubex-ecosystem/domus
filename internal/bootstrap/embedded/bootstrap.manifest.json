@@ -1,13 +1,18 @@
 {
-  "version": "4.0.0",
-  "generated_at": "2025-11-10T00:00:00Z",
+  "version": "4.0.1",
+  "generated_at": "2026-03-14T07:46:00Z",
   "generated_by": "Rafael Mori (Desenvolvedor)",
   "database": {
     "target": "PostgreSQL 17.6+",
-    "compatibility": ["PostgreSQL 14+", "PostgreSQL 15+", "PostgreSQL 16+", "PostgreSQL 17+"],
+    "compatibility": [
+      "PostgreSQL 14+",
+      "PostgreSQL 15+",
+      "PostgreSQL 16+",
+      "PostgreSQL 17+"
+    ],
     "required_extensions": ["uuid-ossp", "pgcrypto", "citext"]
   },
-  "description": "Bootstrap do Schema Híbrido Kubex v3.0 - Combina melhor de sql_1 e sql_2",
+  "description": "Bootstrap do Schema Híbrido Kubex Ecosystem",
   "execution_modes": {
     "fresh_install": "Instalação completa em banco vazio",
     "idempotent": "Pode ser reexecutado sem efeitos colaterais",
@@ -308,15 +313,25 @@
     {
       "name": "Rafael Mori",
       "organization": "Kubex",
-      "role": "Technical Lead"
+      "role": "Technical Lead and Schema Architect"
     },
     {
       "name": "Claude Code",
       "organization": "Anthropic",
       "role": "Schema Architect"
+    },
+    {
+      "name": "Codex",
+      "organization": "OpenAI",
+      "role": "Schema Architect"
+    },
+    {
+      "name": "Gemini",
+      "organization": "Google",
+      "role": "Schema Architect"
     }
   ],
-  "license": "Proprietary - Kubex",
+  "license": "Proprietary - Kubex Ecosystem",
   "support": {
     "documentation": "README.md",
     "issues": "Contactar equipe de desenvolvimento Kubex"

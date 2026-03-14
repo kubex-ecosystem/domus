@@ -35,7 +35,7 @@
 #   ./run_bootstrap.sh sync diff
 # ==========================================
 
-set -euo pipefail  # Exit on error, undefined vars, pipe failures
+set -euo pipefail # Exit on error, undefined vars, pipe failures
 
 # ==========================================
 # CONFIGURAÇÕES
@@ -96,7 +96,7 @@ validate_prerequisites() {
   log_info "Validando pré-requisitos..."
 
   # Verificar se psql está disponível
-  if ! command -v psql &> /dev/null; then
+  if ! command -v psql &>/dev/null; then
     log_error "psql não encontrado. Instale PostgreSQL client."
     exit 1
   fi
@@ -109,7 +109,7 @@ validate_prerequisites() {
   fi
 
   # Testar conexão
-  if ! psql "$DATABASE_URL" -c "SELECT 1" &> /dev/null; then
+  if ! psql "$DATABASE_URL" -c "SELECT 1" &>/dev/null; then
     log_error "Não foi possível conectar ao banco de dados."
     exit 1
   fi
@@ -143,7 +143,7 @@ hydration_seed_exec() {
   sql_exit_code=$?
 
   # Log do output
-  echo "$sql_output" >> "$LOG_FILE"
+  echo "$sql_output" >>"$LOG_FILE"
 
   local step_end=$(date +%s)
   local duration=$((step_end - step_start))
@@ -155,11 +155,11 @@ hydration_seed_exec() {
       echo "$sql_output" | grep -E "^(ERROR|FATAL):" | head -5 | while read -r line; do
         log_error "  $line"
       done
-      echo "$step_num,$step_name,$duration,failed" >> "${LOG_DIR}/execution_summary_seed.csv"
+      echo "$step_num,$step_name,$duration,failed" >>"${LOG_DIR}/execution_summary_seed.csv"
       return 1
     fi
     log_success "Hydration de seed $step_num concluída em ${duration}s"
-    echo "$step_num,$step_name,$duration,success" >> "${LOG_DIR}/execution_summary_seed.csv"
+    echo "$step_num,$step_name,$duration,success" >>"${LOG_DIR}/execution_summary_seed.csv"
     return 0
   else
     log_error "Falha no processo de hydration do seed $step_num após ${duration}s (exit code: $sql_exit_code)"
@@ -167,7 +167,7 @@ hydration_seed_exec() {
     echo "$sql_output" | grep -E "^(ERROR|FATAL):" | head -5 | while read -r line; do
       log_error "  $line"
     done
-    echo "$step_num,$step_name,$duration,failed" >> "${LOG_DIR}/execution_summary_seed.csv"
+    echo "$step_num,$step_name,$duration,failed" >>"${LOG_DIR}/execution_summary_seed.csv"
     return 1
   fi
 }
@@ -256,7 +256,7 @@ generate_json_report() {
   done
   json_tables="${json_tables%,$'\n'}" # Remove última vírgula e newline
 
-  cat > "$JSON_LOG" <<EOF
+  cat >"$JSON_LOG" <<EOF
 {
   "execution_timestamp": "$(date -Iseconds)",
   "database_url": "${DATABASE_URL//:*@/:***@}",
@@ -320,14 +320,13 @@ main() {
   validate_prerequisites
 
   # Criar CSV de resumo
-  echo "step,name,duration_seconds,status" > "${LOG_DIR}/execution_summary_seed.csv"
+  echo "step,name,duration_seconds,status" >"${LOG_DIR}/execution_summary_seed.csv"
 
   local step_counter=1
   for seed_file in "${seeds_to_use[@]}"; do
     log_info "Usando seed: $seed_file"
     hydration_seed_exec "$step_counter" "$(basename "$seed_file")" "$seed_file"
     ((step_counter++))
-
 
     # Validar instalação
     if validate_installation "$seed_file"; then
@@ -366,7 +365,7 @@ show_help() {
   echo ""
   echo "Comandos disponíveis:"
   echo ""
-  echo "  seed [pattern]         Executa seed hydration (padrão: simplemock)"
+  echo "  seed [pattern]         Executa seed hydration (padrões: simplemock, fulldata, auth_users, leads)"
   echo "  extract [output_dir]   Extrai schema PostgreSQL para JSON"
   echo "  generate-types [dir]   Gera TypeScript types a partir do schema"
   echo "  generate-mocks [dir]   Gera mocks TypeScript dos dados reais"
@@ -497,33 +496,33 @@ route_command() {
   shift || true
 
   case "$command" in
-    seed)
-      main "$@"
-      ;;
-    extract)
-      run_extract "$@"
-      ;;
-    generate-types)
-      run_generate_types "$@"
-      ;;
-    generate-mocks)
-      run_generate_mocks "$@"
-      ;;
-    sync)
-      run_sync "$@"
-      ;;
-    full-pipeline)
-      run_full_pipeline "$@"
-      ;;
-    help|--help|-h)
-      show_help
-      ;;
-    *)
-      log_error "Comando desconhecido: $command"
-      echo ""
-      show_help
-      exit 1
-      ;;
+  seed)
+    main "$@"
+    ;;
+  extract)
+    run_extract "$@"
+    ;;
+  generate-types)
+    run_generate_types "$@"
+    ;;
+  generate-mocks)
+    run_generate_mocks "$@"
+    ;;
+  sync)
+    run_sync "$@"
+    ;;
+  full-pipeline)
+    run_full_pipeline "$@"
+    ;;
+  help | --help | -h)
+    show_help
+    ;;
+  *)
+    log_error "Comando desconhecido: $command"
+    echo ""
+    show_help
+    exit 1
+    ;;
   esac
 }
 

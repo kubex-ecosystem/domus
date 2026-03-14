@@ -11,7 +11,7 @@
 #   Executa todas as 8 etapas em ordem, com validação e logging.
 # ==========================================
 
-set -euo pipefail  # Exit on error, undefined vars, pipe failures
+set -euo pipefail # Exit on error, undefined vars, pipe failures
 
 # ==========================================
 # CONFIGURAÇÕES
@@ -72,7 +72,7 @@ validate_prerequisites() {
   log_info "Validando pré-requisitos..."
 
   # Verificar se psql está disponível
-  if ! command -v psql &> /dev/null; then
+  if ! command -v psql &>/dev/null; then
     log_error "psql não encontrado. Instale PostgreSQL client."
     exit 1
   fi
@@ -85,7 +85,7 @@ validate_prerequisites() {
   fi
 
   # Testar conexão
-  if ! psql "$DATABASE_URL" -c "SELECT 1" &> /dev/null; then
+  if ! psql "$DATABASE_URL" -c "SELECT 1" &>/dev/null; then
     log_error "Não foi possível conectar ao banco de dados."
     exit 1
   fi
@@ -113,17 +113,17 @@ execute_step() {
   fi
 
   # Executar SQL com output redirecionado para log
-  if psql "${DATABASE_URL:-}" -f "$full_path" >> "$LOG_FILE" 2>&1; then
+  if psql "${DATABASE_URL:-}" -f "$full_path" >>"$LOG_FILE" 2>&1; then
     local step_end=$(date +%s)
     local duration=$((step_end - step_start))
     log_success "Etapa $step_num concluída em ${duration}s"
-    echo "$step_num,$step_name,$duration,success" >> "${LOG_DIR}/execution_summary.csv"
+    echo "$step_num,$step_name,$duration,success" >>"${LOG_DIR}/execution_summary.csv"
     return 0
   else
     local step_end=$(date +%s)
     local duration=$((step_end - step_start))
     log_error "Falha na etapa $step_num após ${duration}s"
-    echo "$step_num,$step_name,$duration,failed" >> "${LOG_DIR}/execution_summary.csv"
+    echo "$step_num,$step_name,$duration,failed" >>"${LOG_DIR}/execution_summary.csv"
     return 1
   fi
 }
@@ -194,14 +194,14 @@ generate_json_report() {
   local total_duration=$1
   local status=$2
 
-  cat > "$JSON_LOG" <<EOF
+  cat >"$JSON_LOG" <<EOF
 {
   "execution_timestamp": "$(date -Iseconds)",
   "database_url": "${DATABASE_URL//:*@/:***@}",
   "total_duration_seconds": $total_duration,
   "status": "$status",
   "log_file": "$LOG_FILE",
-  "steps_executed": $(wc -l < "${LOG_DIR}/execution_summary.csv"),
+  "steps_executed": $(wc -l <"${LOG_DIR}/execution_summary.csv"),
   "manifest_version": "3.0.0",
   "schema_version": "hybrid-v1.0",
   "features": {
@@ -238,7 +238,7 @@ main() {
   validate_prerequisites
 
   # Criar CSV de resumo
-  echo "step,name,duration_seconds,status" > "${LOG_DIR}/execution_summary.csv"
+  echo "step,name,duration_seconds,status" >"${LOG_DIR}/execution_summary.csv"
 
   # Executar etapas conforme manifest
   execute_step 1 "Extensions + Multi-Tenancy" "core/etapa_1_extensions_tenancy.sql" || exit 1
@@ -251,6 +251,8 @@ main() {
   execute_step 8 "Seed Data" "core/etapa_8_seed_data.sql" || exit 1
   execute_step 9 "Seed Data" "core/etapa_9_auth_sessions.sql" || exit 1
   execute_step 10 "Seed Data" "core/etapa_10_pending_access_requests.sql" || exit 1
+  execute_step 11 "Seed Data" "core/etapa_11_integrations.sql" || exit 1
+  execute_step 12 "Seed Data" "core/etapa_12_external_metadata_registry.sql" || exit 1
 
   # Validar instalação
   if validate_installation; then

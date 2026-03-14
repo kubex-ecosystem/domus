@@ -1,13 +1,18 @@
 {
-  "version": "3.0.0",
-  "generated_at": "2025-11-10T00:00:00Z",
-  "generated_by": "Rafael Mori (Desenvolvedor) + Claude Code (Anthropic)",
+  "version": "4.0.1",
+  "generated_at": "2026-03-14T07:46:00Z",
+  "generated_by": "Rafael Mori (Desenvolvedor)",
   "database": {
     "target": "PostgreSQL 17.6+",
-    "compatibility": ["PostgreSQL 14+", "PostgreSQL 15+", "PostgreSQL 16+", "PostgreSQL 17+"],
+    "compatibility": [
+      "PostgreSQL 14+",
+      "PostgreSQL 15+",
+      "PostgreSQL 16+",
+      "PostgreSQL 17+"
+    ],
     "required_extensions": ["uuid-ossp", "pgcrypto", "citext"]
   },
-  "description": "Bootstrap do Schema Híbrido Kubex v3.0 - Combina melhor de sql_1 e sql_2",
+  "description": "Bootstrap do Schema Híbrido Kubex Ecosystem",
   "execution_modes": {
     "fresh_install": "Instalação completa em banco vazio",
     "idempotent": "Pode ser reexecutado sem efeitos colaterais",
@@ -74,7 +79,7 @@
         "table: partner_invitation",
         "table: internal_invitation"
       ],
-      "critical": false,
+      "critical": true,
       "rollback_safe": true
     },
     {
@@ -153,18 +158,69 @@
         "table: auth_sessions",
         "index: idx_auth_sessions_refresh"
       ],
+      "critical": true,
+      "rollback_safe": true
+    },
+    {
+      "step": 10,
+      "name": "Pending Access Requests",
+      "file": "core/etapa_10_pending_access_requests.sql",
+      "description": "Cria tabela para solicitações de acesso pendentes (ex: OAuth)",
+      "estimated_duration_seconds": 1,
+      "dependencies": ["etapa_2_users_rbac.sql"],
+      "creates": [
+        "table: pending_access_requests",
+        "index: idx_pending_access_requests_status",
+        "index: idx_pending_access_requests_created_at"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 11,
+      "name": "Integrations",
+      "file": "core/etapa_11_integrations.sql",
+      "description": "Cria tabela para integrações com terceiros (ex: API keys, webhooks)",
+      "estimated_duration_seconds": 2,
+      "dependencies": ["etapa_2_users_rbac.sql"],
+      "creates": [
+        "table: integration_config",
+        "table: sync_job",
+        "table: integration_query",
+        "index: idx_integration_config_tenant",
+        "index: idx_integration_config_type",
+        "index: idx_integration_config_created_at",
+        "index: idx_sync_job_tenant"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 12,
+      "name": "External Metadata Registry",
+      "file": "core/etapa_12_external_metadata_registry.sql",
+      "description": "Cria registry de datasets externos carregados no mesmo PostgreSQL",
+      "estimated_duration_seconds": 1,
+      "dependencies": ["etapa_7_triggers.sql"],
+      "creates": [
+        "table: external_metadata_registry",
+        "index: idx_external_metadata_registry_source_domain",
+        "index: idx_external_metadata_registry_schema_dataset",
+        "index: idx_external_metadata_registry_status",
+        "index: idx_external_metadata_registry_last_loaded"
+      ],
       "critical": false,
       "rollback_safe": true
     }
   ],
-  "total_estimated_duration_seconds": 22,
+  "total_estimated_duration_seconds": 21,
   "statistics": {
-    "total_tables": 19,
+    "total_tables": 21,
     "total_functions": 1,
-    "total_triggers": 13,
-    "total_indexes": 61,
+    "total_triggers": 15,
+    "total_indexes": 67,
     "total_roles_created": 8,
-    "total_permissions_configured": 35
+    "total_permissions_configured": 33
   },
   "validation": {
     "pre_execution_checks": [
@@ -173,9 +229,9 @@
       "Verificar disponibilidade de extensions"
     ],
     "post_execution_checks": [
-      "Validar existência de todas as 18 tabelas",
+      "Validar existência de todas as 19 tabelas",
       "Validar existência de função update_updated_at_column",
-      "Validar existência de 13 triggers",
+      "Validar existência de 14 triggers",
       "Validar existência de 8 roles do sistema",
       "Validar existência de 35 permissions",
       "Validar integridade das Foreign Keys"
@@ -255,17 +311,27 @@
   ],
   "authors": [
     {
-      "name": "Desenvolvedor",
+      "name": "Rafael Mori",
       "organization": "Kubex",
-      "role": "Technical Lead"
+      "role": "Technical Lead and Schema Architect"
     },
     {
       "name": "Claude Code",
       "organization": "Anthropic",
       "role": "Schema Architect"
+    },
+    {
+      "name": "Codex",
+      "organization": "OpenAI",
+      "role": "Schema Architect"
+    },
+    {
+      "name": "Gemini",
+      "organization": "Google",
+      "role": "Schema Architect"
     }
   ],
-  "license": "Proprietary - Kubex",
+  "license": "Proprietary - Kubex Ecosystem",
   "support": {
     "documentation": "README.md",
     "issues": "Contactar equipe de desenvolvimento Kubex"

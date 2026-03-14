@@ -7,7 +7,7 @@ import "fmt"
 // Ele existe para:
 //   - suportar backends não-SQL (mongo, redis, http, etc);
 //   - permitir que agentes/IA gerem operações abstratas;
-//   - habilitar pipelines metaprogramados (ex: Analyzer, Grompt, etc).
+//   - habilitar pipelines metaprogramados (ex dos antigos: Analyzer, GNyx Workspace, etc).
 //
 // Exemplos de Command:
 //   - "pg:exec"
