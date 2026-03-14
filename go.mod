@@ -21,7 +21,7 @@ require (
 )
 
 require (
-	github.com/kubex-ecosystem/logz v1.6.8
+	github.com/kubex-ecosystem/logz v1.6.89
 	github.com/lib/pq v1.11.2
 	github.com/rabbitmq/amqp091-go v1.10.0
 	go.mongodb.org/mongo-driver v1.17.9
