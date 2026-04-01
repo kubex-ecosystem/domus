@@ -6,7 +6,7 @@ set -euo pipefail
 # run_bootstrap.sh
 # Applies seed_utils and final seed SQL files in order, with logging and dry-run.
 
-_DATABASE_URL="postgresql://postgres.fisrtbmeeajjmyqgxxpg:zAXorlTZiCnAtlZU@aws-1-sa-east-1.pooler.supabase.com:6543/postgres"
+_DATABASE_URL="postgres://kubex_adm:admin123@127.0.0.1:5432/postgres?sslmode=disable"
 DSN="${DATABASE_URL:-${_DATABASE_URL:-}}"
 
 # Testa conexão com o banco de dados
