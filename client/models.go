@@ -21,6 +21,9 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/models/gnyx/rolepermissions"
 	"github.com/kubex-ecosystem/domus/internal/models/gnyx/roles"
 	"github.com/kubex-ecosystem/domus/internal/models/gnyx/subscriptionplans"
+	"github.com/kubex-ecosystem/domus/internal/models/gnyx/sysdashboards"
+	"github.com/kubex-ecosystem/domus/internal/models/gnyx/sysdatasources"
+	"github.com/kubex-ecosystem/domus/internal/models/gnyx/syswidgets"
 	"github.com/kubex-ecosystem/domus/internal/models/gnyx/systemlogs"
 	"github.com/kubex-ecosystem/domus/internal/models/gnyx/systemmetrics"
 	"github.com/kubex-ecosystem/domus/internal/models/gnyx/tenants"
@@ -69,3 +72,6 @@ type BackupStatus = backupstatus.BackupStatus
 type Permissions = permissions.Permissions
 type Tenants = tenants.Tenants
 type SystemMetrics = systemmetrics.SystemMetrics
+type SysDashboards = sysdashboards.SysDashboards
+type SysWidgets = syswidgets.SysWidgets
+type SysDataSources = sysdatasources.SysDataSources
