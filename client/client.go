@@ -13,6 +13,7 @@ import (
 	integration "github.com/kubex-ecosystem/domus/internal/datastore/integration_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	pendingaccess "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
+	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	en "github.com/kubex-ecosystem/domus/internal/engine"
 	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
@@ -33,6 +34,7 @@ type (
 	PendingAccessStore    = pendingaccess.PendingAccessStore
 	ExternalMetadataStore = externalmetadata.ExternalMetadataStore
 	IntegrationStore      = integration.IntegrationStore
+	PropertyStore         = propertystore.PropertyStore
 )
 
 // BackendConnections is an alias for the database manager type.
@@ -68,6 +70,7 @@ type DSClient interface {
 	GetCompanyStore(ctx context.Context, dbName string) (CompanyStore, error)
 	GetPendingAccessStore(ctx context.Context, dbName string) (PendingAccessStore, error)
 	GetExternalMetadataStore(ctx context.Context, dbName string) (ExternalMetadataStore, error)
+	GetPropertyStore(ctx context.Context, dbName string) (PropertyStore, error)
 
 	// Adapter factory methods
 	NewAdapterFactory(ctx context.Context, dbName string, db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)

@@ -8,6 +8,7 @@ import (
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	pendingaccess "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
+	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	userstore "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	"github.com/kubex-ecosystem/domus/internal/execution"
 	"github.com/kubex-ecosystem/domus/internal/provider/flavors"
@@ -223,6 +224,40 @@ func registerPostgresStores() {
 
 	if err := RegisterStore(driverName, "external_metadata", externalMetadata, externalMetadataFactory); err != nil {
 		gl.Errorf("Failed to register external metadata store: %v", err)
+	}
+
+	// Registra PropertyStore (Colonial NetImóveis)
+	propertyMetadata := &t.StoreMetadata{
+		Name:        "property",
+		Type:        reflect.TypeFor[propertystore.Property](),
+		DriverName:  driverName,
+		Description: "Property management store (Colonial NetImóveis)",
+		Version:     "1.0.0",
+		Capabilities: []string{
+			"crud",
+			"pagination",
+			"filtering",
+			"image_management",
+		},
+	}
+
+	propertyFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("property store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return propertystore.NewPGPropertyStore(pgExec), nil
+	}
+
+	if err := RegisterStore(driverName, "property", propertyMetadata, propertyFactory); err != nil {
+		gl.Errorf("Failed to register property store: %v", err)
 	}
 
 	gl.Noticef("Registered %d stores for driver: %s", len(ListStoresByDriver(driverName)), driverName)

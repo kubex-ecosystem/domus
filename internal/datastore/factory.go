@@ -13,6 +13,7 @@ import (
 	integration "github.com/kubex-ecosystem/domus/internal/datastore/integration_store"
 	i "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	p "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
+	prop "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	s "github.com/kubex-ecosystem/domus/internal/datastore/schemas_store"
 	u "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	t "github.com/kubex-ecosystem/domus/internal/types"
@@ -137,6 +138,19 @@ func (f *StoreFactory) ExternalMetadataStore(ctx context.Context) (externalmetad
 	return externalMetadataStore, nil
 }
 
+// PropertyStore cria um PropertyStore (helper específico).
+func (f *StoreFactory) PropertyStore(ctx context.Context) (prop.PropertyStore, error) {
+	store, err := f.Create(ctx, "property")
+	if err != nil {
+		return nil, err
+	}
+	propertyStore, ok := store.(prop.PropertyStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a PropertyStore")
+	}
+	return propertyStore, nil
+}
+
 func (f *StoreFactory) IntegrationStore(ctx context.Context, mKey []byte) (integration.IntegrationStore, error) {
 	store, err := f.Create(ctx, "integration")
 	if err != nil {
@@ -243,6 +257,21 @@ func NewExternalMetadataStoreFromExecutor(exec execution.Executor) (externalmeta
 		return nil, fmt.Errorf("PGExecutor is nil")
 	}
 	return externalmetadata.NewPGExternalMetadataStore(pgExec), nil
+}
+
+// NewPropertyStoreFromExecutor cria PropertyStore diretamente de um Executor.
+func NewPropertyStoreFromExecutor(exec execution.Executor) (prop.PropertyStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("property store requires Postgres backend, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return prop.NewPGPropertyStore(pgExec), nil
 }
 
 func NewIntegrationStoreFromExecutor(exec execution.Executor, mKey []byte) (integration.IntegrationStore, error) {

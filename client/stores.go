@@ -9,6 +9,7 @@ import (
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	pendingaccess "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
+	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	"github.com/kubex-ecosystem/domus/internal/execution"
 	t "github.com/kubex-ecosystem/domus/internal/types"
@@ -25,7 +26,6 @@ type (
 	Executor = execution.Executor
 
 	// Invite types (InviteStore já declarado em client.go)
-
 	Invitation            = invite.Invitation
 	InvitationType        = invite.InvitationType
 	InvitationStatus      = invite.InvitationStatus
@@ -40,7 +40,6 @@ type (
 	CompanyFilters     = company.CompanyFilters
 
 	// Pending access types
-
 	PendingAccessRequest            = pendingaccess.PendingAccessRequest
 	CreatePendingAccessRequestInput = pendingaccess.CreatePendingAccessRequestInput
 	UpdatePendingAccessRequestInput = pendingaccess.UpdatePendingAccessRequestInput
@@ -51,8 +50,14 @@ type (
 	UpsertExternalMetadataInput = externalmetadata.UpsertExternalMetadataInput
 	ExternalMetadataFilters     = externalmetadata.ExternalMetadataFilters
 
-	// Adapter types - apenas os não-genéricos
+	// Property types (Colonial NetImóveis)
+	Property            = propertystore.Property
+	PropertyImage       = propertystore.PropertyImage
+	CreatePropertyInput = propertystore.CreatePropertyInput
+	UpdatePropertyInput = propertystore.UpdatePropertyInput
+	PropertyFilters     = propertystore.PropertyFilters
 
+	// Adapter types - apenas os não-genéricos
 	AdapterFactory   = adapter.AdapterFactory
 	RepositoryConfig = adapter.RepositoryConfig
 )
@@ -134,6 +139,17 @@ func (c *DSClientImpl) GetExternalMetadataStore(ctx context.Context, dbName stri
 	return factory.ExternalMetadataStore(ctx)
 }
 
+// GetPropertyStore é um helper para obter PropertyStore diretamente.
+func (c *DSClientImpl) GetPropertyStore(ctx context.Context, dbName string) (PropertyStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.PropertyStore(ctx)
+}
+
 // Funções standalone para criação de stores a partir de BackendConnection
 
 // NewUserStore cria um UserStore a partir de uma conexão.
@@ -164,6 +180,12 @@ func NewPendingAccessStore(ctx context.Context, conn *BackendConnection) (Pendin
 func NewExternalMetadataStore(ctx context.Context, conn *BackendConnection) (ExternalMetadataStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.ExternalMetadataStore(ctx)
+}
+
+// NewPropertyStore cria um PropertyStore a partir de uma conexão.
+func NewPropertyStore(ctx context.Context, conn *BackendConnection) (PropertyStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.PropertyStore(ctx)
 }
 
 func NewIntegrationStore(ctx context.Context, conn *BackendConnection, mKey []byte) (IntegrationStore, error) {
