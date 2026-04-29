@@ -1,0 +1,91 @@
+{
+  "extracted_at": "2025-12-02T10:30:00-03:00",
+  "database": "postgres://***@localhost:5432/domus",
+  "enums": [],
+  "tables": [
+    {
+      "table_name": "org",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "udt_name": "uuid",
+          "is_nullable": "NO",
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null
+        },
+        {
+          "column_name": "name",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "NO",
+          "column_default": null,
+          "character_maximum_length": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "udt_name": "timestamptz",
+          "is_nullable": "NO",
+          "column_default": "now()",
+          "character_maximum_length": null
+        }
+      ]
+    },
+    {
+      "table_name": "user",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "udt_name": "uuid",
+          "is_nullable": "NO",
+          "column_default": "gen_random_uuid()",
+          "character_maximum_length": null
+        },
+        {
+          "column_name": "email",
+          "data_type": "USER-DEFINED",
+          "udt_name": "citext",
+          "is_nullable": "NO",
+          "column_default": null,
+          "character_maximum_length": null
+        },
+        {
+          "column_name": "name",
+          "data_type": "text",
+          "udt_name": "text",
+          "is_nullable": "YES",
+          "column_default": null,
+          "character_maximum_length": null
+        }
+      ]
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_name": "org_pkey",
+      "table_name": "org",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "constraint_name": "user_pkey",
+      "table_name": "user",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "constraint_name": "user_email_key",
+      "table_name": "user",
+      "constraint_type": "UNIQUE",
+      "column_name": "email",
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    }
+  ]
+}
