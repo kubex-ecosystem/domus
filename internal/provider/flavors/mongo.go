@@ -8,8 +8,9 @@ import (
 	"github.com/faelmori/domus-pulse/internal/execution"
 	"github.com/faelmori/domus-pulse/internal/types"
 	logz "github.com/kubex-ecosystem/logz"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type MongoDriver struct {
@@ -34,10 +35,10 @@ func (d *MongoDriver) Connect(ctx context.Context, cfg *types.DBConfig) error {
 
 	clientOpts := options.Client().ApplyURI(cfg.DSN)
 
-	ctxConn, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
+	// ctxConn, cancel := context.WithTimeout(ctx, 10*time.Second)
+	// defer cancel()
 
-	client, err := mongo.Connect(ctxConn, clientOpts)
+	client, err := mongo.Connect(clientOpts)
 	if err != nil {
 		return fmt.Errorf("mongodb: connect error: %v", err)
 	}

@@ -4,12 +4,13 @@ import (
 	"context"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
+// MongoRepo implements the Repo interface for MongoDB.
 type MongoRepo[T any] struct {
 	DB      *mongo.Database
 	Coll    *mongo.Collection
@@ -35,21 +36,21 @@ func (r *MongoRepo[T]) withTimeout(ctx context.Context) (context.Context, contex
 	return context.WithTimeout(ctx, r.Timeout)
 }
 
-func (r *MongoRepo[T]) InsertOne(ctx context.Context, doc *T) (primitive.ObjectID, error) {
+func (r *MongoRepo[T]) InsertOne(ctx context.Context, doc *T) (bson.ObjectID, error) {
 	ctx, cancel := r.withTimeout(ctx)
 	defer cancel()
 	res, err := r.Coll.InsertOne(ctx, doc)
 	if err != nil {
-		return primitive.NilObjectID, err
+		return bson.NilObjectID, err
 	}
-	if oid, ok := res.InsertedID.(primitive.ObjectID); ok {
+	if oid, ok := res.InsertedID.(bson.ObjectID); ok {
 		return oid, nil
 	}
 	// se o documento já traz _id custom (string, etc.), ignore conversão
-	return primitive.NilObjectID, nil
+	return bson.NilObjectID, nil
 }
 
-func (r *MongoRepo[T]) FindByID(ctx context.Context, id primitive.ObjectID) (*T, error) {
+func (r *MongoRepo[T]) FindByID(ctx context.Context, id bson.ObjectID) (*T, error) {
 	ctx, cancel := r.withTimeout(ctx)
 	defer cancel()
 	var out T
@@ -60,21 +61,21 @@ func (r *MongoRepo[T]) FindByID(ctx context.Context, id primitive.ObjectID) (*T,
 	return &out, nil
 }
 
-func (r *MongoRepo[T]) FindOne(ctx context.Context, filter interface{}, opts ...*options.FindOneOptions) (*T, error) {
+func (r *MongoRepo[T]) FindOne(ctx context.Context, filter interface{}, opts options.Lister[options.FindOneOptions]) (*T, error) {
 	ctx, cancel := r.withTimeout(ctx)
 	defer cancel()
 	var out T
-	err := r.Coll.FindOne(ctx, filter, opts...).Decode(&out)
+	err := r.Coll.FindOne(ctx, filter, opts).Decode(&out)
 	if err != nil {
 		return nil, err
 	}
 	return &out, nil
 }
 
-func (r *MongoRepo[T]) UpdateOne(ctx context.Context, filter interface{}, update interface{}, opts ...*options.UpdateOptions) (int64, error) {
+func (r *MongoRepo[T]) UpdateOne(ctx context.Context, filter interface{}, update interface{}, opts options.Lister[options.UpdateOneOptions]) (int64, error) {
 	ctx, cancel := r.withTimeout(ctx)
 	defer cancel()
-	res, err := r.Coll.UpdateOne(ctx, filter, update, opts...)
+	res, err := r.Coll.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
 		return 0, err
 	}

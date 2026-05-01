@@ -9,9 +9,9 @@ import (
 	"github.com/faelmori/domus-pulse/internal/module/kbx"
 	"github.com/faelmori/domus-pulse/internal/types"
 	logz "github.com/kubex-ecosystem/logz"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
 // BuildMongoURI monta a URI de conexão. Se appUser/appPass vierem vazios,
@@ -45,7 +45,7 @@ func ConnectMongo(ctx context.Context, cfg *types.DBConfig) (*mongo.Client, *mon
 		SetRetryWrites(true).
 		SetMaxPoolSize(40)
 
-	client, err := mongo.Connect(ctx, clientOpts)
+	client, err := mongo.Connect(clientOpts)
 	if err != nil {
 		return nil, nil, fmt.Errorf("mongo connect: %v", err)
 	}
