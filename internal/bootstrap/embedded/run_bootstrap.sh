@@ -17,6 +17,9 @@ set -euo pipefail # Exit on error, undefined vars, pipe failures
 # CONFIGURAÇÕES
 # ==========================================
 
+_DATABASE_URL="postgres://kubex_adm:admin123@127.0.0.1:5432/postgres?sslmode=disable"
+DSN="${DATABASE_URL:-${_DATABASE_URL:-}}"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_DIR="${SCRIPT_DIR}/logs"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -253,6 +256,11 @@ main() {
   execute_step 10 "Seed Data" "core/etapa_10_pending_access_requests.sql" || exit 1
   execute_step 11 "Seed Data" "core/etapa_11_integrations.sql" || exit 1
   execute_step 12 "Seed Data" "core/etapa_12_external_metadata_registry.sql" || exit 1
+  execute_step 13 "Seed Data" "core/etapa_13_whatsapp_webhook.sql" || exit 1
+  execute_step 14 "Seed Data" "core/etapa_14_gnyx_bi.sql" || exit 1
+  execute_step 15 "Seed Data" "core/etapa_15_gnyx_sync.sql" || exit 1
+  execute_step 16 "Seed Data" "core/etapa_16_limalar_schema.sql" || exit 1
+  execute_step 17 "Seed Data" "core/etapa_17_limalar_whatsapp.sql" || exit 1
 
   # Validar instalação
   if validate_installation; then

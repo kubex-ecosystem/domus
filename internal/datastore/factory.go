@@ -8,13 +8,27 @@ import (
 	"github.com/faelmori/domus-pulse/internal/execution"
 	"github.com/faelmori/domus-pulse/internal/provider/flavors"
 
+	commissionstore "github.com/faelmori/domus-pulse/internal/datastore/commission_store"
 	c "github.com/faelmori/domus-pulse/internal/datastore/company_store"
 	externalmetadata "github.com/faelmori/domus-pulse/internal/datastore/external_metadata_store"
 	integration "github.com/faelmori/domus-pulse/internal/datastore/integration_store"
 	i "github.com/faelmori/domus-pulse/internal/datastore/invite_store"
+	leadconv "github.com/faelmori/domus-pulse/internal/datastore/lead_conversation_store"
+	leadeventstore "github.com/faelmori/domus-pulse/internal/datastore/lead_event_store"
+	leadstore "github.com/faelmori/domus-pulse/internal/datastore/lead_store"
+	membershipstore "github.com/faelmori/domus-pulse/internal/datastore/membership_store"
+	notificationstore "github.com/faelmori/domus-pulse/internal/datastore/notification_store"
 	p "github.com/faelmori/domus-pulse/internal/datastore/pending_access_store"
+	pipelinecardstore "github.com/faelmori/domus-pulse/internal/datastore/pipeline_card_store"
+	propshare "github.com/faelmori/domus-pulse/internal/datastore/property_share_store"
+	prop "github.com/faelmori/domus-pulse/internal/datastore/property_store"
+	rolestore "github.com/faelmori/domus-pulse/internal/datastore/role_store"
 	s "github.com/faelmori/domus-pulse/internal/datastore/schemas_store"
+	transactionstore "github.com/faelmori/domus-pulse/internal/datastore/transaction_store"
 	u "github.com/faelmori/domus-pulse/internal/datastore/user_store"
+	visiteventstore "github.com/faelmori/domus-pulse/internal/datastore/visit_event_store"
+	wappmsg "github.com/faelmori/domus-pulse/internal/datastore/wapp_message_store"
+	wappwebhook "github.com/faelmori/domus-pulse/internal/datastore/wapp_webhook_store"
 	t "github.com/faelmori/domus-pulse/internal/types"
 	gl "github.com/kubex-ecosystem/logz"
 )
@@ -137,6 +151,19 @@ func (f *StoreFactory) ExternalMetadataStore(ctx context.Context) (externalmetad
 	return externalMetadataStore, nil
 }
 
+// PropertyStore cria um PropertyStore (helper específico).
+func (f *StoreFactory) PropertyStore(ctx context.Context) (prop.PropertyStore, error) {
+	store, err := f.Create(ctx, "property")
+	if err != nil {
+		return nil, err
+	}
+	propertyStore, ok := store.(prop.PropertyStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a PropertyStore")
+	}
+	return propertyStore, nil
+}
+
 func (f *StoreFactory) IntegrationStore(ctx context.Context, mKey []byte) (integration.IntegrationStore, error) {
 	store, err := f.Create(ctx, "integration")
 	if err != nil {
@@ -245,6 +272,105 @@ func NewExternalMetadataStoreFromExecutor(exec execution.Executor) (externalmeta
 	return externalmetadata.NewPGExternalMetadataStore(pgExec), nil
 }
 
+// NewPropertyStoreFromExecutor cria PropertyStore diretamente de um Executor.
+func NewPropertyStoreFromExecutor(exec execution.Executor) (prop.PropertyStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("property store requires Postgres backend, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return prop.NewPGPropertyStore(pgExec), nil
+}
+
+// PropertyShareStore cria um PropertyShareStore (helper específico).
+func (f *StoreFactory) PropertyShareStore(ctx context.Context) (propshare.PropertyShareStore, error) {
+	store, err := f.Create(ctx, "property_share")
+	if err != nil {
+		return nil, err
+	}
+	shareStore, ok := store.(propshare.PropertyShareStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a PropertyShareStore")
+	}
+	return shareStore, nil
+}
+
+// WappMessageStore cria um WappMessageStore (helper específico).
+func (f *StoreFactory) WappMessageStore(ctx context.Context) (wappmsg.WappMessageStore, error) {
+	store, err := f.Create(ctx, "wapp_message")
+	if err != nil {
+		return nil, err
+	}
+	wappStore, ok := store.(wappmsg.WappMessageStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a WappMessageStore")
+	}
+	return wappStore, nil
+}
+
+// LeadConversationStore cria um LeadConversationStore (helper específico).
+func (f *StoreFactory) LeadConversationStore(ctx context.Context) (leadconv.LeadConversationStore, error) {
+	store, err := f.Create(ctx, "lead_conversation")
+	if err != nil {
+		return nil, err
+	}
+	convStore, ok := store.(leadconv.LeadConversationStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a LeadConversationStore")
+	}
+	return convStore, nil
+}
+
+// NewPropertyShareStoreFromExecutor cria PropertyShareStore diretamente de um Executor.
+func NewPropertyShareStoreFromExecutor(exec execution.Executor) (propshare.PropertyShareStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("property share store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return propshare.NewPGPropertyShareStore(pgExec), nil
+}
+
+// NewWappMessageStoreFromExecutor cria WappMessageStore diretamente de um Executor.
+func NewWappMessageStoreFromExecutor(exec execution.Executor) (wappmsg.WappMessageStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("wapp message store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return wappmsg.NewPGWappMessageStore(pgExec), nil
+}
+
+// NewLeadConversationStoreFromExecutor cria LeadConversationStore diretamente de um Executor.
+func NewLeadConversationStoreFromExecutor(exec execution.Executor) (leadconv.LeadConversationStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("lead conversation store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return leadconv.NewPGLeadConversationStore(pgExec), nil
+}
+
 func NewIntegrationStoreFromExecutor(exec execution.Executor, mKey []byte) (integration.IntegrationStore, error) {
 	if exec == nil {
 		return nil, fmt.Errorf("executor is nil")
@@ -258,3 +384,370 @@ func NewIntegrationStoreFromExecutor(exec execution.Executor, mKey []byte) (inte
 	}
 	return integration.NewPGIntegrationStore(pgExec, mKey), nil
 }
+
+// WappWebhookStore cria um WappWebhookStore (eventos brutos de webhook Meta).
+func (f *StoreFactory) WappWebhookStore(ctx context.Context) (wappwebhook.WappWebhookStore, error) {
+	store, err := f.Create(ctx, "wapp_webhook")
+	if err != nil {
+		return nil, err
+	}
+	webhookStore, ok := store.(wappwebhook.WappWebhookStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a WappWebhookStore")
+	}
+	return webhookStore, nil
+}
+
+// NewWappWebhookStoreFromExecutor cria WappWebhookStore diretamente de um Executor.
+func NewWappWebhookStoreFromExecutor(exec execution.Executor) (wappwebhook.WappWebhookStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("wapp webhook store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return wappwebhook.NewPGWappWebhookStore(pgExec), nil
+}
+
+// RoleStore cria um RoleStore (leitura de roles RBAC).
+func (f *StoreFactory) RoleStore(ctx context.Context) (rolestore.RoleStore, error) {
+	store, err := f.Create(ctx, "role")
+	if err != nil {
+		return nil, err
+	}
+	rs, ok := store.(rolestore.RoleStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a RoleStore")
+	}
+	return rs, nil
+}
+
+// NewRoleStoreFromExecutor cria RoleStore diretamente de um Executor.
+func NewRoleStoreFromExecutor(exec execution.Executor) (rolestore.RoleStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("role store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return rolestore.NewPGRoleStore(pgExec), nil
+}
+
+// MembershipStore cria um MembershipStore (tenant_membership com joins).
+func (f *StoreFactory) MembershipStore(ctx context.Context) (membershipstore.MembershipStore, error) {
+	store, err := f.Create(ctx, "membership")
+	if err != nil {
+		return nil, err
+	}
+	ms, ok := store.(membershipstore.MembershipStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a MembershipStore")
+	}
+	return ms, nil
+}
+
+// NewMembershipStoreFromExecutor cria MembershipStore diretamente de um Executor.
+func NewMembershipStoreFromExecutor(exec execution.Executor) (membershipstore.MembershipStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("membership store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return membershipstore.NewPGMembershipStore(pgExec), nil
+}
+
+// LeadStore cria um LeadStore (CRM de leads — Colonial NetImóveis).
+func (f *StoreFactory) LeadStore(ctx context.Context) (leadstore.LeadStore, error) {
+	store, err := f.Create(ctx, "lead")
+	if err != nil {
+		return nil, err
+	}
+	ls, ok := store.(leadstore.LeadStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a LeadStore")
+	}
+	return ls, nil
+}
+
+// NewLeadStoreFromExecutor cria LeadStore diretamente de um Executor.
+func NewLeadStoreFromExecutor(exec execution.Executor) (leadstore.LeadStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("lead store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return leadstore.NewPGLeadStore(pgExec), nil
+}
+
+// PipelineCardStore cria um PipelineCardStore (kanban CRM — Colonial NetImóveis).
+func (f *StoreFactory) PipelineCardStore(ctx context.Context) (pipelinecardstore.PipelineCardStore, error) {
+	store, err := f.Create(ctx, "pipeline_card")
+	if err != nil {
+		return nil, err
+	}
+	ps, ok := store.(pipelinecardstore.PipelineCardStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a PipelineCardStore")
+	}
+	return ps, nil
+}
+
+// NewPipelineCardStoreFromExecutor cria PipelineCardStore diretamente de um Executor.
+func NewPipelineCardStoreFromExecutor(exec execution.Executor) (pipelinecardstore.PipelineCardStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("pipeline card store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return pipelinecardstore.NewPGPipelineCardStore(pgExec), nil
+}
+
+// CommissionStore cria um CommissionStore (módulo financeiro — Colonial NetImóveis).
+func (f *StoreFactory) CommissionStore(ctx context.Context) (commissionstore.CommissionStore, error) {
+	store, err := f.Create(ctx, "commission")
+	if err != nil {
+		return nil, err
+	}
+	cs, ok := store.(commissionstore.CommissionStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a CommissionStore")
+	}
+	return cs, nil
+}
+
+// NewCommissionStoreFromExecutor cria CommissionStore diretamente de um Executor.
+func NewCommissionStoreFromExecutor(exec execution.Executor) (commissionstore.CommissionStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("commission store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return commissionstore.NewPGCommissionStore(pgExec), nil
+}
+
+// LeadEventStore cria um LeadEventStore (timeline de atividades — Colonial NetImóveis).
+func (f *StoreFactory) LeadEventStore(ctx context.Context) (leadeventstore.LeadEventStore, error) {
+	store, err := f.Create(ctx, "lead_event")
+	if err != nil {
+		return nil, err
+	}
+	les, ok := store.(leadeventstore.LeadEventStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a LeadEventStore")
+	}
+	return les, nil
+}
+
+// NewLeadEventStoreFromExecutor cria LeadEventStore diretamente de um Executor.
+func NewLeadEventStoreFromExecutor(exec execution.Executor) (leadeventstore.LeadEventStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("lead event store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return leadeventstore.NewPGLeadEventStore(pgExec), nil
+}
+
+// NotificationStore cria um NotificationStore (centro de notificações).
+func (f *StoreFactory) NotificationStore(ctx context.Context) (notificationstore.NotificationStore, error) {
+	store, err := f.Create(ctx, "notification")
+	if err != nil {
+		return nil, err
+	}
+	ns, ok := store.(notificationstore.NotificationStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a NotificationStore")
+	}
+	return ns, nil
+}
+
+// NewNotificationStoreFromExecutor cria NotificationStore diretamente de um Executor.
+func NewNotificationStoreFromExecutor(exec execution.Executor) (notificationstore.NotificationStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("notification store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return notificationstore.NewPGNotificationStore(pgExec), nil
+}
+
+// NotificationPrefStore cria um NotificationPrefStore (preferências Calm UX).
+func (f *StoreFactory) NotificationPrefStore(ctx context.Context) (notificationstore.NotificationPrefStore, error) {
+	store, err := f.Create(ctx, "notification_pref")
+	if err != nil {
+		return nil, err
+	}
+	nps, ok := store.(notificationstore.NotificationPrefStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a NotificationPrefStore")
+	}
+	return nps, nil
+}
+
+// NewNotificationPrefStoreFromExecutor cria NotificationPrefStore diretamente de um Executor.
+func NewNotificationPrefStoreFromExecutor(exec execution.Executor) (notificationstore.NotificationPrefStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("notification pref store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return notificationstore.NewPGNotificationPrefStore(pgExec), nil
+}
+
+// TransactionStore cria um TransactionStore (negociações imobiliárias — Colonial NetImóveis).
+func (f *StoreFactory) TransactionStore(ctx context.Context) (transactionstore.TransactionStore, error) {
+	store, err := f.Create(ctx, "transaction")
+	if err != nil {
+		return nil, err
+	}
+	ts, ok := store.(transactionstore.TransactionStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a TransactionStore")
+	}
+	return ts, nil
+}
+
+// NewTransactionStoreFromExecutor cria TransactionStore diretamente de um Executor.
+func NewTransactionStoreFromExecutor(exec execution.Executor) (transactionstore.TransactionStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("transaction store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return transactionstore.NewPGTransactionStore(pgExec), nil
+}
+
+// TransactionStepStore cria um TransactionStepStore (checklist — Colonial NetImóveis).
+func (f *StoreFactory) TransactionStepStore(ctx context.Context) (transactionstore.TransactionStepStore, error) {
+	store, err := f.Create(ctx, "transaction_step")
+	if err != nil {
+		return nil, err
+	}
+	ss, ok := store.(transactionstore.TransactionStepStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a TransactionStepStore")
+	}
+	return ss, nil
+}
+
+// NewTransactionStepStoreFromExecutor cria TransactionStepStore diretamente de um Executor.
+func NewTransactionStepStoreFromExecutor(exec execution.Executor) (transactionstore.TransactionStepStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("transaction step store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return transactionstore.NewPGTransactionStepStore(pgExec), nil
+}
+
+// TransactionDocStore cria um TransactionDocStore (documentos — Colonial NetImóveis).
+func (f *StoreFactory) TransactionDocStore(ctx context.Context) (transactionstore.TransactionDocStore, error) {
+	store, err := f.Create(ctx, "transaction_doc")
+	if err != nil {
+		return nil, err
+	}
+	ds, ok := store.(transactionstore.TransactionDocStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a TransactionDocStore")
+	}
+	return ds, nil
+}
+
+// NewTransactionDocStoreFromExecutor cria TransactionDocStore diretamente de um Executor.
+func NewTransactionDocStoreFromExecutor(exec execution.Executor) (transactionstore.TransactionDocStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("transaction doc store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return transactionstore.NewPGTransactionDocStore(pgExec), nil
+}
+
+// VisitEventStore cria um VisitEventStore (agenda de visitas — Colonial NetImóveis).
+func (f *StoreFactory) VisitEventStore(ctx context.Context) (visiteventstore.VisitEventStore, error) {
+	store, err := f.Create(ctx, "visit_event")
+	if err != nil {
+		return nil, err
+	}
+	vs, ok := store.(visiteventstore.VisitEventStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a VisitEventStore")
+	}
+	return vs, nil
+}
+
+// NewVisitEventStoreFromExecutor cria VisitEventStore diretamente de um Executor.
+func NewVisitEventStoreFromExecutor(exec execution.Executor) (visiteventstore.VisitEventStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("visit event store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return visiteventstore.NewPGVisitEventStore(pgExec), nil
+}
+
+// suppress unused import warnings for reflect (used in init.go via same package)
+var _ = reflect.TypeOf

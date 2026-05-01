@@ -45,6 +45,9 @@ fi
 # CONFIGURAÇÕES
 # ==========================================
 
+_DATABASE_URL="postgres://kubex_adm:admin123@127.0.0.1:5432/postgres?sslmode=disable"
+DSN="${DATABASE_URL:-${_DATABASE_URL:-}}"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_DIR="${SCRIPT_DIR}/logs"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -111,14 +114,14 @@ validate_prerequisites() {
   fi
 
   # Verificar variável de ambiente DATABASE_URL
-  if [ -z "${DATABASE_URL:-}" ]; then
-    log_error "Variável DATABASE_URL não definida."
-    log_info "Defina: export DATABASE_URL='postgres://user:pass@host:port/dbname'"
+  if [ -z "${DSN:-}" ]; then
+    log_error "Variável DSN não definida."
+    log_info "Defina: export DSN='postgres://user:pass@host:port/dbname'"
     exit 1
   fi
 
   # Testar conexão
-  if ! psql "$DATABASE_URL" -c "SELECT 1" &>/dev/null; then
+  if ! psql "$DSN" -c "SELECT 1" &>/dev/null; then
     log_error "Não foi possível conectar ao banco de dados."
     exit 1
   fi
@@ -148,7 +151,7 @@ hydration_seed_exec() {
   # Executar SQL capturando stdout e stderr separadamente
   local sql_output
   local sql_exit_code
-  sql_output=$(psql "${DATABASE_URL:-}" -v ON_ERROR_STOP=1 -f "$full_path" 2>&1)
+  sql_output=$(psql "${DSN:-}" -v ON_ERROR_STOP=1 -f "$full_path" 2>&1)
   sql_exit_code=$?
 
   # Log do output
@@ -198,7 +201,7 @@ validate_installation() {
 
   for table in "${core_tables[@]}"; do
     local count
-    count=$(psql "$DATABASE_URL" -tAc "SELECT COUNT(*) FROM $table" 2>/dev/null)
+    count=$(psql "$DSN" -tAc "SELECT COUNT(*) FROM $table" 2>/dev/null)
     if [ $? -ne 0 ]; then
       log_warning "Tabela $table não existe ou erro ao consultar"
       ((warnings++))
@@ -215,7 +218,7 @@ validate_installation() {
 
   for table in "${optional_tables[@]}"; do
     local count
-    count=$(psql "$DATABASE_URL" -tAc "SELECT COUNT(*) FROM $table" 2>/dev/null)
+    count=$(psql "$DSN" -tAc "SELECT COUNT(*) FROM $table" 2>/dev/null)
     if [ $? -eq 0 ] && [ "$count" -gt 0 ]; then
       log_info "✓ $table: $count registros"
     fi
@@ -252,7 +255,7 @@ generate_json_report() {
 
   for table in "${known_tables[@]}"; do
     local count
-    count=$(psql "$DATABASE_URL" -tAc "SELECT COUNT(*) FROM $table" 2>/dev/null) || count="0"
+    count=$(psql "$DSN" -tAc "SELECT COUNT(*) FROM $table" 2>/dev/null) || count="0"
     # Garantir que count é um número
     count="${count:-0}"
     count="${count// /}"
@@ -268,7 +271,7 @@ generate_json_report() {
   cat >"$JSON_LOG" <<EOF
 {
   "execution_timestamp": "$(date -Iseconds)",
-  "database_url": "${DATABASE_URL//:*@/:***@}",
+  "database_url": "${DSN//:*@/:***@}",
   "total_duration_seconds": $total_duration,
   "status": "$status",
   "log_file": "$LOG_FILE",
@@ -322,7 +325,7 @@ main() {
   print_header "KUBEX HYDRATION v0.0.1 - INICIANDO"
 
   log_info "Timestamp: $(date)"
-  log_info "Database: ${DATABASE_URL//:*@/:***@}"
+  log_info "Database: ${DSN//:*@/:***@}"
   log_info "Log: $LOG_FILE"
 
   # Validar pré-requisitos

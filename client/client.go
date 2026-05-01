@@ -8,12 +8,26 @@ import (
 
 	"github.com/faelmori/domus-pulse/internal/adapter"
 	st "github.com/faelmori/domus-pulse/internal/datastore"
+	commissionstore "github.com/faelmori/domus-pulse/internal/datastore/commission_store"
 	company "github.com/faelmori/domus-pulse/internal/datastore/company_store"
 	externalmetadata "github.com/faelmori/domus-pulse/internal/datastore/external_metadata_store"
 	integration "github.com/faelmori/domus-pulse/internal/datastore/integration_store"
 	invite "github.com/faelmori/domus-pulse/internal/datastore/invite_store"
+	leadconvstore "github.com/faelmori/domus-pulse/internal/datastore/lead_conversation_store"
+	leadeventstore "github.com/faelmori/domus-pulse/internal/datastore/lead_event_store"
+	leadstore "github.com/faelmori/domus-pulse/internal/datastore/lead_store"
+	membershipstore "github.com/faelmori/domus-pulse/internal/datastore/membership_store"
+	notificationstore "github.com/faelmori/domus-pulse/internal/datastore/notification_store"
 	pendingaccess "github.com/faelmori/domus-pulse/internal/datastore/pending_access_store"
+	pipelinecardstore "github.com/faelmori/domus-pulse/internal/datastore/pipeline_card_store"
+	propsharestore "github.com/faelmori/domus-pulse/internal/datastore/property_share_store"
+	propertystore "github.com/faelmori/domus-pulse/internal/datastore/property_store"
+	rolestore "github.com/faelmori/domus-pulse/internal/datastore/role_store"
+	transactionstore "github.com/faelmori/domus-pulse/internal/datastore/transaction_store"
 	user "github.com/faelmori/domus-pulse/internal/datastore/user_store"
+	visiteventstore "github.com/faelmori/domus-pulse/internal/datastore/visit_event_store"
+	wappmsgstore "github.com/faelmori/domus-pulse/internal/datastore/wapp_message_store"
+	wappwebhookstore "github.com/faelmori/domus-pulse/internal/datastore/wapp_webhook_store"
 	en "github.com/faelmori/domus-pulse/internal/engine"
 	kbxMod "github.com/faelmori/domus-pulse/internal/module/kbx"
 	t "github.com/faelmori/domus-pulse/internal/types"
@@ -33,6 +47,37 @@ type (
 	PendingAccessStore    = pendingaccess.PendingAccessStore
 	ExternalMetadataStore = externalmetadata.ExternalMetadataStore
 	IntegrationStore      = integration.IntegrationStore
+	PropertyStore         = propertystore.PropertyStore
+
+	// Limalar domain stores (Colonial NetImóveis)
+	PropertyShareStore    = propsharestore.PropertyShareStore
+	WappMessageStore      = wappmsgstore.WappMessageStore
+	LeadConversationStore = leadconvstore.LeadConversationStore
+	WappWebhookStore      = wappwebhookstore.WappWebhookStore
+
+	// CRM Pipeline stores (Colonial NetImóveis)
+	LeadStore         = leadstore.LeadStore
+	LeadEventStore    = leadeventstore.LeadEventStore
+	PipelineCardStore = pipelinecardstore.PipelineCardStore
+
+	// Financial stores (Colonial NetImóveis)
+	CommissionStore = commissionstore.CommissionStore
+
+	// Notification stores (Colonial NetImóveis — Calm UX)
+	NotificationStore     = notificationstore.NotificationStore
+	NotificationPrefStore = notificationstore.NotificationPrefStore
+
+	// Transaction stores (Colonial NetImóveis — fechamento imobiliário)
+	TransactionStore     = transactionstore.TransactionStore
+	TransactionStepStore = transactionstore.TransactionStepStore
+	TransactionDocStore  = transactionstore.TransactionDocStore
+
+	// Visit agenda store (Colonial NetImóveis — roteiro de visitas)
+	VisitEventStore = visiteventstore.VisitEventStore
+
+	// RBAC stores
+	RoleStore       = rolestore.RoleStore
+	MembershipStore = membershipstore.MembershipStore
 )
 
 // BackendConnections is an alias for the database manager type.
@@ -68,6 +113,37 @@ type DSClient interface {
 	GetCompanyStore(ctx context.Context, dbName string) (CompanyStore, error)
 	GetPendingAccessStore(ctx context.Context, dbName string) (PendingAccessStore, error)
 	GetExternalMetadataStore(ctx context.Context, dbName string) (ExternalMetadataStore, error)
+	GetPropertyStore(ctx context.Context, dbName string) (PropertyStore, error)
+
+	// Limalar domain stores (Colonial NetImóveis)
+	GetPropertyShareStore(ctx context.Context, dbName string) (PropertyShareStore, error)
+	GetWappMessageStore(ctx context.Context, dbName string) (WappMessageStore, error)
+	GetLeadConversationStore(ctx context.Context, dbName string) (LeadConversationStore, error)
+	GetWappWebhookStore(ctx context.Context, dbName string) (WappWebhookStore, error)
+
+	// CRM Pipeline stores (Colonial NetImóveis)
+	GetLeadStore(ctx context.Context, dbName string) (LeadStore, error)
+	GetLeadEventStore(ctx context.Context, dbName string) (LeadEventStore, error)
+	GetPipelineCardStore(ctx context.Context, dbName string) (PipelineCardStore, error)
+
+	// Financial stores (Colonial NetImóveis)
+	GetCommissionStore(ctx context.Context, dbName string) (CommissionStore, error)
+
+	// Notification stores (Colonial NetImóveis — Calm UX)
+	GetNotificationStore(ctx context.Context, dbName string) (NotificationStore, error)
+	GetNotificationPrefStore(ctx context.Context, dbName string) (NotificationPrefStore, error)
+
+	// Transaction stores (Colonial NetImóveis — fechamento imobiliário)
+	GetTransactionStore(ctx context.Context, dbName string) (TransactionStore, error)
+	GetTransactionStepStore(ctx context.Context, dbName string) (TransactionStepStore, error)
+	GetTransactionDocStore(ctx context.Context, dbName string) (TransactionDocStore, error)
+
+	// Visit agenda store (Colonial NetImóveis — roteiro de visitas)
+	GetVisitEventStore(ctx context.Context, dbName string) (VisitEventStore, error)
+
+	// RBAC stores
+	GetRoleStore(ctx context.Context, dbName string) (RoleStore, error)
+	GetMembershipStore(ctx context.Context, dbName string) (MembershipStore, error)
 
 	// Adapter factory methods
 	NewAdapterFactory(ctx context.Context, dbName string, db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)

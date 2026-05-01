@@ -6,7 +6,7 @@ package types
 // 	"os/signal"
 // 	"syscall"
 
-// 	ci "github.com/faelmori/gnyx-pulse/interfaces"
+// 	ci "github.com/faelmori/gnyx-limalar/interfaces"
 // 	"github.com/kubex-ecosystem/logz"
 // 	gl "github.com/kubex-ecosystem/logz"
 // 	l "github.com/kubex-ecosystem/logz"

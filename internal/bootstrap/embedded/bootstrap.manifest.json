@@ -1,6 +1,6 @@
 {
-  "version": "4.0.1",
-  "generated_at": "2026-03-14T07:46:00Z",
+  "version": "4.1.0",
+  "generated_at": "2026-04-22T00:00:00Z",
   "generated_by": "Rafael Mori (Desenvolvedor)",
   "database": {
     "target": "PostgreSQL 17.6+",
@@ -208,6 +208,107 @@
         "index: idx_external_metadata_registry_schema_dataset",
         "index: idx_external_metadata_registry_status",
         "index: idx_external_metadata_registry_last_loaded"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 13,
+      "name": "WhatsApp Webhook Storage",
+      "file": "core/etapa_13_whatsapp_webhook.sql",
+      "description": "Cria tabelas public.whatsapp_messages e public.whatsapp_statuses para armazenamento bruto de webhooks Meta Cloud API",
+      "estimated_duration_seconds": 1,
+      "dependencies": ["etapa_1_extensions_tenancy.sql"],
+      "creates": [
+        "table: whatsapp_messages",
+        "table: whatsapp_statuses",
+        "index: idx_whatsapp_messages_phone_created",
+        "index: idx_whatsapp_statuses_recipient"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 14,
+      "name": "GNyx BI Schema",
+      "file": "core/etapa_14_gnyx_bi.sql",
+      "description": "Cria schema gnyx_bi com artefatos de Business Intelligence e jobs de exportação assíncronos",
+      "estimated_duration_seconds": 1,
+      "dependencies": ["etapa_1_extensions_tenancy.sql"],
+      "creates": [
+        "schema: gnyx_bi",
+        "table: gnyx_bi.artifacts",
+        "table: gnyx_bi.export_jobs",
+        "index: idx_gnyx_bi_artifacts_tenant_updated",
+        "index: idx_gnyx_bi_export_jobs_artifact_created",
+        "index: idx_gnyx_bi_export_jobs_tenant_created"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 15,
+      "name": "GNyx Sync Schema",
+      "file": "core/etapa_15_gnyx_sync.sql",
+      "description": "Cria schema gnyx_sync com workspaces, conexões de fonte, query assets, destinos, jobs e runs de sincronização de dados",
+      "estimated_duration_seconds": 2,
+      "dependencies": ["etapa_1_extensions_tenancy.sql"],
+      "creates": [
+        "schema: gnyx_sync",
+        "table: gnyx_sync.workspaces",
+        "table: gnyx_sync.source_connections",
+        "table: gnyx_sync.query_assets",
+        "table: gnyx_sync.destination_targets",
+        "table: gnyx_sync.jobs",
+        "table: gnyx_sync.runs",
+        "index: idx_gnyx_sync_workspaces_tenant",
+        "index: idx_gnyx_sync_connections_workspace",
+        "index: idx_gnyx_sync_query_assets_workspace",
+        "index: idx_gnyx_sync_targets_workspace",
+        "index: idx_gnyx_sync_jobs_workspace",
+        "index: idx_gnyx_sync_runs_workspace"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 16,
+      "name": "Limalar — Domínio Imobiliário (Colonial NetImóveis)",
+      "file": "core/etapa_16_limalar_schema.sql",
+      "description": "Cria schema limalar com tabelas de imóveis, compartilhamentos e conversas de qualificação de leads por IA",
+      "estimated_duration_seconds": 2,
+      "dependencies": ["etapa_7_triggers.sql"],
+      "creates": [
+        "schema: limalar",
+        "table: limalar.properties",
+        "table: limalar.property_shares",
+        "table: limalar.lead_conversations",
+        "trigger: update_limalar_properties_updated_at",
+        "index: idx_limalar_props_tenant_updated",
+        "index: idx_limalar_props_tenant_transaction",
+        "index: idx_limalar_shares_property",
+        "index: idx_limalar_shares_tenant",
+        "index: idx_limalar_shares_token",
+        "index: idx_limalar_shares_phone",
+        "index: idx_limalar_lead_conv_property",
+        "index: idx_limalar_lead_conv_phone",
+        "index: idx_limalar_lead_conv_tenant_created"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 17,
+      "name": "Limalar — Mensagens WhatsApp Threaded",
+      "file": "core/etapa_17_limalar_whatsapp.sql",
+      "description": "Cria limalar.wapp_messages: histórico threaded de conversas WhatsApp por telefone, com role (lead/ai/human) para a tela de conversas do corretor",
+      "estimated_duration_seconds": 1,
+      "dependencies": ["etapa_16_limalar_schema.sql"],
+      "creates": [
+        "table: limalar.wapp_messages",
+        "index: idx_limalar_wapp_msg_phone",
+        "index: idx_limalar_wapp_msg_tenant",
+        "index: idx_limalar_wapp_msg_property"
       ],
       "critical": false,
       "rollback_safe": true
