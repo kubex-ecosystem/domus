@@ -12,6 +12,7 @@ const (
 	StatusAccepted InvitationStatus = "accepted"
 	StatusExpired  InvitationStatus = "expired"
 	StatusRevoked  InvitationStatus = "revoked"
+	StatusRejected InvitationStatus = "rejected"
 )
 
 // InvitationType represents the type of invitation
@@ -20,6 +21,7 @@ type InvitationType string
 const (
 	TypePartner  InvitationType = "partner"
 	TypeInternal InvitationType = "internal"
+	TypeUser     InvitationType = "user"
 )
 
 // PartnerInvitation represents an invitation for a partner

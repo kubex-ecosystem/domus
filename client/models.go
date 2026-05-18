@@ -37,6 +37,7 @@ import (
 	"github.com/faelmori/domus-pulse/internal/models/gnyx/userpreferences"
 	"github.com/faelmori/domus-pulse/internal/models/gnyx/userprofiles"
 	"github.com/faelmori/domus-pulse/internal/models/gnyx/users"
+	"github.com/faelmori/domus-pulse/internal/models/invitations"
 )
 
 type SubscriptionPlans = subscriptionplans.SubscriptionPlans
@@ -75,3 +76,15 @@ type SystemMetrics = systemmetrics.SystemMetrics
 type SysDashboards = sysdashboards.SysDashboards
 type SysWidgets = syswidgets.SysWidgets
 type SysDataSources = sysdatasources.SysDataSources
+
+const (
+	InvitationTypePartner  = invitations.TypePartner
+	InvitationTypeInternal = invitations.TypeInternal
+	InvitationTypeUser     = invitations.TypeUser
+
+	InvitationStatusPending  = invitations.StatusPending
+	InvitationStatusAccepted = invitations.StatusAccepted
+	InvitationStatusRejected = invitations.StatusRejected
+	InvitationStatusRevoked  = invitations.StatusRevoked
+	InvitationStatusExpired  = invitations.StatusExpired
+)
