@@ -299,7 +299,7 @@ func (v *Validation[T]) CheckIfWillValidate() bool {
 	hasValidator := false
 	v.validatorMap.Range(func(key, value any) bool {
 		if _, vld := key.(int); vld {
-			if _, ok := value.(ValidationFunc[T]); ok {
+			if _, ok := value.(ci.IValidationFunc[T]); ok {
 				hasValidator = true
 				return false
 			}
@@ -327,8 +327,8 @@ func (v *Validation[T]) Validate(value *T, args ...any) ci.IValidationResult {
 
 	results := make([]ci.IValidationResult, 0)
 	v.validatorMap.Range(func(key, val any) bool {
-		if validator, ok := val.(ValidationFunc[T]); ok {
-			result := validator.Func(value, args...)
+		if validator, ok := val.(ci.IValidationFunc[T]); ok {
+			result := validator.GetFunction()(value, args...)
 			results = append(results, result)
 			if result != nil && !result.GetIsValid() {
 				v.isValid = false
@@ -454,9 +454,8 @@ func (v *Validation[T]) ClearResults() {
 		return
 	}
 	v.validatorMap.Range(func(key, value any) bool {
-		if validator, ok := value.(ValidationFunc[T]); ok {
-			validator.Result = nil
-			v.validatorMap.Store(key, validator)
+		if validator, ok := value.(ci.IValidationFunc[T]); ok {
+			validator.SetResult(nil)
 		}
 		return true
 	})
