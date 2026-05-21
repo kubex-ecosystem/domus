@@ -12,7 +12,7 @@ shopt -s inherit_errexit
 declare -a _GNYX_ARGS=()
 # Assumo o ROOT_DIR como padrão o diretório do projeto
 # com fallback pro fixo GNYX_DIR
-_GNYX_DIR="/ALL/KUBEX/SHOWCASE/projects/gnyx"
+_GNYX_DIR="/ALL/BELLUBE/kubex-pulse/gnyx-pulse"
 _ROOT_DIR="${_ROOT_DIR:-${_GNYX_DIR}}"
 _SCRIPT_DIR="${_ROOT_DIR}/support"
 _BINARY_NAME="${_BINARY_NAME:-gnyx}"
