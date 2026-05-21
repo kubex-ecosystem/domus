@@ -10,7 +10,7 @@
   "repository": "https://github.com/kubex-ecosystem/domus",
   "homepage": "https://github.com/kubex-ecosystem/domus",
   "description": "Kubex DS: A complete tool for managing databases, data models, and more.",
-  "go_version": "1.26.1",
+  "go_version": "1.26.2",
   "main": "cmd/main.go",
   "bin": "domus",
   "author": "Rafael Mori <faelmori@gmail.com>",
