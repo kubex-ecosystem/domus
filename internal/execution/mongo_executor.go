@@ -27,9 +27,7 @@ type MongoExecutor interface {
 }
 
 // mongoExecutor é a implementação padrão baseada em *mdb.Client.
-type mongoExecutor struct {
-	client *mdb.Client
-}
+type mongoExecutor struct{ client *mdb.Client }
 
 // NewMongoExecutor cria um MongoExecutor a partir de um *mdb.Client.
 func NewMongoExecutor(client *mdb.Client) MongoExecutor {

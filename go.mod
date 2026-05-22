@@ -145,3 +145,5 @@ require (
 // replace kbx => /projects/kubex/kbx
 
 replace github.com/google/dotprompt/go/dotprompt => github.com/faelmori/dotprompt v0.0.2
+
+replace github.com/kubex-ecosystem/kbx => /projects/kubex/kbx

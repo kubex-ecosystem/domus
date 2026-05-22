@@ -1,45 +1,53 @@
 package cli
 
 import (
-	"github.com/faelmori/domus-pulse/internal/engine"
-	"github.com/faelmori/domus-pulse/internal/provider"
-
 	"context"
-	"os"
-
-	"github.com/faelmori/domus-pulse/internal/module/info"
-
-	"github.com/spf13/cobra"
 
 	"github.com/faelmori/domus-pulse/internal/backends"
-
+	"github.com/faelmori/domus-pulse/internal/engine"
 	kbxMod "github.com/faelmori/domus-pulse/internal/module/kbx"
+	"github.com/faelmori/domus-pulse/internal/provider"
 	systemservice "github.com/faelmori/domus-pulse/internal/services/system_service"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
-	kbxInfo "github.com/kubex-ecosystem/kbx/tools/info"
+	"github.com/kubex-ecosystem/kbx/tools/flow"
+	"github.com/kubex-ecosystem/kbx/tools/flow/fsm"
 	gl "github.com/kubex-ecosystem/logz"
+	"github.com/spf13/cobra"
 )
 
 var logger = gl.GetLoggerZ("Migration")
 
+// Estados Atômicos da Migração Domus
+const (
+	MigrateIdle fsm.State = 1 << iota
+	MigrateConfigLoading
+	MigrateBackendLoading
+	MigrateExecuting
+	MigrateDone
+	MigrateError
+)
+
+// Eventos de Transição
+const (
+	EvStartMigrate fsm.Event = iota
+	EvConfigReady
+	EvBackendReady
+	EvMigrationSuccess
+	EvMigrationFail
+)
+
 func DatabaseCmd() *cobra.Command {
 	var initArgs = &kbxMod.InitArgs{}
 
-	shortDesc := "Database management commands for Domus"
-	longDesc := "Database management commands for Domus"
 	cmd := &cobra.Command{
-		Use:         "database",
-		Short:       shortDesc,
-		Long:        longDesc,
-		Annotations: info.GetDescriptions([]string{longDesc, shortDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
+		Use:   "database",
+		Short: "Database management commands for Domus",
 		Run: func(cmd *cobra.Command, args []string) {
 			if initArgs.Debug {
 				gl.SetDebugMode(initArgs.Debug)
 			}
 			gl.Info("Domus", "Database management commands for Domus")
-			if err := cmd.Help(); err != nil {
-				gl.Errorf("Error displaying help: %v", err)
-			}
+			cmd.Help()
 		},
 	}
 
@@ -58,110 +66,68 @@ func DatabaseCmd() *cobra.Command {
 func startDatabaseCmd() *cobra.Command {
 	var initArgs = &kbxMod.InitArgs{}
 
-	shortDesc := "Start Database services"
-	longDesc := "Start Database services. This will launch the database in a Docker container, and keep a minimal Z"
-
 	cmd := &cobra.Command{
-		Use:         "start",
-		Short:       shortDesc,
-		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
+		Use:   "start",
+		Short: "Start Database services",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			gl.SetDebugMode(initArgs.Debug)
 			if err := migrateDatabaseCmd().Execute(); err != nil {
 				return gl.Errorf("Error executing migration: %v", err)
 			}
-
 			if err := systemservice.StartSystemService(initArgs); err != nil {
 				return gl.Errorf("Error starting database services: %v", err)
 			}
-			gl.Info("Domus", "Database services started successfully.")
 			return nil
 		},
 	}
-
-	cmd.Flags().BoolVarP(&initArgs.Debug, "debug", "D", false, "Enable debug mode")
-	cmd.Flags().StringVarP(&initArgs.EnvFile, "env-file", "e", "", "Path to .env file")
-	cmd.Flags().StringVarP(&initArgs.ConfigFile, "config-file", "C", "config.yaml", "Path to configuration file")
-
 	return cmd
 }
 
 func stopDatabaseCmd() *cobra.Command {
-	var initArgs = &kbxMod.InitArgs{}
-
-	shortDesc := "Stop Docker"
-	longDesc := "Stop Docker service"
-
-	cmd := &cobra.Command{
-		Use:         "stop",
-		Short:       shortDesc,
-		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
-		Run: func(cmd *cobra.Command, args []string) {
-			if err := cmd.Help(); err != nil {
-				gl.Errorf("Error displaying help: %v", err)
-			}
-		},
-	}
-
-	cmd.Flags().BoolVarP(&initArgs.Debug, "debug", "D", false, "Enable debug mode")
-	cmd.Flags().StringVarP(&initArgs.EnvFile, "env-file", "e", "", "Path to .env file")
-	cmd.Flags().StringVarP(&initArgs.ConfigFile, "config-file", "C", "config.yaml", "Path to configuration file")
-
-	return cmd
+	return &cobra.Command{Use: "stop", Run: func(cmd *cobra.Command, args []string) { cmd.Help() }}
 }
 
 func statusDatabaseCmd() *cobra.Command {
-	var initArgs = &kbxMod.InitArgs{}
-
-	shortDesc := "Status Docker"
-	longDesc := "Status Docker service"
-
-	cmd := &cobra.Command{
-		Use:         "status",
-		Short:       shortDesc,
-		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
-		Run: func(cmd *cobra.Command, args []string) {
-			if err := cmd.Help(); err != nil {
-				gl.Errorf("Error displaying help: %v", err)
-			}
-		},
-	}
-
-	cmd.Flags().BoolVarP(&initArgs.Debug, "debug", "D", false, "Enable debug mode")
-	cmd.Flags().StringVarP(&initArgs.EnvFile, "env-file", "e", "", "Path to .env file")
-	cmd.Flags().StringVarP(&initArgs.ConfigFile, "config-file", "C", "config.yaml", "Path to configuration file")
-
-	return cmd
+	return &cobra.Command{Use: "status", Run: func(cmd *cobra.Command, args []string) { cmd.Help() }}
 }
 
 func migrateDatabaseCmd() *cobra.Command {
 	var initArgs = &kbxMod.InitArgs{}
 	var keepAlive bool
 
-	shortDesc := "Run database migrations"
-	longDesc := "Run database migrations for all registered models."
-
 	cmd := &cobra.Command{
-		Use:         "migrate",
-		Short:       shortDesc,
-		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
+		Use:   "migrate",
+		Short: "Run database migrations",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// Initialize context and logger
 			ctx := context.Background()
 			gl.SetDebugMode(initArgs.Debug)
 
-			// ========== STEP 1: LOAD CONFIG ==========
+			// Inicializa o Maestro Atômico para a Migração
+			m := flow.NewFlow()
+			m.FSM = fsm.NewFSM(MigrateIdle, []fsm.Transition{
+				{From: MigrateIdle, Event: EvStartMigrate, To: MigrateConfigLoading},
+				{From: MigrateConfigLoading, Event: EvConfigReady, To: MigrateBackendLoading},
+				{From: MigrateBackendLoading, Event: EvBackendReady, To: MigrateExecuting},
+				{From: MigrateExecuting, Event: EvMigrationSuccess, To: MigrateDone},
+				{From: MigrateExecuting, Event: EvMigrationFail, To: MigrateError},
+			})
+
+			// Inicia o Processo
+			if err := m.State.Start(); err != nil {
+				return err
+			}
+			m.FSM.Trigger(EvStartMigrate)
+			gl.Infof("[Atomic Migration: %d] Iniciando...", m.FSM.Current())
+
+			// 1. LOAD CONFIG
 			configPath := kbxGet.ValOrType(initArgs.ConfigFile, kbxGet.EnvOr("KUBEX_DOMUS_CONFIG_FILE", kbxMod.DefaultConfigFile))
-			gl.Debugf("Loading configuration from path: %s", configPath)
 			rootConfig, err := engine.LoadRootConfig(configPath)
 			if err != nil {
+				m.FSM.Trigger(EvMigrationFail)
 				return gl.Errorf("Failed to load config: %v", err)
 			}
-			gl.Success("Configuration loaded successfully.")
+			m.FSM.Trigger(EvConfigReady)
+			gl.Infof("[Atomic Migration: %d] Configuração carregada.", m.FSM.Current())
 
 			var dbConfig *kbxMod.DBConfig
 			if len(initArgs.DBConfigID) > 0 {
@@ -170,101 +136,65 @@ func migrateDatabaseCmd() *cobra.Command {
 				dbConfig = engine.GetDefaultDBConfig(&rootConfig)
 			}
 			if dbConfig == nil {
+				m.FSM.Trigger(EvMigrationFail)
 				return gl.Errorf("No default database configuration found")
 			}
-			gl.Debugf("Database configuration: %s/%s", dbConfig.ID, dbConfig.Name)
 
-			// ========== STEP 2: CREATE BACKEND STACK ==========
-			gl.Debug("Loading backend stack...")
-			providers := backends.ListProviders()
-			for _, provider := range providers {
-				gl.Debugf("Provider Registered: %s", provider.Name())
-			}
+			// 2. BACKEND STACK
 			backendStack, ok := backends.GetProvider(dbConfig.Backend)
 			if !ok {
+				m.FSM.Trigger(EvMigrationFail)
 				return gl.Errorf("Backend '%s' not found", dbConfig.Backend)
 			}
-			gl.Debugf("Backend '%s' found", dbConfig.Backend)
-			capabilities, err := backendStack.Capabilities(ctx)
-			if err != nil {
-				return gl.Errorf("Failed to get capabilities: %v", err)
-			}
-			gl.Debugf("Backend '%s' has %b capabilities", dbConfig.Backend, len(capabilities.Features))
-			if !capabilities.Managed {
-				gl.Info("Backend is not managed. Skipping migration steps.")
-				return nil
-			}
-			gl.Debugf("Backend '%s' is managed", dbConfig.Backend)
-			if hasMigrations, ok := capabilities.Features["migrations"]; !ok || !hasMigrations {
-				gl.Info("Backend does not support migrations. Skipping migration steps.")
-				return nil
-			}
-			gl.Debugf("Backend '%s' supports migrations", dbConfig.Backend)
+			m.FSM.Trigger(EvBackendReady)
+			gl.Infof("[Atomic Migration: %d] Backend selecionado.", m.FSM.Current())
 
-			// ========== STEP 3: GET MIGRATABLE BACKEND STACK ==========
 			migratableStack, ok := backendStack.(provider.MigratableProvider)
 			if !ok {
-				return gl.Errorf("Backend '%s' does not support migrations", dbConfig.Backend)
+				m.FSM.Trigger(EvMigrationSuccess) // Not an error, just skip
+				gl.Info("Backend does not support migrations. skipping.")
+				return nil
 			}
 
-			gl.Infof("Backend '%s' selected for migration", dbConfig.Backend)
-
+			// 3. EXECUTE MIGRATION
 			endpoints, err := migratableStack.Start(ctx, provider.ConvertRootConfigToStartSpec(&rootConfig))
 			if err != nil {
-				return gl.Errorf("Failed to start services: %v", err)
+				m.FSM.Trigger(EvMigrationFail)
+				return err
 			}
-			gl.Debug("Services started successfully.")
 
-			// ========== STEP 4: RUN MIGRATIONS ==========
-			mgr := engine.NewDatabaseManager(logger)
+			dbMgr := engine.NewDatabaseManager(logger)
 			for _, endpoint := range endpoints {
 				if endpoint.DBConfig.Migration == nil {
 					continue
 				}
-				conn, err := mgr.LoadDBConfig(endpoint.DBConfig)
+				conn, err := dbMgr.LoadDBConfig(endpoint.DBConfig)
 				if err != nil {
-					return gl.Errorf("Failed to get connection: %v", err)
+					m.FSM.Trigger(EvMigrationFail)
+					return err
 				}
-				gl.Debugf("Connection established for database: %s", endpoint.DBConfig.ID)
 				if err := migratableStack.PrepareMigrations(ctx, &conn); err != nil {
-					return gl.Errorf("Failed to prepare migrations: %v", err)
+					m.FSM.Trigger(EvMigrationFail)
+					return err
 				}
-				gl.Debugf("Migrations prepared for database: %s", endpoint.DBConfig.ID)
 				if err := migratableStack.RunMigrations(ctx, &conn, endpoint.DBConfig.Migration); err != nil {
-					return gl.Errorf("Failed to migrate: %v", err)
+					m.FSM.Trigger(EvMigrationFail)
+					return err
 				}
-				gl.Debugf("Migrations applied to database: %s", endpoint.DBConfig.ID)
 			}
 
-			// ========== STEP 7 (OPTIONAL): ENGINE CONNECTIONS ==========
-			if keepAlive {
-				gl.Info("Establishing engine connections (keep-alive mode)...")
-				mgr := engine.NewDatabaseManager(logger)
-				if err := mgr.InitFromRootConfig(ctx, &rootConfig); err != nil {
-					return gl.Errorf("Failed to initialize engine: %v", err)
-				}
-				gl.Info("Engine ready for runtime operations")
-				// Note: In keep-alive mode, connections remain open.
-				// Add graceful shutdown handling if needed.
-			}
-
-			gl.Success("Migration pipeline completed successfully!")
+			m.FSM.Trigger(EvMigrationSuccess)
+			m.State.Complete()
+			gl.Successf("[Atomic Migration: %d] Migração concluída com sucesso!", m.FSM.Current())
 
 			return nil
 		},
 	}
 
-	// Flags
 	cmd.Flags().StringVarP(&initArgs.DBConfigID, "target-db", "t", "", "Target database config ID")
 	cmd.Flags().BoolVarP(&initArgs.Debug, "debug", "D", false, "Enable debug mode")
-	cmd.Flags().StringVarP(&initArgs.EnvFile, "env-file", "e", "", "Path to .env file")
-	cmd.Flags().BoolVarP(&keepAlive, "keep-alive", "k", false, "Keep engine connections alive after migration (default: false)")
+	cmd.Flags().BoolVarP(&keepAlive, "keep-alive", "k", false, "Keep engine connections alive")
 	cmd.Flags().StringVarP(&initArgs.ConfigFile, "config-file", "C", "", "Path to configuration file")
-
-	// Future flags (not yet implemented)
-	cmd.Flags().BoolVarP(&initArgs.Force, "force", "f", false, "Force apply all migrations (not yet implemented)")
-	cmd.Flags().BoolVarP(&initArgs.Reset, "reset", "r", false, "Reset database before migrations (not yet implemented)")
-	cmd.Flags().BoolVarP(&initArgs.DryRun, "dry-run", "", false, "Simulate migrations without applying (not yet implemented)")
 
 	return cmd
 }
