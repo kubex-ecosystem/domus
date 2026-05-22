@@ -31,7 +31,7 @@ func DatabaseCmd() *cobra.Command {
 		Use:         "database",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
+		Annotations: info.GetDescriptions([]string{longDesc, shortDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			if initArgs.Debug {
 				gl.SetDebugMode(initArgs.Debug)

@@ -88,11 +88,11 @@ func (d *MongoDriver) Executor(ctx context.Context) (execution.Executor, error) 
 		return nil, fmt.Errorf("executor requested but ping failed")
 	}
 
-	// mongoExec := execution.NewMongoExecutor(d.client)
-	// d.executor = execution.NewExecutor(
-	// 	execution.WithKind(execution.BackendMongo),
-	// 	execution.WithMongo(mongoExec),
-	// )
+	mongoExec := execution.NewMongoExecutor(d.client)
+	d.executor = execution.NewExecutor(
+		execution.WithKind(execution.BackendMongo),
+		execution.WithMongo(mongoExec),
+	)
 
 	// return d.executor, nil
 	return nil, fmt.Errorf("mongodb executor not implemented yet")
