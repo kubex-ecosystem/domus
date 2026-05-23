@@ -14,7 +14,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	gl "github.com/kubex-ecosystem/logz"
 
-	"github.com/kubex-ecosystem/kbx/tools/security/crypto"
+	"github.com/kubex-ecosystem/ethyr/tools/security/crypto"
 )
 
 // pgIntegrationStore implementa IntegrationStore usando PGExecutor e CryptoService.

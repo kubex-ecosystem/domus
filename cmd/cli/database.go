@@ -8,9 +8,9 @@ import (
 	kbxMod "github.com/faelmori/domus-pulse/internal/module/kbx"
 	"github.com/faelmori/domus-pulse/internal/provider"
 	systemservice "github.com/faelmori/domus-pulse/internal/services/system_service"
+	"github.com/kubex-ecosystem/ethyr/tools/flow"
+	"github.com/kubex-ecosystem/ethyr/tools/flow/fsm"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
-	"github.com/kubex-ecosystem/kbx/tools/flow"
-	"github.com/kubex-ecosystem/kbx/tools/flow/fsm"
 	gl "github.com/kubex-ecosystem/logz"
 	"github.com/spf13/cobra"
 )

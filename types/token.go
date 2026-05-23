@@ -8,7 +8,7 @@ import (
 
 	ci "github.com/faelmori/domus-pulse/internal/interfaces"
 	"github.com/faelmori/domus-pulse/internal/types"
-	kbxSec "github.com/kubex-ecosystem/kbx/tools/security/interfaces"
+	kbxSec "github.com/kubex-ecosystem/ethyr/tools/security/interfaces"
 )
 
 type TSConfig struct {

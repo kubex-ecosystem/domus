@@ -13,8 +13,8 @@ import (
 	ci "github.com/faelmori/domus-pulse/internal/interfaces"
 	"github.com/faelmori/domus-pulse/internal/module/kbx"
 	svc "github.com/faelmori/domus-pulse/internal/services"
-	kbxCrp "github.com/kubex-ecosystem/kbx/tools/security/crypto"
-	kbxKrs "github.com/kubex-ecosystem/kbx/tools/security/external"
+	kbxCrp "github.com/kubex-ecosystem/ethyr/tools/security/crypto"
+	kbxKrs "github.com/kubex-ecosystem/ethyr/tools/security/external"
 	logz "github.com/kubex-ecosystem/logz"
 )
 
