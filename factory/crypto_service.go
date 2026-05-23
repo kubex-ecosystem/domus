@@ -2,9 +2,9 @@
 package factory
 
 import (
-	kbxCrp "github.com/kubex-ecosystem/kbx/tools/security/crypto"
-	kbxKrs "github.com/kubex-ecosystem/kbx/tools/security/external"
-	kbxSec "github.com/kubex-ecosystem/kbx/tools/security/interfaces"
+	kbxCrp "github.com/kubex-ecosystem/ethyr/tools/security/crypto"
+	kbxKrs "github.com/kubex-ecosystem/ethyr/tools/security/external"
+	kbxSec "github.com/kubex-ecosystem/ethyr/tools/security/interfaces"
 )
 
 type CryptoService = kbxSec.ICryptoService

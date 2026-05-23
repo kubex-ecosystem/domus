@@ -5,7 +5,6 @@ go 1.26.2
 require (
 	github.com/docker/docker v28.5.2+incompatible
 	github.com/docker/go-connections v0.7.0
-	github.com/fatih/color v1.19.0 // indirect
 	github.com/goccy/go-json v0.10.6
 	github.com/google/uuid v1.6.0
 	github.com/opencontainers/image-spec v1.1.1
@@ -21,6 +20,7 @@ require (
 )
 
 require (
+	github.com/kubex-ecosystem/ethyr v0.0.0-00010101000000-000000000000
 	github.com/kubex-ecosystem/logz v1.6.90
 	github.com/lib/pq v1.12.3
 	github.com/rabbitmq/amqp091-go v1.11.0
@@ -41,7 +41,7 @@ require (
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/gin-contrib/sse v1.1.1 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.30.2 // indirect
@@ -55,6 +55,7 @@ require (
 	github.com/hashicorp/go-secure-stdlib/strutil v0.1.2 // indirect
 	github.com/hashicorp/go-sockaddr v1.0.7 // indirect
 	github.com/hashicorp/hcl v1.0.1-vault-7 // indirect
+	github.com/hashicorp/vault/api v1.22.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.18.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
@@ -103,7 +104,6 @@ require (
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
-	github.com/hashicorp/vault/api v1.23.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -114,7 +114,6 @@ require (
 	github.com/kubex-ecosystem/kbx v1.0.4
 	github.com/kubex-ecosystem/xtui v1.3.3
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
-	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/mattn/go-runewidth v0.0.23 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
@@ -141,8 +140,10 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
-// replace kbx => /projects/kubex/kbx
-
 replace github.com/google/dotprompt/go/dotprompt => github.com/faelmori/dotprompt v0.0.2
 
 replace github.com/kubex-ecosystem/kbx => /projects/kubex/kbx
+
+replace github.com/kubex-ecosystem/ethyr => ../ethyr
+
+replace github.com/kubex-ecosystem/logz => /projects/kubex/logz
