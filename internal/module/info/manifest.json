@@ -10,7 +10,7 @@
   "repository": "https://github.com/faelmori/domus-pulse",
   "homepage": "https://github.com/faelmori/domus-pulse",
   "description": "Kubex DS: A complete tool for managing databases, data models, and more.",
-  "go_version": "1.26.2",
+  "go_version": "1.26.3",
   "main": "cmd/main.go",
   "bin": "domus",
   "author": "Rafael Mori <faelmori@gmail.com>",
