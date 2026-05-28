@@ -9,11 +9,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
-	"github.com/faelmori/domus-pulse/internal/model/gnyx/user"
 	"github.com/jackc/pgx/v5"
+	"github.com/kubex-ecosystem/domus/internal/execution"
+	"github.com/kubex-ecosystem/domus/internal/model/gnyx/user"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // pgUserStore implementa UserStore usando PGExecutor.

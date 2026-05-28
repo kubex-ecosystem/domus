@@ -8,7 +8,7 @@ import (
 	"context"
 	"time"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // ── Notification ──────────────────────────────────────────────────────────────

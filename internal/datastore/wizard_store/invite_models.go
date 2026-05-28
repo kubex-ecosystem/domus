@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	invitestore "github.com/faelmori/domus-pulse/internal/datastore/invite_store"
+	invitestore "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	"gorm.io/gorm"
 )
 

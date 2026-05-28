@@ -3,7 +3,7 @@ package schemasstore
 import (
 	"context"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
+	"github.com/kubex-ecosystem/domus/internal/execution"
 )
 
 // PersistentSchemaStore is a persistent implementation of SchemaStore.

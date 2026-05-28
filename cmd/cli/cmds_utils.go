@@ -3,9 +3,8 @@ package cli
 import (
 	"os"
 
-	"github.com/faelmori/domus-pulse/internal/module/info"
-	"github.com/faelmori/domus-pulse/utils/helpers"
-	kbxInfo "github.com/kubex-ecosystem/kbx/tools/info"
+	"github.com/kubex-ecosystem/domus/internal/module/info"
+	"github.com/kubex-ecosystem/domus/utils/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +20,7 @@ func UtilsCmds() *cobra.Command {
 		Aliases:     []string{"u", "util"},
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
+		Annotations: info.GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 	}
 	uCmd.AddCommand(installUtilsCmd())
 	uCmd.AddCommand(uninstallUtilsCmd())
@@ -39,7 +38,7 @@ func installUtilsCmd() *cobra.Command {
 		Use:         "install",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
+		Annotations: info.GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			helpers.InstallBashHelpers()
 		},
@@ -58,7 +57,7 @@ func uninstallUtilsCmd() *cobra.Command {
 		Use:         "uninstall",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
+		Annotations: info.GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			helpers.UninstallBashHelpers()
 		},

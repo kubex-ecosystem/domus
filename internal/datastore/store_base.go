@@ -5,8 +5,8 @@ import (
 	"context"
 	"reflect"
 
-	s "github.com/faelmori/domus-pulse/internal/datastore/schemas_store"
-	t "github.com/faelmori/domus-pulse/internal/types"
+	s "github.com/kubex-ecosystem/domus/internal/datastore/schemas_store"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // Repository define operações CRUD genéricas para qualquer entidade.

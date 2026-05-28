@@ -1,7 +1,7 @@
 // Package commission contém os modelos relacionados a comissões.
 package commission
 
-import "github.com/faelmori/domus-pulse/internal/model/gnyx"
+import "github.com/kubex-ecosystem/domus/internal/model/gnyx"
 
 // CommissionType controla o tipo de pagamento de comissão.
 type CommissionType string

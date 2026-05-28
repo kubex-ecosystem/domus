@@ -5,10 +5,10 @@ import (
 	"net/url"
 	"time"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
-	t "github.com/faelmori/domus-pulse/internal/types"
 	"github.com/google/uuid"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 	logz "github.com/kubex-ecosystem/logz"
 )
 

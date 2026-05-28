@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
 	"github.com/goccy/go-json"
 	"github.com/google/uuid"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

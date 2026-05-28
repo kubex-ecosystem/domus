@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
-	t "github.com/faelmori/domus-pulse/internal/types"
 	"github.com/jackc/pgx/v5"
+	"github.com/kubex-ecosystem/domus/internal/execution"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 	gl "github.com/kubex-ecosystem/logz"
 
-	"github.com/kubex-ecosystem/kbx/tools/security/crypto"
+	"github.com/kubex-ecosystem/ethyr/tools/security/crypto"
 )
 
 // pgIntegrationStore implementa IntegrationStore usando PGExecutor e CryptoService.

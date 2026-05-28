@@ -1,5 +1,5 @@
-// Package backend provides adapters for the github.com/faelmori/gnyx-limalar backend.
-// This package implements the interfaces defined in github.com/faelmori/gnyx-limalar and bridges them
+// Package backend provides adapters for the github.com/kubex-ecosystem/gnyx-limalar backend.
+// This package implements the interfaces defined in github.com/kubex-ecosystem/gnyx-limalar and bridges them
 // to the actual database implementation (GORM + PostgreSQL).
 package backend
 
@@ -8,16 +8,16 @@ import (
 	"time"
 
 	// Import kubexdb models
-	"github.com/faelmori/domus-pulse/internal/models/invitations"
+	"github.com/kubex-ecosystem/domus/internal/models/invitations"
 	// Import BE interface (the contract)
 	// Note: In practice, this import path should match your actual module path
-	// beInvitations "github.com/faelmori/gnyx-limalar/internal/adapters/database/invitations"
+	// beInvitations "github.com/kubex-ecosystem/gnyx-limalar/internal/adapters/database/invitations"
 )
 
 // ===========================================================================
 // TYPE MAPPINGS
 // These types mirror the BE interface types to avoid circular imports.
-// In production, you'd import them from github.com/faelmori/gnyx-limalar.
+// In production, you'd import them from github.com/kubex-ecosystem/gnyx-limalar.
 // ===========================================================================
 
 type InvitationStatus string

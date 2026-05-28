@@ -1,8 +1,8 @@
 package factory
 
 import (
-	prv "github.com/faelmori/domus-pulse/internal/provider"
-	flv "github.com/faelmori/domus-pulse/internal/provider/flavors"
+	prv "github.com/kubex-ecosystem/domus/internal/provider"
+	flv "github.com/kubex-ecosystem/domus/internal/provider/flavors"
 )
 
 type ServiceRef = prv.ServiceRef

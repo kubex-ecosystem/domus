@@ -7,14 +7,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/engine"
+	"github.com/kubex-ecosystem/domus/internal/engine"
 
-	"github.com/faelmori/domus-pulse/internal/provider"
-	"github.com/faelmori/domus-pulse/internal/services/docker"
-	"github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/provider"
+	"github.com/kubex-ecosystem/domus/internal/services/docker"
+	"github.com/kubex-ecosystem/domus/internal/types"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	kbxMod "github.com/faelmori/domus-pulse/internal/module/kbx"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	logz "github.com/kubex-ecosystem/logz"
 )

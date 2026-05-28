@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	info "github.com/faelmori/domus-pulse/internal/module/info"
+	info "github.com/kubex-ecosystem/domus/internal/module/info"
 
 	gl "github.com/kubex-ecosystem/logz"
 	"github.com/spf13/cobra"

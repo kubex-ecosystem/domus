@@ -4,8 +4,8 @@ package adaptive
 import (
 	"reflect"
 
-	"github.com/faelmori/domus-pulse/internal/services/adaptive/data"
-	"github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/services/adaptive/data"
+	"github.com/kubex-ecosystem/domus/internal/types"
 	kbxTypes "github.com/kubex-ecosystem/kbx/types"
 )
 

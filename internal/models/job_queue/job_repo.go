@@ -6,7 +6,7 @@ package jobqueue
 // 	"fmt"
 // 	"time"
 
-// 	svc "github.com/faelmori/domus-pulse/internal/services"
+// 	svc "github.com/kubex-ecosystem/domus/internal/services"
 // 	gl "github.com/kubex-ecosystem/logz"
 
 // 	"github.com/google/uuid"

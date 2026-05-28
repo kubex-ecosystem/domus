@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
-	t "github.com/faelmori/domus-pulse/internal/types"
 	"github.com/jackc/pgx/v5"
+	"github.com/kubex-ecosystem/domus/internal/execution"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 const tableName = "limalar.property_shares"

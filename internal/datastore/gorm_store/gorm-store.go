@@ -6,9 +6,9 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/faelmori/domus-pulse/internal/datastore"
-	"github.com/faelmori/domus-pulse/internal/execution"
-	t "github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/datastore"
+	"github.com/kubex-ecosystem/domus/internal/execution"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // GormRepository is the single generic GORM-backed repository implementation.

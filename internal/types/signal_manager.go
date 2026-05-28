@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 	logz "github.com/kubex-ecosystem/logz"
 )
 

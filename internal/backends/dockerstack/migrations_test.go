@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/faelmori/domus-pulse/internal/bootstrap"
+	"github.com/kubex-ecosystem/domus/internal/bootstrap"
 )
 
 const triggerMigrationPath = "embedded/core/etapa_7_triggers.sql"

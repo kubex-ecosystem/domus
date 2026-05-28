@@ -6,7 +6,7 @@ package sockets
 // 	"fmt"
 // 	"log"
 
-// 	is "github.com/faelmori/domus-pulse/internal/services"
+// 	is "github.com/kubex-ecosystem/domus/internal/services"
 // 	"github.com/gorilla/websocket"
 // )
 

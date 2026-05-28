@@ -3,8 +3,8 @@ package models
 // import (
 // 	"context"
 
-// 	m "github.com/faelmori/domus-pulse/internal/models/job_queue"
-// 	svc "github.com/faelmori/domus-pulse/internal/services"
+// 	m "github.com/kubex-ecosystem/domus/internal/models/job_queue"
+// 	svc "github.com/kubex-ecosystem/domus/internal/services"
 // )
 
 // type JobQueue = m.JobQueue

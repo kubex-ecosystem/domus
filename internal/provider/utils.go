@@ -4,9 +4,9 @@ package provider
 import (
 	"strconv"
 
-	"github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/types"
 
-	kbxMod "github.com/faelmori/domus-pulse/internal/module/kbx"
+	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 )
 

@@ -2,9 +2,9 @@
 package kubexdb
 
 import (
-	"github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
-	t "github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 
 	logz "github.com/kubex-ecosystem/logz"
 )

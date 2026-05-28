@@ -1,7 +1,7 @@
 package models
 
 import (
-	m "github.com/faelmori/domus-pulse/internal/interfaces"
+	m "github.com/kubex-ecosystem/domus/internal/interfaces"
 )
 
 type User = m.User

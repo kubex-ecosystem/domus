@@ -13,10 +13,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/interfaces"
-	kbxMod "github.com/faelmori/domus-pulse/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/interfaces"
+	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
 
-	"github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/types"
 	"github.com/kubex-ecosystem/logz"
 	_ "github.com/lib/pq" // se for postgres, por exemplo
 )

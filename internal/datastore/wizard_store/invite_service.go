@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/adapters/backend"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/kubex-ecosystem/domus/internal/adapters/backend"
 	gl "github.com/kubex-ecosystem/logz"
 )
 

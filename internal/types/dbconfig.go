@@ -3,8 +3,8 @@ package types
 import (
 	"context"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/execution"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 )
 
 // DBConfigRT é a “view runtime”: agrega coisas de runtime sem poluir o modelo puro.

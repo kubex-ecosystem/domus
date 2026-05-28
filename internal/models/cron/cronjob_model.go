@@ -4,11 +4,11 @@ package cron
 // 	"context"
 // 	"time"
 
-// 	t "github.com/faelmori/domus-pulse/internal/types"
+// 	t "github.com/kubex-ecosystem/domus/internal/types"
 // 	"github.com/google/uuid"
 // 	l "github.com/kubex-ecosystem/logz"
 
-// 	jobqueue "github.com/faelmori/domus-pulse/internal/models/job_queue"
+// 	jobqueue "github.com/kubex-ecosystem/domus/internal/models/job_queue"
 
 // 	gl "github.com/kubex-ecosystem/logz"
 // )

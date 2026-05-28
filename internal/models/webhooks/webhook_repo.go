@@ -7,8 +7,8 @@ package webhooks
 
 // 	"github.com/google/uuid"
 
-// 	svc "github.com/faelmori/domus-pulse/internal/services"
-// 	t "github.com/faelmori/domus-pulse/internal/types"
+// 	svc "github.com/kubex-ecosystem/domus/internal/services"
+// 	t "github.com/kubex-ecosystem/domus/internal/types"
 // )
 
 // type IWebhookRepo = datastore.Repository[WebhookModel]

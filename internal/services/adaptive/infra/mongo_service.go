@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
-	"github.com/faelmori/domus-pulse/internal/services/docker"
-	"github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/services/docker"
+	"github.com/kubex-ecosystem/domus/internal/types"
 	logz "github.com/kubex-ecosystem/logz"
 )
 

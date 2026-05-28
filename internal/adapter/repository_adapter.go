@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"reflect"
 
-	store "github.com/faelmori/domus-pulse/internal/datastore"
-	t "github.com/faelmori/domus-pulse/internal/types"
+	store "github.com/kubex-ecosystem/domus/internal/datastore"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 	"github.com/kubex-ecosystem/logz"
 )
 

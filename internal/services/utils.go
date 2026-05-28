@@ -10,7 +10,7 @@ import (
 
 	"github.com/docker/go-connections/nat"
 
-	u "github.com/faelmori/domus-pulse/utils"
+	u "github.com/kubex-ecosystem/domus/utils"
 	logz "github.com/kubex-ecosystem/logz"
 )
 

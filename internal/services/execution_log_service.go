@@ -1,6 +1,6 @@
 package services
 
-// /jobqueue "github.com/faelmori/domus-pulse/internal/models/job_queue"
+// /jobqueue "github.com/kubex-ecosystem/domus/internal/models/job_queue"
 
 // ExecutionLogService implements the IExecutionLogService interface.
 type ExecutionLogService struct {

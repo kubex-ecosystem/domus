@@ -4,7 +4,7 @@ package data
 import (
 	"reflect"
 
-	"github.com/faelmori/domus-pulse/internal/services/adaptive"
+	"github.com/kubex-ecosystem/domus/internal/services/adaptive"
 )
 
 // AdaptiveService reflete métodos idênticos entre services SQL e Mongo

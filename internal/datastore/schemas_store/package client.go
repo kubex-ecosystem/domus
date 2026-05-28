@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/faelmori/domus-pulse/internal/bootstrap" // onde está o embed
+	"github.com/kubex-ecosystem/domus/internal/bootstrap" // onde está o embed
 
 	kbxget "github.com/kubex-ecosystem/kbx/get"
 	gl "github.com/kubex-ecosystem/logz"

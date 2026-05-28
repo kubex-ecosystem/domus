@@ -1,7 +1,7 @@
 package models
 
 import (
-	m "github.com/faelmori/domus-pulse/internal/models/notification"
+	m "github.com/kubex-ecosystem/domus/internal/models/notification"
 	"gorm.io/gorm"
 )
 

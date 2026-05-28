@@ -11,7 +11,7 @@ package messagery
 
 // 	amqp "github.com/rabbitmq/amqp091-go"
 
-// 	svc "github.com/faelmori/domus-pulse/internal/services"
+// 	svc "github.com/kubex-ecosystem/domus/internal/services"
 // 	gl "github.com/kubex-ecosystem/logz"
 // )
 

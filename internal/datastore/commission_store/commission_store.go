@@ -5,7 +5,7 @@ import (
 	"context"
 	"time"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // Commission representa uma comissão registrada para um imóvel negociado.

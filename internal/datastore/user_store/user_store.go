@@ -5,7 +5,7 @@ import (
 	"context"
 	"time"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // User representa a entidade de usuário conforme schema do banco.

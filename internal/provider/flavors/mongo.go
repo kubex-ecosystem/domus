@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
-	"github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/execution"
+	"github.com/kubex-ecosystem/domus/internal/types"
 	logz "github.com/kubex-ecosystem/logz"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -88,11 +88,11 @@ func (d *MongoDriver) Executor(ctx context.Context) (execution.Executor, error) 
 		return nil, fmt.Errorf("executor requested but ping failed")
 	}
 
-	// mongoExec := execution.NewMongoExecutor(d.client)
-	// d.executor = execution.NewExecutor(
-	// 	execution.WithKind(execution.BackendMongo),
-	// 	execution.WithMongo(mongoExec),
-	// )
+	mongoExec := execution.NewMongoExecutor(d.client)
+	d.executor = execution.NewExecutor(
+		execution.WithKind(execution.BackendMongo),
+		execution.WithMongo(mongoExec),
+	)
 
 	// return d.executor, nil
 	return nil, fmt.Errorf("mongodb executor not implemented yet")

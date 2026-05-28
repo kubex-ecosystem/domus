@@ -4,30 +4,18 @@
   "version": "1.0.0",
   "private": true,
   "published": false,
-  "aliases": [
-    "domus"
-  ],
-  "repository": "https://github.com/faelmori/domus-pulse",
-  "homepage": "https://github.com/faelmori/domus-pulse",
+  "aliases": ["domus"],
+  "repository": "https://github.com/kubex-ecosystem/domus",
+  "homepage": "https://github.com/kubex-ecosystem/domus",
   "description": "Kubex DS: A complete tool for managing databases, data models, and more.",
-  "go_version": "1.26.2",
+  "go_version": "1.26.3",
   "main": "cmd/main.go",
   "bin": "domus",
   "author": "Rafael Mori <faelmori@gmail.com>",
   "organization": "kbx_gnyx",
   "license": "MIT",
-  "keywords": [
-    "domus",
-    "control",
-    "command-line",
-    "tool",
-    "management"
-  ],
-  "platforms": [
-    "linux/amd64",
-    "darwin/amd64",
-    "windows/amd64"
-  ],
+  "keywords": ["domus", "control", "command-line", "tool", "management"],
+  "platforms": ["linux/amd64", "darwin/amd64", "windows/amd64"],
   "dependencies": [
     "pkg-config",
     "tar",

@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	gl "github.com/kubex-ecosystem/logz"

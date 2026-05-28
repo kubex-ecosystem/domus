@@ -13,7 +13,7 @@ import (
 	"reflect"
 	"strings"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
 	gl "github.com/kubex-ecosystem/logz"
 	"github.com/pelletier/go-toml/v2"
 	"gopkg.in/yaml.v3"

@@ -1,7 +1,7 @@
 // Package activity defines the data structures and types for managing activities
 package activity
 
-import "github.com/faelmori/domus-pulse/internal/model/gnyx"
+import "github.com/kubex-ecosystem/domus/internal/model/gnyx"
 
 // ActivityType enumerates supported activity records.
 type ActivityType string

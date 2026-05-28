@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
 	"github.com/google/uuid"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // ConversationStatus represents the status of a conversation

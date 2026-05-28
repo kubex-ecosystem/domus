@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
 	"github.com/jackc/pgx/v5"
+	"github.com/kubex-ecosystem/domus/internal/execution"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // pgPendingAccessStore implementa PendingAccessStore usando PGExecutor.

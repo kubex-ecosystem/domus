@@ -24,7 +24,7 @@ func (e *noopExec) Query(_ context.Context, _ string, _ ...any) (pgx.Rows, error
 }
 func (e *noopExec) QueryRow(_ context.Context, _ string, _ ...any) pgx.Row { return nil }
 func (e *noopExec) BeginTx(_ context.Context) (pgx.Tx, error)              { return nil, nil }
-func (e *noopExec) Pool() *pgxpool.Pool                                     { return nil }
+func (e *noopExec) Pool() *pgxpool.Pool                                    { return nil }
 
 // ─────────────────────────────────────────────────────────────────────────── //
 // tableName
@@ -66,9 +66,9 @@ func TestNormalizeLimit(t *testing.T) {
 	cases := []struct {
 		limit, def, max, want int
 	}{
-		{0, 20, 100, 20},   // zero → default
-		{-1, 20, 100, 20},  // negative → default
-		{50, 20, 100, 50},  // within bounds
+		{0, 20, 100, 20},    // zero → default
+		{-1, 20, 100, 20},   // negative → default
+		{50, 20, 100, 50},   // within bounds
 		{200, 20, 100, 100}, // exceeds max → max
 		{100, 20, 100, 100}, // exactly max
 	}
@@ -97,17 +97,17 @@ func TestCalcOffset(t *testing.T) {
 
 func TestCalcTotalPages(t *testing.T) {
 	cases := []struct {
-		total    int64
-		limit    int
-		want     int
+		total int64
+		limit int
+		want  int
 	}{
-		{0, 20, 0},    // no data → 0 pages
-		{1, 20, 1},    // less than limit → 1 page
-		{20, 20, 1},   // exactly 1 page
-		{21, 20, 2},   // spillover → 2 pages
-		{100, 20, 5},  // exactly 5 pages
-		{101, 20, 6},  // 1 extra item → 6 pages
-		{0, 0, 0},     // zero limit guard
+		{0, 20, 0},   // no data → 0 pages
+		{1, 20, 1},   // less than limit → 1 page
+		{20, 20, 1},  // exactly 1 page
+		{21, 20, 2},  // spillover → 2 pages
+		{100, 20, 5}, // exactly 5 pages
+		{101, 20, 6}, // 1 extra item → 6 pages
+		{0, 0, 0},    // zero limit guard
 	}
 	for _, c := range cases {
 		if got := calcTotalPages(c.total, c.limit); got != c.want {
@@ -140,7 +140,7 @@ func TestValidateCreateInput_Valid(t *testing.T) {
 
 func TestValidateCreateInput_RequiredFields(t *testing.T) {
 	cases := []struct {
-		name  string
+		name   string
 		mutate func(*CreateInvitationInput)
 	}{
 		{"empty email", func(i *CreateInvitationInput) { i.Email = "" }},

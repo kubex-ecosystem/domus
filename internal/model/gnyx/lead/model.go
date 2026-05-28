@@ -1,7 +1,7 @@
 // Package lead defines the Lead model and related types.
 package lead
 
-import "github.com/faelmori/domus-pulse/internal/model/gnyx"
+import "github.com/kubex-ecosystem/domus/internal/model/gnyx"
 
 // LeadStage enumerates the lifecycle stages for a lead.
 type LeadStage string

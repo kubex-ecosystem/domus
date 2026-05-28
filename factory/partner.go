@@ -1,7 +1,7 @@
 package factory
 
 // import (
-// 	prm "github.com/faelmori/domus-pulse/internal/models/gnyx"
+// 	prm "github.com/kubex-ecosystem/domus/internal/models/gnyx"
 // 	"gorm.io/gorm"
 // )
 

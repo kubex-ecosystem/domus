@@ -11,7 +11,7 @@ import (
 // A ideia é você expandir isso conforme for introduzindo
 // backends genéricos (ex: DS remoto via HTTP, ou um router interno).
 type GenericExecutor interface {
-	Execute(ctx context.Context, qm QueryModel) (any, error)
+	Exec(ctx context.Context, qm QueryModel) (any, error)
 }
 
 // genericExecutor é a implementação básica.
@@ -29,8 +29,12 @@ func NewGenericExecutor() GenericExecutor {
 	return &genericExecutor{}
 }
 
-func (g *genericExecutor) Execute(ctx context.Context, qm QueryModel) (any, error) {
+func (g *genericExecutor) Exec(ctx context.Context, qm QueryModel) (any, error) {
 	// Implementação "no-op" inicial. Ela é intencionalmente limitada
 	// para evitar comportamento mágico prematuro.
 	return nil, ErrUnsupported
+}
+
+func (g *genericExecutor) Executor() Executor {
+	return nil
 }

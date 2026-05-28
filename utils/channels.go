@@ -1,3 +1,3 @@
 package utils
 
-// ci "github.com/faelmori/domus-pulse/internal/interfaces"
+// ci "github.com/kubex-ecosystem/domus/internal/interfaces"

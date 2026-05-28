@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
+	"github.com/kubex-ecosystem/domus/internal/execution"
 )
 
 // pgWappWebhookStore implementa WappWebhookStore usando PGExecutor.

@@ -2,7 +2,7 @@
 package dockerstack
 
 import (
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
 )
 
 // Provider is an alias to the real implementation in adapter.go

@@ -3,10 +3,10 @@ package types
 import (
 	"context"
 
-	"github.com/faelmori/domus-pulse/internal/engine"
-	it "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
-	svc "github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/engine"
+	it "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+	svc "github.com/kubex-ecosystem/domus/internal/types"
 
 	logz "github.com/kubex-ecosystem/logz"
 )

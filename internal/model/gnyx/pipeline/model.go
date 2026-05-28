@@ -1,7 +1,7 @@
 // Package pipeline contém as definições de modelos relacionados a pipelines.
 package pipeline
 
-import "github.com/faelmori/domus-pulse/internal/model/gnyx"
+import "github.com/kubex-ecosystem/domus/internal/model/gnyx"
 
 // Pipeline espelha a tabela pipelines.
 type Pipeline struct {

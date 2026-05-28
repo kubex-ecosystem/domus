@@ -4,7 +4,7 @@ import (
 	"os"
 	"reflect"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
 	logz "github.com/kubex-ecosystem/logz"
 
 	"github.com/google/uuid"

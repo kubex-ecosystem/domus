@@ -4,7 +4,7 @@ package rolestore
 import (
 	"context"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // Role representa um papel no sistema RBAC.

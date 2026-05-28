@@ -14,8 +14,8 @@ import (
 	"time"
 
 	ds "github.com/docker/docker/api/types/container"
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/types"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/types"
 	logz "github.com/kubex-ecosystem/logz"
 
 	"github.com/docker/docker/client"

@@ -6,9 +6,9 @@ import (
 	"crypto/rsa"
 	"time"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/types"
-	kbxSec "github.com/kubex-ecosystem/kbx/tools/security/interfaces"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/types"
+	kbxSec "github.com/kubex-ecosystem/ethyr/tools/security/interfaces"
 )
 
 type TSConfig struct {

@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"time"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // WebhookMessage representa um evento de mensagem recebida via webhook Meta.

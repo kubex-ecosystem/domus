@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"sync"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 	gl "github.com/kubex-ecosystem/logz"
 )
 

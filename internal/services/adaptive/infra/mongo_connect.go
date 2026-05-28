@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
-	"github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/types"
 	logz "github.com/kubex-ecosystem/logz"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"

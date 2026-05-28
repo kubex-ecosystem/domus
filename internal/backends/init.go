@@ -2,11 +2,11 @@
 package backends
 
 import (
-	"github.com/faelmori/domus-pulse/internal/backends/dockerstack"
-	"github.com/faelmori/domus-pulse/internal/backends/remotestack"
-	"github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/provider"
-	"github.com/faelmori/domus-pulse/internal/provider/flavors"
+	"github.com/kubex-ecosystem/domus/internal/backends/dockerstack"
+	"github.com/kubex-ecosystem/domus/internal/backends/remotestack"
+	"github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/provider"
+	"github.com/kubex-ecosystem/domus/internal/provider/flavors"
 
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 )
