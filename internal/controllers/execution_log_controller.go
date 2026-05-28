@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 
-	jobqueue "github.com/faelmori/domus-pulse/internal/models/job_queue"
-	"github.com/faelmori/domus-pulse/internal/services"
 	"github.com/gin-gonic/gin"
+	jobqueue "github.com/kubex-ecosystem/domus/internal/models/job_queue"
+	"github.com/kubex-ecosystem/domus/internal/services"
 )
 
 // ExecutionLogController handles HTTP requests for execution logs.

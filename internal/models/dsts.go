@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"strings"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
 	"github.com/goccy/go-json"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
 	"github.com/kubex-ecosystem/logz"
 )
 

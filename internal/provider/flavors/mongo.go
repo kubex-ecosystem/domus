@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
-	"github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/execution"
+	"github.com/kubex-ecosystem/domus/internal/types"
 	logz "github.com/kubex-ecosystem/logz"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"

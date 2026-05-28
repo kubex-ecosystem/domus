@@ -2,8 +2,8 @@
 package user
 
 import (
-	"github.com/faelmori/domus-pulse/internal/model/gnyx"
 	"github.com/google/uuid"
+	"github.com/kubex-ecosystem/domus/internal/model/gnyx"
 )
 
 // UserRole é utilizado em convites e regras de acesso mais amplas.

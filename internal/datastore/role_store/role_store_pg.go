@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
 	"github.com/jackc/pgx/v5"
+	"github.com/kubex-ecosystem/domus/internal/execution"
 )
 
 type pgRoleStore struct {

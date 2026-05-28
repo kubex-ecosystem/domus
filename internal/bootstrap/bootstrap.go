@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 
-	// "github.com/faelmori/domus-pulse/internal/engine"
+	// "github.com/kubex-ecosystem/domus/internal/engine"
 
-	"github.com/faelmori/domus-pulse/internal/provider"
-	"github.com/faelmori/domus-pulse/internal/provider/flavors"
+	"github.com/kubex-ecosystem/domus/internal/provider"
+	"github.com/kubex-ecosystem/domus/internal/provider/flavors"
 )
 
 //go:embed all:embedded/*[.sql,.template,.yaml,.yml,.json]

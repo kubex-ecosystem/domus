@@ -1,6 +1,6 @@
 package metrics
 
-import "github.com/faelmori/domus-pulse/internal/model/gnyx"
+import "github.com/kubex-ecosystem/domus/internal/model/gnyx"
 
 type MetricType string
 

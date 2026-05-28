@@ -3,8 +3,8 @@ package models
 // import (
 // 	"context"
 
-// 	m "github.com/faelmori/domus-pulse/internal/models/messaging"
-// 	svc "github.com/faelmori/domus-pulse/internal/services"
+// 	m "github.com/kubex-ecosystem/domus/internal/models/messaging"
+// 	svc "github.com/kubex-ecosystem/domus/internal/services"
 // )
 
 // // Conversation types

@@ -3,8 +3,8 @@ package cli
 import (
 	"os"
 
-	"github.com/faelmori/domus-pulse/internal/module/info"
-	"github.com/faelmori/domus-pulse/utils/helpers"
+	"github.com/kubex-ecosystem/domus/internal/module/info"
+	"github.com/kubex-ecosystem/domus/utils/helpers"
 	"github.com/spf13/cobra"
 )
 

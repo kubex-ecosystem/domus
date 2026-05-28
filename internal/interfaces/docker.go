@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/docker/go-connections/nat"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 
 	c "github.com/docker/docker/api/types/container"
 	i "github.com/docker/docker/api/types/image"

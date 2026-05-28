@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/bootstrap"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
-	"github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/bootstrap"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/types"
 
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	kbxTypes "github.com/kubex-ecosystem/kbx/types"

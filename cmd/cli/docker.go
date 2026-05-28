@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/faelmori/domus-pulse/internal/module/info"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
-	"github.com/faelmori/domus-pulse/internal/services/docker"
+	"github.com/kubex-ecosystem/domus/internal/module/info"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/services/docker"
 	logz "github.com/kubex-ecosystem/logz"
 	"github.com/spf13/cobra"
 )

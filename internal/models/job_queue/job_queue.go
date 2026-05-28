@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
 	"github.com/google/uuid"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 type IJobQueue interface {

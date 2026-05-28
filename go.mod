@@ -1,4 +1,4 @@
-module github.com/faelmori/domus-pulse
+module github.com/kubex-ecosystem/domus
 
 go 1.26.3
 
@@ -140,7 +140,7 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
-replace github.com/google/dotprompt/go/dotprompt => github.com/faelmori/dotprompt v0.0.2
+replace github.com/google/dotprompt/go/dotprompt => github.com/kubex-ecosystem/dotprompt v0.0.2
 
 replace github.com/kubex-ecosystem/kbx => /projects/kubex/kbx
 

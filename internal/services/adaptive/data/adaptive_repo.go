@@ -1,8 +1,8 @@
 package data
 
 import (
-	"github.com/faelmori/domus-pulse/internal/services/adaptive"
-	"github.com/faelmori/domus-pulse/internal/services/adaptive/backend"
+	"github.com/kubex-ecosystem/domus/internal/services/adaptive"
+	"github.com/kubex-ecosystem/domus/internal/services/adaptive/backend"
 )
 
 // AdaptiveRepo atua como ponte genérica entre múltiplos backends.

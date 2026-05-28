@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/types"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // ─────────────────────────────────────────────────────────────────────────── //

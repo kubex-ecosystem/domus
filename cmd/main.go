@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/faelmori/domus-pulse/internal/module"
+	"github.com/kubex-ecosystem/domus/internal/module"
 	gl "github.com/kubex-ecosystem/logz"
 )
 

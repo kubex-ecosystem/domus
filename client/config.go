@@ -3,7 +3,7 @@
 package client
 
 import (
-	kbx "github.com/faelmori/domus-pulse/internal/module/kbx"
+	kbx "github.com/kubex-ecosystem/domus/internal/module/kbx"
 )
 
 // Reference is an alias for the reference type.

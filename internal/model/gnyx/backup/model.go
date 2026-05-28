@@ -1,7 +1,7 @@
 // Package backup defines data models related to backup operations.
 package backup
 
-import "github.com/faelmori/domus-pulse/internal/model/gnyx"
+import "github.com/kubex-ecosystem/domus/internal/model/gnyx"
 
 // BackupType enumerates supported backup modes.
 type BackupType string

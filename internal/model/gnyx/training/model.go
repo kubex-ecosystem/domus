@@ -1,6 +1,6 @@
 package training
 
-import "github.com/faelmori/domus-pulse/internal/model/gnyx"
+import "github.com/kubex-ecosystem/domus/internal/model/gnyx"
 
 // TrainingCourseStat espelha training_course_stats.
 type TrainingCourseStat struct {

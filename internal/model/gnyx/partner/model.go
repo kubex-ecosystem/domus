@@ -1,7 +1,7 @@
 // Package partner defines the data structures and types related to partner profiles within the Kubex system.
 package partner
 
-import "github.com/faelmori/domus-pulse/internal/model/gnyx"
+import "github.com/kubex-ecosystem/domus/internal/model/gnyx"
 
 // PartnerStatus indicates whether a partner profile remains active.
 type PartnerStatus string

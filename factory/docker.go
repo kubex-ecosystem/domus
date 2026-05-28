@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	dksk "github.com/faelmori/domus-pulse/internal/backends/dockerstack"
-	"github.com/faelmori/domus-pulse/internal/engine"
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/services/docker"
-	"github.com/faelmori/domus-pulse/internal/types"
+	dksk "github.com/kubex-ecosystem/domus/internal/backends/dockerstack"
+	"github.com/kubex-ecosystem/domus/internal/engine"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/services/docker"
+	"github.com/kubex-ecosystem/domus/internal/types"
 
 	"github.com/docker/docker/client"
 	logz "github.com/kubex-ecosystem/logz"

@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
 	"github.com/jackc/pgx/v5"
 	pglib "github.com/jackc/pgx/v5"
+	"github.com/kubex-ecosystem/domus/internal/execution"
 )
 
 type pgMembershipStore struct {

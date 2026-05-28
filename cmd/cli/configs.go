@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/faelmori/domus-pulse/internal/module/info"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/module/info"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

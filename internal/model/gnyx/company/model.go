@@ -1,7 +1,7 @@
 // Package company contém o modelo da entidade Empresa.
 package company
 
-import "github.com/faelmori/domus-pulse/internal/model/gnyx"
+import "github.com/kubex-ecosystem/domus/internal/model/gnyx"
 
 // SubscriptionPlan expressa o plano vinculado à empresa.
 type SubscriptionPlan string

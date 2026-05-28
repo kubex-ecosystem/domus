@@ -9,9 +9,9 @@ package cli
 // 	"runtime"
 // 	"strings"
 
-// 	"github.com/faelmori/domus-pulse/internal/bootstrap"
-// 	info "github.com/faelmori/domus-pulse/internal/module/info"
-// 	kbx "github.com/faelmori/domus-pulse/internal/module/kbx"
+// 	"github.com/kubex-ecosystem/domus/internal/bootstrap"
+// 	info "github.com/kubex-ecosystem/domus/internal/module/info"
+// 	kbx "github.com/kubex-ecosystem/domus/internal/module/kbx"
 // 	"github.com/spf13/cobra"
 // )
 

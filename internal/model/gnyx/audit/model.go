@@ -1,6 +1,6 @@
 package audit
 
-import "github.com/faelmori/domus-pulse/internal/model/gnyx"
+import "github.com/kubex-ecosystem/domus/internal/model/gnyx"
 
 // AuditAction mirrors CREATE TYPE audit_action.
 type AuditAction string

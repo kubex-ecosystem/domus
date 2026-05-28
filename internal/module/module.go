@@ -2,10 +2,10 @@
 package module
 
 import (
-	"github.com/faelmori/domus-pulse/cmd/cli"
-	"github.com/faelmori/domus-pulse/internal/module/version"
+	"github.com/kubex-ecosystem/domus/cmd/cli"
+	"github.com/kubex-ecosystem/domus/internal/module/version"
 
-	info "github.com/faelmori/domus-pulse/internal/module/info"
+	info "github.com/kubex-ecosystem/domus/internal/module/info"
 	kbxStyle "github.com/kubex-ecosystem/kbx/tools/style"
 	logz "github.com/kubex-ecosystem/logz"
 

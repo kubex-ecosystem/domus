@@ -4,8 +4,8 @@ package models
 // 	"context"
 // 	"time"
 
-// 	n "github.com/faelmori/domus-pulse/internal/models/notification"
-// 	t "github.com/faelmori/domus-pulse/internal/types"
+// 	n "github.com/kubex-ecosystem/domus/internal/models/notification"
+// 	t "github.com/kubex-ecosystem/domus/internal/types"
 // 	"github.com/google/uuid"
 // )
 

@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/docker/go-connections/nat"
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
-	svc "github.com/faelmori/domus-pulse/internal/services"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+	svc "github.com/kubex-ecosystem/domus/internal/services"
 	kbxCrp "github.com/kubex-ecosystem/ethyr/tools/security/crypto"
 	kbxKrs "github.com/kubex-ecosystem/ethyr/tools/security/external"
 	logz "github.com/kubex-ecosystem/logz"

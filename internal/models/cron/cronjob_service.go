@@ -9,8 +9,8 @@ package cron
 // 	"strings"
 // 	"time"
 
-// 	jobqueue "github.com/faelmori/domus-pulse/internal/models/job_queue"
-// 	svc "github.com/faelmori/domus-pulse/internal/services"
+// 	jobqueue "github.com/kubex-ecosystem/domus/internal/models/job_queue"
+// 	svc "github.com/kubex-ecosystem/domus/internal/services"
 // 	"github.com/google/uuid"
 // 	gl "github.com/kubex-ecosystem/logz"
 // 	amqp "github.com/rabbitmq/amqp091-go"

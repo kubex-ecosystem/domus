@@ -1,11 +1,11 @@
 package flavors
 
 import (
-	"github.com/faelmori/domus-pulse/internal/engine"
-	"github.com/faelmori/domus-pulse/internal/provider"
+	"github.com/kubex-ecosystem/domus/internal/engine"
+	"github.com/kubex-ecosystem/domus/internal/provider"
 	logz "github.com/kubex-ecosystem/logz"
 
-	"github.com/faelmori/domus-pulse/internal/types"
+	"github.com/kubex-ecosystem/domus/internal/types"
 )
 
 var registry = map[string]provider.Provider{}

@@ -1,6 +1,6 @@
 package types
 
-import "github.com/faelmori/domus-pulse/internal/module/kbx"
+import "github.com/kubex-ecosystem/domus/internal/module/kbx"
 
 type JWT struct {
 	Reference             *kbx.Reference `json:"reference" yaml:"reference" xml:"reference" toml:"reference" mapstructure:"reference,squash"`

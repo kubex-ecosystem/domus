@@ -3,11 +3,11 @@ package cli
 import (
 	"context"
 
-	"github.com/faelmori/domus-pulse/internal/backends"
-	"github.com/faelmori/domus-pulse/internal/engine"
-	kbxMod "github.com/faelmori/domus-pulse/internal/module/kbx"
-	"github.com/faelmori/domus-pulse/internal/provider"
-	systemservice "github.com/faelmori/domus-pulse/internal/services/system_service"
+	"github.com/kubex-ecosystem/domus/internal/backends"
+	"github.com/kubex-ecosystem/domus/internal/engine"
+	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/provider"
+	systemservice "github.com/kubex-ecosystem/domus/internal/services/system_service"
 	"github.com/kubex-ecosystem/ethyr/tools/flow"
 	"github.com/kubex-ecosystem/ethyr/tools/flow/fsm"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"

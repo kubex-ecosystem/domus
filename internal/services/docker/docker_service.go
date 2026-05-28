@@ -16,10 +16,10 @@ import (
 	v "github.com/docker/docker/api/types/volume"
 	k "github.com/docker/docker/client"
 
-	evs "github.com/faelmori/domus-pulse/internal/events"
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
-	"github.com/faelmori/domus-pulse/internal/types"
+	evs "github.com/kubex-ecosystem/domus/internal/events"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/types"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	logz "github.com/kubex-ecosystem/logz"
 

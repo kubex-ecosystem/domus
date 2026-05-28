@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/module/info"
-	"github.com/faelmori/domus-pulse/utils"
+	"github.com/kubex-ecosystem/domus/internal/module/info"
+	"github.com/kubex-ecosystem/domus/utils"
 	"github.com/spf13/cobra"
 )
 

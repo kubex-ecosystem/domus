@@ -12,7 +12,7 @@ shopt -s inherit_errexit
 declare -a _GNYX_ARGS=()
 # Assumo o ROOT_DIR como padrão o diretório do projeto
 # com fallback pro fixo GNYX_DIR
-_GNYX_DIR="/ALL/BELLUBE/kubex-pulse/gnyx-pulse"
+_GNYX_DIR="/projects/kubex/gnyx"
 _ROOT_DIR="${_ROOT_DIR:-${_GNYX_DIR}}"
 _SCRIPT_DIR="${_ROOT_DIR}/support"
 _BINARY_NAME="${_BINARY_NAME:-gnyx}"
@@ -59,8 +59,8 @@ trap "die;" EXIT
 _gnyx_pid() {
   # Nada fica na 5000 se não achar o BE
   local _pid=$(pgrep -f "${_BINARY_NAME}" 2>/dev/null || lsof -Fp -i:5000 | tr -d 'p' 2>/dev/null || echo "")
-  if [[ -n "$_pid" ]]; then
-    if [[ -n "${_PID:-}" && "${_PID:-}" != "$_pid" ]]; then
+  if [[ -n $_pid ]]; then
+    if [[ -n ${_PID:-} && ${_PID:-} != "$_pid" ]]; then
       log warn "PID already set to ${_PID:-}, but found $_pid. Killing $_pid"
       kill -9 "${_PID:-}" || {
         log error "Failed to kill gnyx process" true
@@ -158,24 +158,24 @@ manager() {
     local _exec_args=()
 
     case "${_exec_args[0]}" in
-    #######################################
-    # UI - UI AND OTHERS
-    build-ui)
-      build_gnyx_ui "${_exec_args[@]}"
-      ;;
+      #######################################
+      # UI - UI AND OTHERS
+      build-ui)
+        build_gnyx_ui "${_exec_args[@]}"
+        ;;
 
-    #######################################
-    # GNYX - MAIN PACKAGE CMDS
-    start | stop | restart | build)
-      # concat action with target to create a function name
-      broker "${_exec_args[0]}" "${_exec_args[@]}"
-      ;;
+      #######################################
+      # GNYX - MAIN PACKAGE CMDS
+      start | stop | restart | build)
+        # concat action with target to create a function name
+        broker "${_exec_args[0]}" "${_exec_args[@]}"
+        ;;
 
-    #######################################
-    # UNKNOWN
-    *)
-      log error "Invalid argument: ${_exec_args[0]}" true
-      ;;
+      #######################################
+      # UNKNOWN
+      *)
+        log error "Invalid argument: ${_exec_args[0]}" true
+        ;;
     esac
 
     # LOOP COMMAND ERROR HANDLER

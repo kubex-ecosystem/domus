@@ -3,14 +3,14 @@ package infra
 import (
 	"fmt"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 
 	// kbxKrs "github.com/kubex-ecosystem/kbx/tools/security/external"
 
 	"github.com/docker/go-connections/nat"
-	svc "github.com/faelmori/domus-pulse/internal/services/docker"
-	"github.com/faelmori/domus-pulse/internal/types"
+	svc "github.com/kubex-ecosystem/domus/internal/services/docker"
+	"github.com/kubex-ecosystem/domus/internal/types"
 	logz "github.com/kubex-ecosystem/logz"
 )
 

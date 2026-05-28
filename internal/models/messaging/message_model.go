@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	t "github.com/faelmori/domus-pulse/internal/types"
 	"github.com/google/uuid"
+	t "github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // MessageStatus represents the status of a message

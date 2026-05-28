@@ -5,9 +5,9 @@ import (
 	"context"
 	"fmt"
 
-	store "github.com/faelmori/domus-pulse/internal/datastore"
-	"github.com/faelmori/domus-pulse/internal/execution"
-	"github.com/faelmori/domus-pulse/internal/types"
+	store "github.com/kubex-ecosystem/domus/internal/datastore"
+	"github.com/kubex-ecosystem/domus/internal/execution"
+	"github.com/kubex-ecosystem/domus/internal/types"
 )
 
 // AdapterFactory cria adapters DSRepository[T] a partir de Driver ou GORM.

@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
 	kbxCrp "github.com/kubex-ecosystem/ethyr/tools/security/crypto"
 	kbxSec "github.com/kubex-ecosystem/ethyr/tools/security/interfaces"
 	kbx "github.com/kubex-ecosystem/kbx"

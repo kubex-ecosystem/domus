@@ -21,7 +21,7 @@ var (
 	ErrConflict     = logz.Errorf("entry conflict")
 )
 
-// Domus-pulse domain errors.
+// Domus domain errors.
 var (
 	ErrUnimplemented   = logz.Errorf("unimplemented")
 	ErrIncompleteData  = logz.Errorf("incomplete data")

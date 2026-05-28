@@ -3,9 +3,9 @@ package types
 import (
 	"reflect"
 
-	ci "github.com/faelmori/domus-pulse/internal/interfaces"
-	"github.com/faelmori/domus-pulse/internal/module/kbx"
 	"github.com/google/uuid"
+	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 
 	"fmt"
 	"sort"

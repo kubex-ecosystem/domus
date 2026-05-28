@@ -5,11 +5,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/execution"
-	"github.com/faelmori/domus-pulse/internal/types"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/kubex-ecosystem/domus/internal/execution"
+	"github.com/kubex-ecosystem/domus/internal/types"
 
-	kbxMod "github.com/faelmori/domus-pulse/internal/module/kbx"
+	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
 	gl "github.com/kubex-ecosystem/logz"
 )
 

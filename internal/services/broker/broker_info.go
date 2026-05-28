@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/faelmori/domus-pulse/internal/services"
+	"github.com/kubex-ecosystem/domus/internal/services"
 	logz "github.com/kubex-ecosystem/logz"
 )
 

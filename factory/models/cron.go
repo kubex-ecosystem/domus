@@ -4,8 +4,8 @@ package models
 // 	"context"
 // 	"errors"
 
-// 	m "github.com/faelmori/domus-pulse/internal/models/cron"
-// 	svc "github.com/faelmori/domus-pulse/internal/services"
+// 	m "github.com/kubex-ecosystem/domus/internal/models/cron"
+// 	svc "github.com/kubex-ecosystem/domus/internal/services"
 // )
 
 // type CronJobType = m.CronJob
