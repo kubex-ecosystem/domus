@@ -30,6 +30,7 @@ import (
 	wappwebhookstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_webhook_store"
 	en "github.com/kubex-ecosystem/domus/internal/engine"
 	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/sqlsafe"
 	t "github.com/kubex-ecosystem/domus/internal/types"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	kbxIs "github.com/kubex-ecosystem/kbx/is"
@@ -388,4 +389,10 @@ func (c *DSClientImpl) NewORMOnlyAdapterFactory(db *BackendConnection, config *a
 	}
 
 	return adapter.NewORMOnlyFactory(db)
+}
+
+// Validate validates a SQL query for safety.
+// It returns an error if the query contains any unsafe operations.
+func Validate(sql string) error {
+	return sqlsafe.Validate(sql)
 }
