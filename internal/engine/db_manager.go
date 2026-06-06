@@ -249,6 +249,17 @@ func (m *DatabaseManager) SecureConn(ctx context.Context, dbName string) (*types
 	m.MuRLock()
 	defer m.MuRUnlock()
 
+	if dbName == "" {
+		if m.DefaultID != "" {
+			dbName = m.DefaultID
+		} else {
+			for id := range m.Conns {
+				dbName = id
+				break
+			}
+		}
+	}
+
 	conn, ok := m.Conns[dbName]
 	if !ok {
 		return nil, fmt.Errorf("no connection found for db name=%s", dbName)
