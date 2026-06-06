@@ -1,7 +1,7 @@
 package schemas
 
 import (
-	"github.com/kubex-ecosystem/domus/internal/datastore/extensions"
+	"github.com/kubex-ecosystem/domus/internal/extensions"
 )
 
 func init() {

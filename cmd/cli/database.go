@@ -9,8 +9,8 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/provider"
 	systemservice "github.com/kubex-ecosystem/domus/internal/services/system_service"
 
-	"github.com/kubex-ecosystem/domus/internal/datastore/extensions"
-	_ "github.com/kubex-ecosystem/domus/internal/datastore/extensions/schemas"
+	"github.com/kubex-ecosystem/domus/internal/extensions"
+	_ "github.com/kubex-ecosystem/domus/internal/extensions/schemas"
 
 	"github.com/kubex-ecosystem/ethyr/tools/flow"
 	"github.com/kubex-ecosystem/ethyr/tools/flow/fsm"

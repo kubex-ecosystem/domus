@@ -8,7 +8,6 @@ import (
 
 	"github.com/kubex-ecosystem/domus/internal/adapter"
 	st "github.com/kubex-ecosystem/domus/internal/datastore"
-	"github.com/kubex-ecosystem/domus/internal/datastore/extensions"
 	commissionstore "github.com/kubex-ecosystem/domus/internal/datastore/commission_store"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
@@ -31,6 +30,7 @@ import (
 	wappmsgstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_message_store"
 	wappwebhookstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_webhook_store"
 	en "github.com/kubex-ecosystem/domus/internal/engine"
+	"github.com/kubex-ecosystem/domus/internal/extensions"
 	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
 	"github.com/kubex-ecosystem/domus/internal/sqlsafe"
 	t "github.com/kubex-ecosystem/domus/internal/types"
@@ -38,7 +38,7 @@ import (
 	kbxIs "github.com/kubex-ecosystem/kbx/is"
 	gl "github.com/kubex-ecosystem/logz"
 
-	_ "github.com/kubex-ecosystem/domus/internal/datastore/extensions/schemas"
+	_ "github.com/kubex-ecosystem/domus/internal/extensions/schemas"
 )
 
 // StoreType é um alias para a interface base de stores.
