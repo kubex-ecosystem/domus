@@ -24,6 +24,7 @@ import (
 	prop "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
 	s "github.com/kubex-ecosystem/domus/internal/datastore/schemas_store"
+	session "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	u "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
@@ -86,6 +87,19 @@ func (f *StoreFactory) UserStore(ctx context.Context) (u.UserStore, error) {
 		return nil, fmt.Errorf("store is not a UserStore")
 	}
 	return userStore, nil
+}
+
+// SessionStore cria um SessionStore (helper específico).
+func (f *StoreFactory) SessionStore(ctx context.Context) (session.SessionStore, error) {
+	store, err := f.Create(ctx, "session")
+	if err != nil {
+		return nil, err
+	}
+	sessionStore, ok := store.(session.SessionStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a SessionStore")
+	}
+	return sessionStore, nil
 }
 
 // InviteStore cria um InviteStore (helper específico).
@@ -212,6 +226,20 @@ func NewUserStoreFromExecutor(exec execution.Executor) (u.UserStore, error) {
 	}
 
 	return u.NewPGUserStore(pgExec), nil
+}
+
+// NewSessionStoreFromExecutor cria SessionStore diretamente de um Executor.
+func NewSessionStoreFromExecutor(exec execution.Executor) (session.SessionStore, error) {
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("session store requires Postgres backend, got %s", exec.Kind())
+	}
+
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+
+	return session.NewPGSessionStore(pgExec), nil
 }
 
 // NewInviteStoreFromExecutor cria InviteStore diretamente de um Executor.

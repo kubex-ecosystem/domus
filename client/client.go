@@ -25,6 +25,7 @@ import (
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
+	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
 	wappmsgstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_message_store"
 	wappwebhookstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_webhook_store"
@@ -43,6 +44,7 @@ type StoreType = t.StoreType
 // Type aliases for specific stores (re-export from stores.go)
 type (
 	UserStore             = user.UserStore
+	SessionStore          = sessionstore.SessionStore
 	InviteStore           = invite.InviteStore
 	CompanyStore          = company.CompanyStore
 	PendingAccessStore    = pendingaccess.PendingAccessStore
@@ -110,6 +112,7 @@ type DSClient interface {
 
 	// Typed store helpers
 	GetUserStore(ctx context.Context, dbName string) (UserStore, error)
+	GetSessionStore(ctx context.Context, dbName string) (SessionStore, error)
 	GetInviteStore(ctx context.Context, dbName string) (InviteStore, error)
 	GetCompanyStore(ctx context.Context, dbName string) (CompanyStore, error)
 	GetPendingAccessStore(ctx context.Context, dbName string) (PendingAccessStore, error)

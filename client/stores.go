@@ -19,6 +19,7 @@ import (
 	propsharestore "github.com/kubex-ecosystem/domus/internal/datastore/property_share_store"
 	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
+	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
@@ -35,6 +36,9 @@ type (
 	CreateUserInput = user.CreateUserInput
 	UpdateUserInput = user.UpdateUserInput
 	UserFilters     = user.UserFilters
+
+	// Session types
+	Session = sessionstore.Session
 
 	Executor = execution.Executor
 
@@ -175,6 +179,17 @@ func (c *DSClientImpl) GetUserStore(ctx context.Context, dbName string) (UserSto
 
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.UserStore(ctx)
+}
+
+// GetSessionStore é um helper para obter SessionStore diretamente.
+func (c *DSClientImpl) GetSessionStore(ctx context.Context, dbName string) (SessionStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SessionStore(ctx)
 }
 
 // GetInviteStore é um helper para obter InviteStore diretamente.
@@ -318,6 +333,12 @@ func NewUserStore(ctx context.Context, conn *BackendConnection) (UserStore, erro
 	return factory.UserStore(ctx)
 }
 
+// NewSessionStore cria um SessionStore a partir de uma conexão.
+func NewSessionStore(ctx context.Context, conn *BackendConnection) (SessionStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SessionStore(ctx)
+}
+
 // NewInviteStore cria um InviteStore a partir de uma conexão.
 func NewInviteStore(ctx context.Context, conn *BackendConnection) (InviteStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
@@ -369,6 +390,11 @@ func NewLeadConversationStore(ctx context.Context, conn *BackendConnection) (Lea
 func NewIntegrationStore(ctx context.Context, conn *BackendConnection, mKey []byte) (IntegrationStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.IntegrationStore(ctx, mKey)
+}
+
+// NewSessionStoreFromExecutor cria um SessionStore a partir de um Executor.
+func NewSessionStoreFromExecutor(exec Executor) (SessionStore, error) {
+	return store.NewSessionStoreFromExecutor(exec)
 }
 
 // GetLeadEventStore é um helper para obter LeadEventStore diretamente.

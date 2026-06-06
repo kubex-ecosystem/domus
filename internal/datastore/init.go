@@ -18,6 +18,7 @@ import (
 	propertysharesstore "github.com/kubex-ecosystem/domus/internal/datastore/property_share_store"
 	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
+	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	userstore "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
@@ -89,6 +90,41 @@ func registerPostgresStores() {
 
 	if err := RegisterStore(driverName, "user", userMetadata, userFactory); err != nil {
 		gl.Errorf("Failed to register user store: %v", err)
+	}
+
+	// Registra SessionStore
+	sessionMetadata := &t.StoreMetadata{
+		Name:        "session",
+		Type:        reflect.TypeFor[sessionstore.Session](),
+		DriverName:  driverName,
+		Description: "Auth session management store",
+		Version:     "1.0.0",
+		Capabilities: []string{
+			"crud",
+			"refresh_token",
+		},
+	}
+
+	sessionFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("session store requires Postgres, got %s", exec.Kind())
+		}
+
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+
+		return sessionstore.NewPGSessionStore(pgExec), nil
+	}
+
+	if err := RegisterStore(driverName, "session", sessionMetadata, sessionFactory); err != nil {
+		gl.Errorf("Failed to register session store: %v", err)
 	}
 
 	// Registra InviteStore
