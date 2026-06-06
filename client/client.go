@@ -8,6 +8,7 @@ import (
 
 	"github.com/kubex-ecosystem/domus/internal/adapter"
 	st "github.com/kubex-ecosystem/domus/internal/datastore"
+	"github.com/kubex-ecosystem/domus/internal/datastore/extensions"
 	commissionstore "github.com/kubex-ecosystem/domus/internal/datastore/commission_store"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
@@ -23,9 +24,9 @@ import (
 	propsharestore "github.com/kubex-ecosystem/domus/internal/datastore/property_share_store"
 	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
+	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
-	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
 	wappmsgstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_message_store"
 	wappwebhookstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_webhook_store"
@@ -36,6 +37,8 @@ import (
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	kbxIs "github.com/kubex-ecosystem/kbx/is"
 	gl "github.com/kubex-ecosystem/logz"
+
+	_ "github.com/kubex-ecosystem/domus/internal/datastore/extensions/schemas"
 )
 
 // StoreType é um alias para a interface base de stores.
@@ -153,6 +156,9 @@ type DSClient interface {
 	NewAdapterFactory(ctx context.Context, dbName string, db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)
 	NewStoreOnlyAdapterFactory(ctx context.Context, dbName string) (*adapter.AdapterFactory, error)
 	NewORMOnlyAdapterFactory(db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)
+
+	// Extension management
+	ApplyExtension(ctx context.Context, extID string) error
 }
 
 // DSClientImpl represents the data service client managing multiple backend connections.
@@ -392,6 +398,28 @@ func (c *DSClientImpl) NewORMOnlyAdapterFactory(db *BackendConnection, config *a
 	}
 
 	return adapter.NewORMOnlyFactory(db)
+}
+
+// ApplyExtension ensures that a modular extension schema is applied to the main database backend.
+func (c *DSClientImpl) ApplyExtension(ctx context.Context, extID string) error {
+	if err := c.validateBasics(); err != nil {
+		return err
+	}
+
+	conn, err := c.GetConn(ctx, "")
+	if err != nil {
+		return gl.Errorf("failed to get connection for extension %q: %v", extID, err)
+	}
+
+	exec, err := conn.Driver.Executor(ctx)
+	if err != nil {
+		return gl.Errorf("failed to get executor for extension %q: %v", extID, err)
+	}
+	if exec == nil {
+		return gl.Errorf("executor is nil for extension %q", extID)
+	}
+
+	return extensions.Global.Apply(ctx, exec, extID)
 }
 
 // Validate validates a SQL query for safety.
