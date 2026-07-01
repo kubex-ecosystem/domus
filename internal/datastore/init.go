@@ -6,6 +6,12 @@ import (
 
 	commissionstore "github.com/kubex-ecosystem/domus/internal/datastore/commission_store"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
+	ckcompanystore "github.com/kubex-ecosystem/domus/internal/datastore/ck_company_store"
+	ckinsumostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_insumo_store"
+	ckmessagestore "github.com/kubex-ecosystem/domus/internal/datastore/ck_message_store"
+	ckmovimentacaostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_movimentacao_store"
+	ckorderstore "github.com/kubex-ecosystem/domus/internal/datastore/ck_order_store"
+	ckprodutostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_produto_store"
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
 	leadconversationstore "github.com/kubex-ecosystem/domus/internal/datastore/lead_conversation_store"
@@ -758,6 +764,164 @@ func registerPostgresStores() {
 	}
 	if err := RegisterStore(driverName, "visit_event", visitMetadata, visitFactory); err != nil {
 		gl.Errorf("Failed to register visit event store: %v", err)
+	}
+
+	// ── Cozinha Pass (KDS) ────────────────────────────────────────────────────
+
+	ckCompanyMetadata := &t.StoreMetadata{
+		Name:         "ck_company",
+		Type:         reflect.TypeFor[ckcompanystore.CKCompany](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — empresa locatária (tenant do KDS)",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "channels", "pagination", "filtering"},
+	}
+	ckCompanyFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_company store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckcompanystore.NewPGCKCompanyStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_company", ckCompanyMetadata, ckCompanyFactory); err != nil {
+		gl.Errorf("Failed to register ck_company store: %v", err)
+	}
+
+	ckOrderMetadata := &t.StoreMetadata{
+		Name:         "ck_order",
+		Type:         reflect.TypeFor[ckorderstore.CKOrder](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — pedidos e itens do KDS",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "status_lifecycle", "pagination", "filtering"},
+	}
+	ckOrderFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_order store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckorderstore.NewPGCKOrderStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_order", ckOrderMetadata, ckOrderFactory); err != nil {
+		gl.Errorf("Failed to register ck_order store: %v", err)
+	}
+
+	ckInsumoMetadata := &t.StoreMetadata{
+		Name:         "ck_insumo",
+		Type:         reflect.TypeFor[ckinsumostore.CKInsumo](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — insumos (matéria-prima) com controle de estoque",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "estoque_ajuste", "baixo_estoque_filter", "pagination"},
+	}
+	ckInsumoFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_insumo store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckinsumostore.NewPGCKInsumoStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_insumo", ckInsumoMetadata, ckInsumoFactory); err != nil {
+		gl.Errorf("Failed to register ck_insumo store: %v", err)
+	}
+
+	ckProdutoMetadata := &t.StoreMetadata{
+		Name:         "ck_produto",
+		Type:         reflect.TypeFor[ckprodutostore.CKProduto](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — produtos (BOM recursivo) com ficha técnica",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "componentes", "bom", "pagination", "filtering"},
+	}
+	ckProdutoFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_produto store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckprodutostore.NewPGCKProdutoStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_produto", ckProdutoMetadata, ckProdutoFactory); err != nil {
+		gl.Errorf("Failed to register ck_produto store: %v", err)
+	}
+
+	ckMessageMetadata := &t.StoreMetadata{
+		Name:         "ck_message",
+		Type:         reflect.TypeFor[ckmessagestore.CKMessage](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — inbox de mensagens multi-canal",
+		Version:      "1.0.0",
+		Capabilities: []string{"append", "mark_read", "conversation_read", "pagination", "filtering"},
+	}
+	ckMessageFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_message store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckmessagestore.NewPGCKMessageStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_message", ckMessageMetadata, ckMessageFactory); err != nil {
+		gl.Errorf("Failed to register ck_message store: %v", err)
+	}
+
+	ckMovimentacaoMetadata := &t.StoreMetadata{
+		Name:         "ck_movimentacao",
+		Type:         reflect.TypeFor[ckmovimentacaostore.CKMovimentacao](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — livro-razão de movimentações de estoque (idempotente para baixa)",
+		Version:      "1.0.0",
+		Capabilities: []string{"append", "idempotent_baixa", "list_by_insumo", "list_by_order"},
+	}
+	ckMovimentacaoFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_movimentacao store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckmovimentacaostore.NewPGCKMovimentacaoStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_movimentacao", ckMovimentacaoMetadata, ckMovimentacaoFactory); err != nil {
+		gl.Errorf("Failed to register ck_movimentacao store: %v", err)
 	}
 
 	gl.Noticef("Registered %d stores for driver: %s", len(ListStoresByDriver(driverName)), driverName)

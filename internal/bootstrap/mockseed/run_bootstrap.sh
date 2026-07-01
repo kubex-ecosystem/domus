@@ -197,7 +197,7 @@ validate_installation() {
   local warnings=0
 
   # Tabelas principais que devem ter dados após o seed
-  local core_tables=("org" "tenant" "role" "permission" "role_permission" "\"user\"" "tenant_membership")
+  local core_tables=("org" "tenant" "role" "permission" "role_permission" '"user"' "tenant_membership")
 
   for table in "${core_tables[@]}"; do
     local count
@@ -247,7 +247,7 @@ generate_json_report() {
   local seed_file=$3
 
   # Tabelas conhecidas do schema
-  local known_tables=("org" "tenant" "role" "permission" "role_permission" "\"user\"" "tenant_membership" "team" "team_membership" "pipeline" "pipeline_stage" "partner" "lead")
+  local known_tables=("org" "tenant" "role" "permission" "role_permission" '"user"' "tenant_membership" "team" "team_membership" "pipeline" "pipeline_stage" "partner" "lead")
 
   local json_tables=""
   local total_records=0
@@ -259,7 +259,7 @@ generate_json_report() {
     # Garantir que count é um número
     count="${count:-0}"
     count="${count// /}"
-    if [[ "$count" =~ ^[0-9]+$ ]] && [ "$count" != "0" ]; then
+    if [[ $count =~ ^[0-9]+$ ]] && [ "$count" != "0" ]; then
       local clean_table="${table//\"/}"
       json_tables+="      \"$clean_table\": $count,"$'\n'
       total_records=$((total_records + count))
@@ -307,7 +307,7 @@ main() {
   local seeds_to_use=()
   while IFS= read -r -d '' file; do
     seeds_to_use+=("$file")
-  done < <(find "${SCRIPT_DIR}/core" -maxdepth 1 -name "*${seed_pattern}*.sql" -type f -print0 2>/dev/null | sort -z)
+  done < <(find "${SCRIPT_DIR}/core" -maxdepth 1 -name "*_${seed_pattern}*.sql" -type f -print0 2>/dev/null | sort -z)
 
   if [ ${#seeds_to_use[@]} -eq 0 ]; then
     log_error "Seed '$seed_pattern' não encontrada no diretório core/."
@@ -508,33 +508,33 @@ route_command() {
   shift || true
 
   case "$command" in
-  seed)
-    main "$@"
-    ;;
-  extract)
-    run_extract "$@"
-    ;;
-  generate-types)
-    run_generate_types "$@"
-    ;;
-  generate-mocks)
-    run_generate_mocks "$@"
-    ;;
-  sync)
-    run_sync "$@"
-    ;;
-  full-pipeline)
-    run_full_pipeline "$@"
-    ;;
-  help | --help | -h)
-    show_help
-    ;;
-  *)
-    log_error "Comando desconhecido: $command"
-    echo ""
-    show_help
-    exit 1
-    ;;
+    seed)
+      main "$@"
+      ;;
+    extract)
+      run_extract "$@"
+      ;;
+    generate-types)
+      run_generate_types "$@"
+      ;;
+    generate-mocks)
+      run_generate_mocks "$@"
+      ;;
+    sync)
+      run_sync "$@"
+      ;;
+    full-pipeline)
+      run_full_pipeline "$@"
+      ;;
+    help | --help | -h)
+      show_help
+      ;;
+    *)
+      log_error "Comando desconhecido: $command"
+      echo ""
+      show_help
+      exit 1
+      ;;
   esac
 }
 

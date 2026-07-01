@@ -8,6 +8,13 @@ import (
 
 	"github.com/kubex-ecosystem/domus/internal/adapter"
 	st "github.com/kubex-ecosystem/domus/internal/datastore"
+	bmori_store "github.com/kubex-ecosystem/domus/internal/datastore/bmori_store"
+	ckcompanystore "github.com/kubex-ecosystem/domus/internal/datastore/ck_company_store"
+	ckinsumostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_insumo_store"
+	ckmessagestore "github.com/kubex-ecosystem/domus/internal/datastore/ck_message_store"
+	ckmovimentacaostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_movimentacao_store"
+	ckorderstore "github.com/kubex-ecosystem/domus/internal/datastore/ck_order_store"
+	ckprodutostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_produto_store"
 	commissionstore "github.com/kubex-ecosystem/domus/internal/datastore/commission_store"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
@@ -55,6 +62,9 @@ type (
 	IntegrationStore      = integration.IntegrationStore
 	PropertyStore         = propertystore.PropertyStore
 
+	// BMori stores
+	BMoriStore = bmori_store.BMoriStore
+
 	// Limalar domain stores (Colonial NetImóveis)
 	PropertyShareStore    = propsharestore.PropertyShareStore
 	WappMessageStore      = wappmsgstore.WappMessageStore
@@ -84,6 +94,14 @@ type (
 	// RBAC stores
 	RoleStore       = rolestore.RoleStore
 	MembershipStore = membershipstore.MembershipStore
+
+	// Cozinha Pass stores (KDS — shared kitchen)
+	CKCompanyStore      = ckcompanystore.CKCompanyStore
+	CKOrderStore        = ckorderstore.CKOrderStore
+	CKInsumoStore       = ckinsumostore.CKInsumoStore
+	CKProdutoStore      = ckprodutostore.CKProdutoStore
+	CKMessageStore      = ckmessagestore.CKMessageStore
+	CKMovimentacaoStore = ckmovimentacaostore.CKMovimentacaoStore
 )
 
 // BackendConnections is an alias for the database manager type.
@@ -122,6 +140,9 @@ type DSClient interface {
 	GetExternalMetadataStore(ctx context.Context, dbName string) (ExternalMetadataStore, error)
 	GetPropertyStore(ctx context.Context, dbName string) (PropertyStore, error)
 
+	// BMori stores
+	GetBMoriStore(ctx context.Context, dbName string) (BMoriStore, error)
+
 	// Limalar domain stores (Colonial NetImóveis)
 	GetPropertyShareStore(ctx context.Context, dbName string) (PropertyShareStore, error)
 	GetWappMessageStore(ctx context.Context, dbName string) (WappMessageStore, error)
@@ -151,6 +172,14 @@ type DSClient interface {
 	// RBAC stores
 	GetRoleStore(ctx context.Context, dbName string) (RoleStore, error)
 	GetMembershipStore(ctx context.Context, dbName string) (MembershipStore, error)
+
+	// Cozinha Pass stores (KDS — shared kitchen)
+	GetCKCompanyStore(ctx context.Context, dbName string) (CKCompanyStore, error)
+	GetCKOrderStore(ctx context.Context, dbName string) (CKOrderStore, error)
+	GetCKInsumoStore(ctx context.Context, dbName string) (CKInsumoStore, error)
+	GetCKProdutoStore(ctx context.Context, dbName string) (CKProdutoStore, error)
+	GetCKMessageStore(ctx context.Context, dbName string) (CKMessageStore, error)
+	GetCKMovimentacaoStore(ctx context.Context, dbName string) (CKMovimentacaoStore, error)
 
 	// Adapter factory methods
 	NewAdapterFactory(ctx context.Context, dbName string, db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)
