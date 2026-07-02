@@ -91,19 +91,29 @@ func (s *pgCKCompanyStore) Update(ctx context.Context, input *UpdateCKCompanyInp
 	idx := 1
 
 	if input.Name != nil {
-		sets = append(sets, fmt.Sprintf("name = $%d", idx)); args = append(args, *input.Name); idx++
+		sets = append(sets, fmt.Sprintf("name = $%d", idx))
+		args = append(args, *input.Name)
+		idx++
 	}
 	if input.Logo != nil {
-		sets = append(sets, fmt.Sprintf("logo = $%d", idx)); args = append(args, *input.Logo); idx++
+		sets = append(sets, fmt.Sprintf("logo = $%d", idx))
+		args = append(args, *input.Logo)
+		idx++
 	}
 	if input.BrandColor != nil {
-		sets = append(sets, fmt.Sprintf("brand_color = $%d", idx)); args = append(args, *input.BrandColor); idx++
+		sets = append(sets, fmt.Sprintf("brand_color = $%d", idx))
+		args = append(args, *input.BrandColor)
+		idx++
 	}
 	if input.Cuisine != nil {
-		sets = append(sets, fmt.Sprintf("cuisine = $%d", idx)); args = append(args, *input.Cuisine); idx++
+		sets = append(sets, fmt.Sprintf("cuisine = $%d", idx))
+		args = append(args, *input.Cuisine)
+		idx++
 	}
 	if input.ActiveStatus != nil {
-		sets = append(sets, fmt.Sprintf("active_status = $%d", idx)); args = append(args, *input.ActiveStatus); idx++
+		sets = append(sets, fmt.Sprintf("active_status = $%d", idx))
+		args = append(args, *input.ActiveStatus)
+		idx++
 	}
 
 	var company *CKCompany
@@ -282,7 +292,12 @@ func scanCKCompany(scanner interface{ Scan(...any) error }) (*CKCompany, error) 
 func (s *pgCKCompanyStore) GetType() (reflect.Type, string, error) {
 	return reflect.TypeFor[CKCompany](), "pg_ck_company_store", nil
 }
-func (s *pgCKCompanyStore) GetName() string  { return "pg_ck_company_store" }
-func (s *pgCKCompanyStore) Name() string     { return "ck_company" }
-func (s *pgCKCompanyStore) Validate() error  { if s.exec == nil { return errors.New("PGExecutor is nil") }; return nil }
-func (s *pgCKCompanyStore) Close() error     { return nil }
+func (s *pgCKCompanyStore) GetName() string { return "pg_ck_company_store" }
+func (s *pgCKCompanyStore) Name() string    { return "ck_company" }
+func (s *pgCKCompanyStore) Validate() error {
+	if s.exec == nil {
+		return errors.New("PGExecutor is nil")
+	}
+	return nil
+}
+func (s *pgCKCompanyStore) Close() error { return nil }

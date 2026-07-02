@@ -137,5 +137,10 @@ func (s *pgCKMovimentacaoStore) GetType() (reflect.Type, string, error) {
 }
 func (s *pgCKMovimentacaoStore) GetName() string { return "pg_ck_movimentacao_store" }
 func (s *pgCKMovimentacaoStore) Name() string    { return "ck_movimentacao" }
-func (s *pgCKMovimentacaoStore) Validate() error { if s.exec == nil { return errors.New("PGExecutor is nil") }; return nil }
-func (s *pgCKMovimentacaoStore) Close() error    { return nil }
+func (s *pgCKMovimentacaoStore) Validate() error {
+	if s.exec == nil {
+		return errors.New("PGExecutor is nil")
+	}
+	return nil
+}
+func (s *pgCKMovimentacaoStore) Close() error { return nil }

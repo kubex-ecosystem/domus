@@ -83,18 +83,26 @@ func (s *pgCKProdutoStore) Update(ctx context.Context, input *UpdateCKProdutoInp
 	idx := 1
 
 	if input.Nome != nil {
-		sets = append(sets, fmt.Sprintf("nome = $%d", idx)); args = append(args, *input.Nome); idx++
+		sets = append(sets, fmt.Sprintf("nome = $%d", idx))
+		args = append(args, *input.Nome)
+		idx++
 	}
 	if input.Tipo != nil {
-		sets = append(sets, fmt.Sprintf("tipo = $%d", idx)); args = append(args, *input.Tipo); idx++
+		sets = append(sets, fmt.Sprintf("tipo = $%d", idx))
+		args = append(args, *input.Tipo)
+		idx++
 	}
 	if input.PrecoVenda != nil {
-		sets = append(sets, fmt.Sprintf("preco_venda = $%d", idx)); args = append(args, *input.PrecoVenda); idx++
+		sets = append(sets, fmt.Sprintf("preco_venda = $%d", idx))
+		args = append(args, *input.PrecoVenda)
+		idx++
 	}
 
 	var produto *CKProduto
 	if len(sets) > 0 {
-		sets = append(sets, fmt.Sprintf("updated_at = $%d", idx)); args = append(args, time.Now().UTC()); idx++
+		sets = append(sets, fmt.Sprintf("updated_at = $%d", idx))
+		args = append(args, time.Now().UTC())
+		idx++
 		args = append(args, input.ID)
 		query := fmt.Sprintf(`
 			UPDATE cozinha_pass.produto SET %s WHERE id = $%d
@@ -161,10 +169,14 @@ func (s *pgCKProdutoStore) List(ctx context.Context, filters *CKProdutoFilters) 
 
 	if filters != nil {
 		if filters.CompanyID != nil {
-			wheres = append(wheres, fmt.Sprintf("company_id = $%d", idx)); args = append(args, *filters.CompanyID); idx++
+			wheres = append(wheres, fmt.Sprintf("company_id = $%d", idx))
+			args = append(args, *filters.CompanyID)
+			idx++
 		}
 		if filters.Tipo != nil {
-			wheres = append(wheres, fmt.Sprintf("tipo = $%d", idx)); args = append(args, *filters.Tipo); idx++
+			wheres = append(wheres, fmt.Sprintf("tipo = $%d", idx))
+			args = append(args, *filters.Tipo)
+			idx++
 		}
 	}
 
@@ -265,5 +277,10 @@ func (s *pgCKProdutoStore) GetType() (reflect.Type, string, error) {
 }
 func (s *pgCKProdutoStore) GetName() string { return "pg_ck_produto_store" }
 func (s *pgCKProdutoStore) Name() string    { return "ck_produto" }
-func (s *pgCKProdutoStore) Validate() error { if s.exec == nil { return errors.New("PGExecutor is nil") }; return nil }
-func (s *pgCKProdutoStore) Close() error    { return nil }
+func (s *pgCKProdutoStore) Validate() error {
+	if s.exec == nil {
+		return errors.New("PGExecutor is nil")
+	}
+	return nil
+}
+func (s *pgCKProdutoStore) Close() error { return nil }

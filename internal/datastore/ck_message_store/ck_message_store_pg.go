@@ -74,16 +74,24 @@ func (s *pgCKMessageStore) List(ctx context.Context, filters *CKMessageFilters) 
 
 	if filters != nil {
 		if filters.CompanyID != nil {
-			wheres = append(wheres, fmt.Sprintf("company_id = $%d", idx)); args = append(args, *filters.CompanyID); idx++
+			wheres = append(wheres, fmt.Sprintf("company_id = $%d", idx))
+			args = append(args, *filters.CompanyID)
+			idx++
 		}
 		if filters.OrderID != nil {
-			wheres = append(wheres, fmt.Sprintf("order_id = $%d", idx)); args = append(args, *filters.OrderID); idx++
+			wheres = append(wheres, fmt.Sprintf("order_id = $%d", idx))
+			args = append(args, *filters.OrderID)
+			idx++
 		}
 		if filters.Channel != nil {
-			wheres = append(wheres, fmt.Sprintf("channel = $%d", idx)); args = append(args, *filters.Channel); idx++
+			wheres = append(wheres, fmt.Sprintf("channel = $%d", idx))
+			args = append(args, *filters.Channel)
+			idx++
 		}
 		if filters.Direction != nil {
-			wheres = append(wheres, fmt.Sprintf("direction = $%d", idx)); args = append(args, *filters.Direction); idx++
+			wheres = append(wheres, fmt.Sprintf("direction = $%d", idx))
+			args = append(args, *filters.Direction)
+			idx++
 		}
 		if filters.Unread != nil && *filters.Unread {
 			wheres = append(wheres, "read = false AND direction = 'inbound'")
@@ -184,5 +192,10 @@ func (s *pgCKMessageStore) GetType() (reflect.Type, string, error) {
 }
 func (s *pgCKMessageStore) GetName() string { return "pg_ck_message_store" }
 func (s *pgCKMessageStore) Name() string    { return "ck_message" }
-func (s *pgCKMessageStore) Validate() error { if s.exec == nil { return errors.New("PGExecutor is nil") }; return nil }
-func (s *pgCKMessageStore) Close() error    { return nil }
+func (s *pgCKMessageStore) Validate() error {
+	if s.exec == nil {
+		return errors.New("PGExecutor is nil")
+	}
+	return nil
+}
+func (s *pgCKMessageStore) Close() error { return nil }

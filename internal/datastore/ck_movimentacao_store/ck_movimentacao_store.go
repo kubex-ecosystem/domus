@@ -8,18 +8,18 @@ import (
 )
 
 type CKMovimentacao struct {
-	ID        string     `json:"id"`
-	InsumoID  string     `json:"insumo_id"`
-	OrderID   *string    `json:"order_id,omitempty"`
-	Tipo      string     `json:"tipo"`
-	Quantidade float64   `json:"quantidade"`
-	CreatedAt *time.Time `json:"created_at,omitempty"`
+	ID         string     `json:"id"`
+	InsumoID   string     `json:"insumo_id"`
+	OrderID    *string    `json:"order_id,omitempty"`
+	Tipo       string     `json:"tipo"`
+	Quantidade float64    `json:"quantidade"`
+	CreatedAt  *time.Time `json:"created_at,omitempty"`
 }
 
 type RegistrarMovimentacaoInput struct {
-	InsumoID  string
-	OrderID   *string
-	Tipo      string
+	InsumoID   string
+	OrderID    *string
+	Tipo       string
 	Quantidade float64
 }
 

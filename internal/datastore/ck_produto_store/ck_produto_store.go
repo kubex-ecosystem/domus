@@ -8,23 +8,23 @@ import (
 )
 
 type CKComponente struct {
-	ID            string   `json:"id"`
-	ProdutoID     string   `json:"produto_id"`
-	RefTipo       string   `json:"ref_tipo"`
-	InsumoRefID   *string  `json:"insumo_ref_id,omitempty"`
-	ProdutoRefID  *string  `json:"produto_ref_id,omitempty"`
-	Quantidade    float64  `json:"quantidade"`
+	ID           string  `json:"id"`
+	ProdutoID    string  `json:"produto_id"`
+	RefTipo      string  `json:"ref_tipo"`
+	InsumoRefID  *string `json:"insumo_ref_id,omitempty"`
+	ProdutoRefID *string `json:"produto_ref_id,omitempty"`
+	Quantidade   float64 `json:"quantidade"`
 }
 
 type CKProduto struct {
-	ID          string          `json:"id"`
-	CompanyID   string          `json:"company_id"`
-	Nome        string          `json:"nome"`
-	Tipo        string          `json:"tipo"`
-	PrecoVenda  *float64        `json:"preco_venda,omitempty"`
-	CreatedAt   *time.Time      `json:"created_at,omitempty"`
-	UpdatedAt   *time.Time      `json:"updated_at,omitempty"`
-	Componentes []CKComponente  `json:"componentes,omitempty"`
+	ID          string         `json:"id"`
+	CompanyID   string         `json:"company_id"`
+	Nome        string         `json:"nome"`
+	Tipo        string         `json:"tipo"`
+	PrecoVenda  *float64       `json:"preco_venda,omitempty"`
+	CreatedAt   *time.Time     `json:"created_at,omitempty"`
+	UpdatedAt   *time.Time     `json:"updated_at,omitempty"`
+	Componentes []CKComponente `json:"componentes,omitempty"`
 }
 
 type CreateCKComponenteInput struct {

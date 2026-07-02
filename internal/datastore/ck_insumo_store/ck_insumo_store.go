@@ -38,10 +38,10 @@ type UpdateCKInsumoInput struct {
 }
 
 type CKInsumoFilters struct {
-	CompanyID   *string
+	CompanyID    *string
 	BaixoEstoque *bool
-	Page        int
-	Limit       int
+	Page         int
+	Limit        int
 }
 
 type CKInsumoStore interface {

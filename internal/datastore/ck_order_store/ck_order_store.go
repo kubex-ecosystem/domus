@@ -8,27 +8,27 @@ import (
 )
 
 type CKOrderItem struct {
-	ID        string   `json:"id"`
-	OrderID   string   `json:"order_id"`
-	Name      string   `json:"name"`
-	ProdutoID *string  `json:"produto_id,omitempty"`
-	Quantity  float64  `json:"quantity"`
-	UnitPrice float64  `json:"unit_price"`
-	Notes     *string  `json:"notes,omitempty"`
+	ID        string  `json:"id"`
+	OrderID   string  `json:"order_id"`
+	Name      string  `json:"name"`
+	ProdutoID *string `json:"produto_id,omitempty"`
+	Quantity  float64 `json:"quantity"`
+	UnitPrice float64 `json:"unit_price"`
+	Notes     *string `json:"notes,omitempty"`
 }
 
 type CKOrder struct {
-	ID          string       `json:"id"`
-	CompanyID   string       `json:"company_id"`
-	Ticket      string       `json:"ticket"`
-	ClientName  string       `json:"client_name"`
-	Channel     string       `json:"channel"`
-	Status      string       `json:"status"`
-	Destination *string      `json:"destination,omitempty"`
-	Note        *string      `json:"note,omitempty"`
-	TotalValue  float64      `json:"total_value"`
-	CreatedAt   *time.Time   `json:"created_at,omitempty"`
-	UpdatedAt   *time.Time   `json:"updated_at,omitempty"`
+	ID          string        `json:"id"`
+	CompanyID   string        `json:"company_id"`
+	Ticket      string        `json:"ticket"`
+	ClientName  string        `json:"client_name"`
+	Channel     string        `json:"channel"`
+	Status      string        `json:"status"`
+	Destination *string       `json:"destination,omitempty"`
+	Note        *string       `json:"note,omitempty"`
+	TotalValue  float64       `json:"total_value"`
+	CreatedAt   *time.Time    `json:"created_at,omitempty"`
+	UpdatedAt   *time.Time    `json:"updated_at,omitempty"`
 	Items       []CKOrderItem `json:"items,omitempty"`
 }
 

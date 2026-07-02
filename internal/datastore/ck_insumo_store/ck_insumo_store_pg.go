@@ -67,26 +67,38 @@ func (s *pgCKInsumoStore) Update(ctx context.Context, input *UpdateCKInsumoInput
 	idx := 1
 
 	if input.Nome != nil {
-		sets = append(sets, fmt.Sprintf("nome = $%d", idx)); args = append(args, *input.Nome); idx++
+		sets = append(sets, fmt.Sprintf("nome = $%d", idx))
+		args = append(args, *input.Nome)
+		idx++
 	}
 	if input.Unidade != nil {
-		sets = append(sets, fmt.Sprintf("unidade = $%d", idx)); args = append(args, *input.Unidade); idx++
+		sets = append(sets, fmt.Sprintf("unidade = $%d", idx))
+		args = append(args, *input.Unidade)
+		idx++
 	}
 	if input.Estoque != nil {
-		sets = append(sets, fmt.Sprintf("estoque = $%d", idx)); args = append(args, *input.Estoque); idx++
+		sets = append(sets, fmt.Sprintf("estoque = $%d", idx))
+		args = append(args, *input.Estoque)
+		idx++
 	}
 	if input.EstoqueMinimo != nil {
-		sets = append(sets, fmt.Sprintf("estoque_minimo = $%d", idx)); args = append(args, *input.EstoqueMinimo); idx++
+		sets = append(sets, fmt.Sprintf("estoque_minimo = $%d", idx))
+		args = append(args, *input.EstoqueMinimo)
+		idx++
 	}
 	if input.CustoUnitario != nil {
-		sets = append(sets, fmt.Sprintf("custo_unitario = $%d", idx)); args = append(args, *input.CustoUnitario); idx++
+		sets = append(sets, fmt.Sprintf("custo_unitario = $%d", idx))
+		args = append(args, *input.CustoUnitario)
+		idx++
 	}
 
 	if len(sets) == 0 {
 		return s.GetByID(ctx, input.ID)
 	}
 
-	sets = append(sets, fmt.Sprintf("updated_at = $%d", idx)); args = append(args, time.Now().UTC()); idx++
+	sets = append(sets, fmt.Sprintf("updated_at = $%d", idx))
+	args = append(args, time.Now().UTC())
+	idx++
 	args = append(args, input.ID)
 
 	query := fmt.Sprintf(`
@@ -136,7 +148,9 @@ func (s *pgCKInsumoStore) List(ctx context.Context, filters *CKInsumoFilters) (*
 
 	if filters != nil {
 		if filters.CompanyID != nil {
-			wheres = append(wheres, fmt.Sprintf("company_id = $%d", idx)); args = append(args, *filters.CompanyID); idx++
+			wheres = append(wheres, fmt.Sprintf("company_id = $%d", idx))
+			args = append(args, *filters.CompanyID)
+			idx++
 		}
 		if filters.BaixoEstoque != nil && *filters.BaixoEstoque {
 			wheres = append(wheres, "estoque <= estoque_minimo")
@@ -225,5 +239,10 @@ func (s *pgCKInsumoStore) GetType() (reflect.Type, string, error) {
 }
 func (s *pgCKInsumoStore) GetName() string { return "pg_ck_insumo_store" }
 func (s *pgCKInsumoStore) Name() string    { return "ck_insumo" }
-func (s *pgCKInsumoStore) Validate() error { if s.exec == nil { return errors.New("PGExecutor is nil") }; return nil }
-func (s *pgCKInsumoStore) Close() error    { return nil }
+func (s *pgCKInsumoStore) Validate() error {
+	if s.exec == nil {
+		return errors.New("PGExecutor is nil")
+	}
+	return nil
+}
+func (s *pgCKInsumoStore) Close() error { return nil }

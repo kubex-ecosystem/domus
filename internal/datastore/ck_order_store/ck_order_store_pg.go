@@ -161,13 +161,19 @@ func (s *pgCKOrderStore) List(ctx context.Context, filters *CKOrderFilters) (*t.
 
 	if filters != nil {
 		if filters.CompanyID != nil {
-			wheres = append(wheres, fmt.Sprintf("company_id = $%d", idx)); args = append(args, *filters.CompanyID); idx++
+			wheres = append(wheres, fmt.Sprintf("company_id = $%d", idx))
+			args = append(args, *filters.CompanyID)
+			idx++
 		}
 		if filters.Status != nil {
-			wheres = append(wheres, fmt.Sprintf("status = $%d", idx)); args = append(args, *filters.Status); idx++
+			wheres = append(wheres, fmt.Sprintf("status = $%d", idx))
+			args = append(args, *filters.Status)
+			idx++
 		}
 		if filters.Channel != nil {
-			wheres = append(wheres, fmt.Sprintf("channel = $%d", idx)); args = append(args, *filters.Channel); idx++
+			wheres = append(wheres, fmt.Sprintf("channel = $%d", idx))
+			args = append(args, *filters.Channel)
+			idx++
 		}
 	}
 
@@ -264,5 +270,10 @@ func (s *pgCKOrderStore) GetType() (reflect.Type, string, error) {
 }
 func (s *pgCKOrderStore) GetName() string { return "pg_ck_order_store" }
 func (s *pgCKOrderStore) Name() string    { return "ck_order" }
-func (s *pgCKOrderStore) Validate() error { if s.exec == nil { return errors.New("PGExecutor is nil") }; return nil }
-func (s *pgCKOrderStore) Close() error    { return nil }
+func (s *pgCKOrderStore) Validate() error {
+	if s.exec == nil {
+		return errors.New("PGExecutor is nil")
+	}
+	return nil
+}
+func (s *pgCKOrderStore) Close() error { return nil }

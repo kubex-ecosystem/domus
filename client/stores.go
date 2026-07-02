@@ -155,12 +155,12 @@ type (
 	UpdateCKCompanyInput = ckcompanystore.UpdateCKCompanyInput
 	CKCompanyFilters     = ckcompanystore.CKCompanyFilters
 
-	CKOrder                = ckorderstore.CKOrder
-	CKOrderItem            = ckorderstore.CKOrderItem
-	CreateCKOrderInput     = ckorderstore.CreateCKOrderInput
-	CreateCKOrderItemInput = ckorderstore.CreateCKOrderItemInput
+	CKOrder                  = ckorderstore.CKOrder
+	CKOrderItem              = ckorderstore.CKOrderItem
+	CreateCKOrderInput       = ckorderstore.CreateCKOrderInput
+	CreateCKOrderItemInput   = ckorderstore.CreateCKOrderItemInput
 	UpdateCKOrderStatusInput = ckorderstore.UpdateCKOrderStatusInput
-	CKOrderFilters         = ckorderstore.CKOrderFilters
+	CKOrderFilters           = ckorderstore.CKOrderFilters
 
 	CKInsumo            = ckinsumostore.CKInsumo
 	CreateCKInsumoInput = ckinsumostore.CreateCKInsumoInput
@@ -178,7 +178,7 @@ type (
 	CreateCKMessageInput = ckmessagestore.CreateCKMessageInput
 	CKMessageFilters     = ckmessagestore.CKMessageFilters
 
-	CKMovimentacao            = ckmovimentacaostore.CKMovimentacao
+	CKMovimentacao             = ckmovimentacaostore.CKMovimentacao
 	RegistrarMovimentacaoInput = ckmovimentacaostore.RegistrarMovimentacaoInput
 
 	// Adapter types - apenas os não-genéricos
