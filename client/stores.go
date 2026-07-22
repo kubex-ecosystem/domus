@@ -436,8 +436,14 @@ func NewLeadConversationStore(ctx context.Context, conn *BackendConnection) (Lea
 }
 
 func NewIntegrationStore(ctx context.Context, conn *BackendConnection, mKey []byte) (IntegrationStore, error) {
-	factory := store.NewStoreFactory(conn.Driver)
-	return factory.IntegrationStore(ctx, mKey)
+	// O cofre de integrações precisa da chave-mestra de cifragem na construção,
+	// o que não cabe no factory keyless por nome ("integration" não está no
+	// registry). Usa o caminho keyed via executor, que injeta a mKey.
+	exec, err := conn.Driver.Executor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return store.NewIntegrationStoreFromExecutor(exec, mKey)
 }
 
 // NewSessionStoreFromExecutor cria um SessionStore a partir de um Executor.
