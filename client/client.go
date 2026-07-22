@@ -51,6 +51,13 @@ import (
 // StoreType é um alias para a interface base de stores.
 type StoreType = t.StoreType
 
+// IntegrationType — valores re-exportados para consumo externo via client.
+const (
+	IntegrationTypeMSSQLErp = integration.TypeMSSQLErp
+	IntegrationTypeRestAPI  = integration.TypeRestAPI
+	IntegrationTypeIMAP     = integration.TypeIMAP
+)
+
 // Type aliases for specific stores (re-export from stores.go)
 type (
 	UserStore             = user.UserStore
@@ -60,7 +67,11 @@ type (
 	PendingAccessStore    = pendingaccess.PendingAccessStore
 	ExternalMetadataStore = externalmetadata.ExternalMetadataStore
 	IntegrationStore      = integration.IntegrationStore
-	PropertyStore         = propertystore.PropertyStore
+	// Integration DTOs — re-export para consumo externo via client (gnyx etc.).
+	IntegrationConfig = integration.IntegrationConfig
+	IntegrationType   = integration.IntegrationType
+	SyncJob           = integration.SyncJob
+	PropertyStore     = propertystore.PropertyStore
 
 	// BMori stores
 	BMoriStore = bmori_store.BMoriStore
