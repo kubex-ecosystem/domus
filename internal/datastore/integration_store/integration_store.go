@@ -57,6 +57,14 @@ type IntegrationStore interface {
 	UpdateConfig(ctx context.Context, input *IntegrationConfig) (*IntegrationConfig, error)
 	// DeleteConfig remove uma config do tenant informado.
 	DeleteConfig(ctx context.Context, tenantID, id string) error
+	// ListActiveConfigs lista as configs ativas de TODOS os tenants, para
+	// processos de plano de fundo (ex.: poller de marketplace) que precisam
+	// descobrir o que existe no boot, sem contexto de usuário.
+	//
+	// Devolve o Settings COMO ARMAZENADO, ou seja, ainda cifrado — decifrar em
+	// massa espalharia credenciais por uma lista inteira. Para obter os segredos
+	// de uma config específica, use GetConfigByID.
+	ListActiveConfigs(ctx context.Context) ([]IntegrationConfig, error)
 
 	// Jobs
 	CreateJob(ctx context.Context, input *SyncJob) (*SyncJob, error)

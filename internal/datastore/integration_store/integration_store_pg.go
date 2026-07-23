@@ -211,6 +211,37 @@ func (s *pgIntegrationStore) ListConfigsByTenant(ctx context.Context, tenantID s
 	return configs, nil
 }
 
+// ListActiveConfigs lista as configs ativas de todos os tenants.
+//
+// NÃO decifra o Settings de propósito: o consumidor típico é um processo de
+// plano de fundo que só precisa saber quais conexões existem. Decifrar a lista
+// inteira colocaria as credenciais de todos os tenants em memória de uma vez,
+// sem necessidade. Quem precisa dos segredos chama GetConfigByID.
+func (s *pgIntegrationStore) ListActiveConfigs(ctx context.Context) ([]IntegrationConfig, error) {
+	const q = `
+		SELECT id, tenant_id, partner_id, type, name, settings, is_active, created_at, updated_at
+		FROM integration_config
+		WHERE is_active = true
+		ORDER BY created_at
+	`
+
+	rows, err := s.exec.Query(ctx, q)
+	if err != nil {
+		return nil, gl.Errorf("failed to list active integration configs: %v", err)
+	}
+	defer rows.Close()
+
+	var configs []IntegrationConfig
+	for rows.Next() {
+		config, err := scanIntegrationConfig(rows)
+		if err != nil {
+			return nil, gl.Errorf("failed to scan integration config: %v", err)
+		}
+		configs = append(configs, *config)
+	}
+	return configs, rows.Err()
+}
+
 // UpdateConfig atualiza a configuração blindando os dados sensíveis do JSONB.
 // Escopado por tenant: a cláusula WHERE exige tenant_id, impedindo que um tenant
 // sobrescreva a config de outro mesmo conhecendo o ID.
