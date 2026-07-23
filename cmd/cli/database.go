@@ -8,6 +8,10 @@ import (
 	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
 	"github.com/kubex-ecosystem/domus/internal/provider"
 	systemservice "github.com/kubex-ecosystem/domus/internal/services/system_service"
+
+	"github.com/kubex-ecosystem/domus/internal/extensions"
+	_ "github.com/kubex-ecosystem/domus/internal/extensions/schemas"
+
 	"github.com/kubex-ecosystem/ethyr/tools/flow"
 	"github.com/kubex-ecosystem/ethyr/tools/flow/fsm"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
@@ -180,6 +184,14 @@ func migrateDatabaseCmd() *cobra.Command {
 				if err := migratableStack.RunMigrations(ctx, &conn, endpoint.DBConfig.Migration); err != nil {
 					m.FSM.Trigger(EvMigrationFail)
 					return err
+				}
+
+				// Apply all registered schema extensions
+				exec, err := conn.Driver.Executor(ctx)
+				if err == nil && exec != nil {
+					if extErr := extensions.Global.ApplyAll(ctx, exec); extErr != nil {
+						gl.Warnf("Failed to apply schema extensions: %v", extErr)
+					}
 				}
 			}
 

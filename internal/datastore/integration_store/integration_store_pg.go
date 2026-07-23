@@ -211,6 +211,108 @@ func (s *pgIntegrationStore) ListConfigsByTenant(ctx context.Context, tenantID s
 	return configs, nil
 }
 
+// ListActiveConfigs lista as configs ativas de todos os tenants.
+//
+// NÃO decifra o Settings de propósito: o consumidor típico é um processo de
+// plano de fundo que só precisa saber quais conexões existem. Decifrar a lista
+// inteira colocaria as credenciais de todos os tenants em memória de uma vez,
+// sem necessidade. Quem precisa dos segredos chama GetConfigByID.
+func (s *pgIntegrationStore) ListActiveConfigs(ctx context.Context) ([]IntegrationConfig, error) {
+	const q = `
+		SELECT id, tenant_id, partner_id, type, name, settings, is_active, created_at, updated_at
+		FROM integration_config
+		WHERE is_active = true
+		ORDER BY created_at
+	`
+
+	rows, err := s.exec.Query(ctx, q)
+	if err != nil {
+		return nil, gl.Errorf("failed to list active integration configs: %v", err)
+	}
+	defer rows.Close()
+
+	var configs []IntegrationConfig
+	for rows.Next() {
+		config, err := scanIntegrationConfig(rows)
+		if err != nil {
+			return nil, gl.Errorf("failed to scan integration config: %v", err)
+		}
+		configs = append(configs, *config)
+	}
+	return configs, rows.Err()
+}
+
+// UpdateConfig atualiza a configuração blindando os dados sensíveis do JSONB.
+// Escopado por tenant: a cláusula WHERE exige tenant_id, impedindo que um tenant
+// sobrescreva a config de outro mesmo conhecendo o ID.
+func (s *pgIntegrationStore) UpdateConfig(ctx context.Context, input *IntegrationConfig) (*IntegrationConfig, error) {
+	if input == nil {
+		return nil, gl.Errorf("update input is required: %v", t.ErrInvalidInput)
+	}
+	if strings.TrimSpace(input.ID) == "" {
+		return nil, gl.Errorf("id is required: %v", t.ErrInvalidInput)
+	}
+	if strings.TrimSpace(input.TenantID) == "" {
+		return nil, gl.Errorf("tenant id is required: %v", t.ErrInvalidInput)
+	}
+	if strings.TrimSpace(input.Name) == "" {
+		return nil, gl.Errorf("name is required: %v", t.ErrInvalidInput)
+	}
+
+	// Sela os segredos antes de tocar o banco — mesmo caminho do CreateConfig.
+	secureSettings, err := s.encryptSensitiveFields(input.Settings)
+	if err != nil {
+		return nil, gl.Errorf("failed to encrypt settings: %v", err)
+	}
+
+	const q = `
+		UPDATE integration_config
+		SET partner_id = $3, type = $4, name = $5, settings = $6, is_active = $7, updated_at = $8
+		WHERE id = $1 AND tenant_id = $2
+		RETURNING id, tenant_id, partner_id, type, name, settings, is_active, created_at, updated_at
+	`
+
+	row := s.exec.QueryRow(ctx, q,
+		input.ID,
+		input.TenantID,
+		input.PartnerID,
+		input.Type,
+		input.Name,
+		secureSettings,
+		input.IsActive,
+		time.Now().UTC(),
+	)
+
+	config, err := scanIntegrationConfig(row)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil // inexistente ou de outro tenant
+		}
+		return nil, gl.Errorf("failed to update integration config: %v", err)
+	}
+
+	config.Settings, _ = s.decryptSensitiveFields(config.Settings)
+	return config, nil
+}
+
+// DeleteConfig remove a configuração do tenant informado.
+func (s *pgIntegrationStore) DeleteConfig(ctx context.Context, tenantID, id string) error {
+	if strings.TrimSpace(tenantID) == "" || strings.TrimSpace(id) == "" {
+		return gl.Errorf("tenant id and id are required: %v", t.ErrInvalidInput)
+	}
+
+	const q = `DELETE FROM integration_config WHERE id = $1 AND tenant_id = $2`
+
+	res, err := s.exec.Exec(ctx, q, id, tenantID)
+	if err != nil {
+		return gl.Errorf("failed to delete integration config: %v", err)
+	}
+	if res.RowsAffected() == 0 {
+		return gl.Errorf("integration config %s not found for tenant", id)
+	}
+	return nil
+}
+
 // ============================================================================
 // HELPERS DE CRIPTOGRAFIA DINÂMICA
 // ============================================================================
@@ -332,24 +434,20 @@ func (s *pgIntegrationStore) GetBySlug(ctx context.Context, tenantID string, slu
 	return config, nil
 }
 
+// Update delega para UpdateConfig. A versão anterior gravava config.Settings
+// CRU no JSONB — ou seja, persistia credenciais em texto puro, furando o cofre.
 func (s *pgIntegrationStore) Update(ctx context.Context, config *IntegrationConfig) error {
-	const q = `
-		UPDATE integration_config
-		SET tenant_id = $2, partner_id = $3, type = $4, name = $5, settings = $6, is_active = $7, updated_at = NOW()
-		WHERE id = $1
-	`
-
-	_, err := s.exec.Exec(ctx, q,
-		config.ID,
-		config.TenantID,
-		config.PartnerID,
-		config.Type,
-		config.Name,
-		config.Settings,
-		config.IsActive)
+	if config == nil {
+		return gl.Errorf("update input is required: %v", t.ErrInvalidInput)
+	}
+	updated, err := s.UpdateConfig(ctx, config)
 	if err != nil {
 		return err
 	}
+	if updated == nil {
+		return gl.Errorf("integration config %s not found for tenant", config.ID)
+	}
+	*config = *updated
 	return nil
 }
 

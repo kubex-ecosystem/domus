@@ -8,6 +8,13 @@ import (
 
 	"github.com/kubex-ecosystem/domus/internal/adapter"
 	st "github.com/kubex-ecosystem/domus/internal/datastore"
+	bmori_store "github.com/kubex-ecosystem/domus/internal/datastore/bmori_store"
+	ckcompanystore "github.com/kubex-ecosystem/domus/internal/datastore/ck_company_store"
+	ckinsumostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_insumo_store"
+	ckmessagestore "github.com/kubex-ecosystem/domus/internal/datastore/ck_message_store"
+	ckmovimentacaostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_movimentacao_store"
+	ckorderstore "github.com/kubex-ecosystem/domus/internal/datastore/ck_order_store"
+	ckprodutostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_produto_store"
 	commissionstore "github.com/kubex-ecosystem/domus/internal/datastore/commission_store"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
@@ -23,31 +30,51 @@ import (
 	propsharestore "github.com/kubex-ecosystem/domus/internal/datastore/property_share_store"
 	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
+	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
 	wappmsgstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_message_store"
 	wappwebhookstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_webhook_store"
 	en "github.com/kubex-ecosystem/domus/internal/engine"
+	"github.com/kubex-ecosystem/domus/internal/extensions"
 	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
+	"github.com/kubex-ecosystem/domus/internal/sqlsafe"
 	t "github.com/kubex-ecosystem/domus/internal/types"
 	kbxGet "github.com/kubex-ecosystem/kbx/get"
 	kbxIs "github.com/kubex-ecosystem/kbx/is"
 	gl "github.com/kubex-ecosystem/logz"
+
+	_ "github.com/kubex-ecosystem/domus/internal/extensions/schemas"
 )
 
 // StoreType é um alias para a interface base de stores.
 type StoreType = t.StoreType
 
+// IntegrationType — valores re-exportados para consumo externo via client.
+const (
+	IntegrationTypeMSSQLErp = integration.TypeMSSQLErp
+	IntegrationTypeRestAPI  = integration.TypeRestAPI
+	IntegrationTypeIMAP     = integration.TypeIMAP
+)
+
 // Type aliases for specific stores (re-export from stores.go)
 type (
 	UserStore             = user.UserStore
+	SessionStore          = sessionstore.SessionStore
 	InviteStore           = invite.InviteStore
 	CompanyStore          = company.CompanyStore
 	PendingAccessStore    = pendingaccess.PendingAccessStore
 	ExternalMetadataStore = externalmetadata.ExternalMetadataStore
 	IntegrationStore      = integration.IntegrationStore
-	PropertyStore         = propertystore.PropertyStore
+	// Integration DTOs — re-export para consumo externo via client (gnyx etc.).
+	IntegrationConfig = integration.IntegrationConfig
+	IntegrationType   = integration.IntegrationType
+	SyncJob           = integration.SyncJob
+	PropertyStore     = propertystore.PropertyStore
+
+	// BMori stores
+	BMoriStore = bmori_store.BMoriStore
 
 	// Limalar domain stores (Colonial NetImóveis)
 	PropertyShareStore    = propsharestore.PropertyShareStore
@@ -78,6 +105,14 @@ type (
 	// RBAC stores
 	RoleStore       = rolestore.RoleStore
 	MembershipStore = membershipstore.MembershipStore
+
+	// Cozinha Pass stores (KDS — shared kitchen)
+	CKCompanyStore      = ckcompanystore.CKCompanyStore
+	CKOrderStore        = ckorderstore.CKOrderStore
+	CKInsumoStore       = ckinsumostore.CKInsumoStore
+	CKProdutoStore      = ckprodutostore.CKProdutoStore
+	CKMessageStore      = ckmessagestore.CKMessageStore
+	CKMovimentacaoStore = ckmovimentacaostore.CKMovimentacaoStore
 )
 
 // BackendConnections is an alias for the database manager type.
@@ -109,11 +144,15 @@ type DSClient interface {
 
 	// Typed store helpers
 	GetUserStore(ctx context.Context, dbName string) (UserStore, error)
+	GetSessionStore(ctx context.Context, dbName string) (SessionStore, error)
 	GetInviteStore(ctx context.Context, dbName string) (InviteStore, error)
 	GetCompanyStore(ctx context.Context, dbName string) (CompanyStore, error)
 	GetPendingAccessStore(ctx context.Context, dbName string) (PendingAccessStore, error)
 	GetExternalMetadataStore(ctx context.Context, dbName string) (ExternalMetadataStore, error)
 	GetPropertyStore(ctx context.Context, dbName string) (PropertyStore, error)
+
+	// BMori stores
+	GetBMoriStore(ctx context.Context, dbName string) (BMoriStore, error)
 
 	// Limalar domain stores (Colonial NetImóveis)
 	GetPropertyShareStore(ctx context.Context, dbName string) (PropertyShareStore, error)
@@ -145,10 +184,21 @@ type DSClient interface {
 	GetRoleStore(ctx context.Context, dbName string) (RoleStore, error)
 	GetMembershipStore(ctx context.Context, dbName string) (MembershipStore, error)
 
+	// Cozinha Pass stores (KDS — shared kitchen)
+	GetCKCompanyStore(ctx context.Context, dbName string) (CKCompanyStore, error)
+	GetCKOrderStore(ctx context.Context, dbName string) (CKOrderStore, error)
+	GetCKInsumoStore(ctx context.Context, dbName string) (CKInsumoStore, error)
+	GetCKProdutoStore(ctx context.Context, dbName string) (CKProdutoStore, error)
+	GetCKMessageStore(ctx context.Context, dbName string) (CKMessageStore, error)
+	GetCKMovimentacaoStore(ctx context.Context, dbName string) (CKMovimentacaoStore, error)
+
 	// Adapter factory methods
 	NewAdapterFactory(ctx context.Context, dbName string, db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)
 	NewStoreOnlyAdapterFactory(ctx context.Context, dbName string) (*adapter.AdapterFactory, error)
 	NewORMOnlyAdapterFactory(db *BackendConnection, config *adapter.RepositoryConfig) (*adapter.AdapterFactory, error)
+
+	// Extension management
+	ApplyExtension(ctx context.Context, extID string) error
 }
 
 // DSClientImpl represents the data service client managing multiple backend connections.
@@ -388,4 +438,32 @@ func (c *DSClientImpl) NewORMOnlyAdapterFactory(db *BackendConnection, config *a
 	}
 
 	return adapter.NewORMOnlyFactory(db)
+}
+
+// ApplyExtension ensures that a modular extension schema is applied to the main database backend.
+func (c *DSClientImpl) ApplyExtension(ctx context.Context, extID string) error {
+	if err := c.validateBasics(); err != nil {
+		return err
+	}
+
+	conn, err := c.GetConn(ctx, "")
+	if err != nil {
+		return gl.Errorf("failed to get connection for extension %q: %v", extID, err)
+	}
+
+	exec, err := conn.Driver.Executor(ctx)
+	if err != nil {
+		return gl.Errorf("failed to get executor for extension %q: %v", extID, err)
+	}
+	if exec == nil {
+		return gl.Errorf("executor is nil for extension %q", extID)
+	}
+
+	return extensions.Global.Apply(ctx, exec, extID)
+}
+
+// Validate validates a SQL query for safety.
+// It returns an error if the query contains any unsafe operations.
+func Validate(sql string) error {
+	return sqlsafe.Validate(sql)
 }

@@ -158,8 +158,7 @@ func getMongoDatabaseSetup(ctx context.Context, d ci.IDockerService, services []
 // getPGDatabaseSetup gets the PG database setup
 func getPGDatabaseSetup(ctx context.Context, d ci.IDockerService, services []*ci.Services, dbConfig *kbx.DBConfig) ([]*ci.Services, error) {
 	// Check if the database is already running
-	ok := IsServiceRunning("kubexdb-pg")
-	if ok {
+	if IsServiceRunning("kubexdb-pg") {
 		logz.Log("debug", fmt.Sprintf("%s já está rodando!", "kubexdb-pg"))
 		return services, nil
 	}
@@ -258,6 +257,9 @@ func getPGDatabaseSetup(ctx context.Context, d ci.IDockerService, services []*ci
 		"kubexdb-pg",
 		"postgres:17-alpine",
 		map[string]string{
+			"UID": "388000594",
+			"GID": "388000594",
+
 			// Standard configs for Postgres container
 			"POSTGRES_APPLICATION_NAME": dbConfig.Name,
 			// "POSTGRES_SERVICE_NAME":      "domus_service",

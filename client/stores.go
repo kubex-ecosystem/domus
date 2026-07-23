@@ -5,6 +5,12 @@ import (
 
 	"github.com/kubex-ecosystem/domus/internal/adapter"
 	store "github.com/kubex-ecosystem/domus/internal/datastore"
+	ckcompanystore "github.com/kubex-ecosystem/domus/internal/datastore/ck_company_store"
+	ckinsumostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_insumo_store"
+	ckmessagestore "github.com/kubex-ecosystem/domus/internal/datastore/ck_message_store"
+	ckmovimentacaostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_movimentacao_store"
+	ckorderstore "github.com/kubex-ecosystem/domus/internal/datastore/ck_order_store"
+	ckprodutostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_produto_store"
 	commissionstore "github.com/kubex-ecosystem/domus/internal/datastore/commission_store"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
@@ -19,6 +25,7 @@ import (
 	propsharestore "github.com/kubex-ecosystem/domus/internal/datastore/property_share_store"
 	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
+	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
@@ -35,6 +42,9 @@ type (
 	CreateUserInput = user.CreateUserInput
 	UpdateUserInput = user.UpdateUserInput
 	UserFilters     = user.UserFilters
+
+	// Session types
+	Session = sessionstore.Session
 
 	Executor = execution.Executor
 
@@ -139,6 +149,38 @@ type (
 	CreateVisitEventInput = visiteventstore.CreateVisitEventInput
 	VisitEventFilters     = visiteventstore.VisitEventFilters
 
+	// Cozinha Pass types (KDS — shared kitchen)
+	CKCompany            = ckcompanystore.CKCompany
+	CreateCKCompanyInput = ckcompanystore.CreateCKCompanyInput
+	UpdateCKCompanyInput = ckcompanystore.UpdateCKCompanyInput
+	CKCompanyFilters     = ckcompanystore.CKCompanyFilters
+
+	CKOrder                  = ckorderstore.CKOrder
+	CKOrderItem              = ckorderstore.CKOrderItem
+	CreateCKOrderInput       = ckorderstore.CreateCKOrderInput
+	CreateCKOrderItemInput   = ckorderstore.CreateCKOrderItemInput
+	UpdateCKOrderStatusInput = ckorderstore.UpdateCKOrderStatusInput
+	CKOrderFilters           = ckorderstore.CKOrderFilters
+
+	CKInsumo            = ckinsumostore.CKInsumo
+	CreateCKInsumoInput = ckinsumostore.CreateCKInsumoInput
+	UpdateCKInsumoInput = ckinsumostore.UpdateCKInsumoInput
+	CKInsumoFilters     = ckinsumostore.CKInsumoFilters
+
+	CKProduto               = ckprodutostore.CKProduto
+	CKComponente            = ckprodutostore.CKComponente
+	CreateCKProdutoInput    = ckprodutostore.CreateCKProdutoInput
+	UpdateCKProdutoInput    = ckprodutostore.UpdateCKProdutoInput
+	CreateCKComponenteInput = ckprodutostore.CreateCKComponenteInput
+	CKProdutoFilters        = ckprodutostore.CKProdutoFilters
+
+	CKMessage            = ckmessagestore.CKMessage
+	CreateCKMessageInput = ckmessagestore.CreateCKMessageInput
+	CKMessageFilters     = ckmessagestore.CKMessageFilters
+
+	CKMovimentacao             = ckmovimentacaostore.CKMovimentacao
+	RegistrarMovimentacaoInput = ckmovimentacaostore.RegistrarMovimentacaoInput
+
 	// Adapter types - apenas os não-genéricos
 	AdapterFactory   = adapter.AdapterFactory
 	RepositoryConfig = adapter.RepositoryConfig
@@ -175,6 +217,17 @@ func (c *DSClientImpl) GetUserStore(ctx context.Context, dbName string) (UserSto
 
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.UserStore(ctx)
+}
+
+// GetSessionStore é um helper para obter SessionStore diretamente.
+func (c *DSClientImpl) GetSessionStore(ctx context.Context, dbName string) (SessionStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SessionStore(ctx)
 }
 
 // GetInviteStore é um helper para obter InviteStore diretamente.
@@ -292,6 +345,16 @@ func (c *DSClientImpl) GetMembershipStore(ctx context.Context, dbName string) (M
 	return factory.MembershipStore(ctx)
 }
 
+// GetBMoriStore é um helper para obter BMoriStore diretamente.
+func (c *DSClientImpl) GetBMoriStore(ctx context.Context, dbName string) (BMoriStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.BMoriStore(ctx)
+}
+
 // NewWappWebhookStore cria um WappWebhookStore a partir de uma conexão.
 func NewWappWebhookStore(ctx context.Context, conn *BackendConnection) (WappWebhookStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
@@ -316,6 +379,12 @@ func NewMembershipStore(ctx context.Context, conn *BackendConnection) (Membershi
 func NewUserStore(ctx context.Context, conn *BackendConnection) (UserStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.UserStore(ctx)
+}
+
+// NewSessionStore cria um SessionStore a partir de uma conexão.
+func NewSessionStore(ctx context.Context, conn *BackendConnection) (SessionStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SessionStore(ctx)
 }
 
 // NewInviteStore cria um InviteStore a partir de uma conexão.
@@ -367,8 +436,19 @@ func NewLeadConversationStore(ctx context.Context, conn *BackendConnection) (Lea
 }
 
 func NewIntegrationStore(ctx context.Context, conn *BackendConnection, mKey []byte) (IntegrationStore, error) {
-	factory := store.NewStoreFactory(conn.Driver)
-	return factory.IntegrationStore(ctx, mKey)
+	// O cofre de integrações precisa da chave-mestra de cifragem na construção,
+	// o que não cabe no factory keyless por nome ("integration" não está no
+	// registry). Usa o caminho keyed via executor, que injeta a mKey.
+	exec, err := conn.Driver.Executor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return store.NewIntegrationStoreFromExecutor(exec, mKey)
+}
+
+// NewSessionStoreFromExecutor cria um SessionStore a partir de um Executor.
+func NewSessionStoreFromExecutor(exec Executor) (SessionStore, error) {
+	return store.NewSessionStoreFromExecutor(exec)
 }
 
 // GetLeadEventStore é um helper para obter LeadEventStore diretamente.
@@ -529,6 +609,102 @@ func (c *DSClientImpl) GetVisitEventStore(ctx context.Context, dbName string) (V
 func NewVisitEventStore(ctx context.Context, conn *BackendConnection) (VisitEventStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.VisitEventStore(ctx)
+}
+
+// GetCKCompanyStore é um helper para obter CKCompanyStore diretamente.
+func (c *DSClientImpl) GetCKCompanyStore(ctx context.Context, dbName string) (CKCompanyStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKCompanyStore(ctx)
+}
+
+// GetCKOrderStore é um helper para obter CKOrderStore diretamente.
+func (c *DSClientImpl) GetCKOrderStore(ctx context.Context, dbName string) (CKOrderStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKOrderStore(ctx)
+}
+
+// GetCKInsumoStore é um helper para obter CKInsumoStore diretamente.
+func (c *DSClientImpl) GetCKInsumoStore(ctx context.Context, dbName string) (CKInsumoStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKInsumoStore(ctx)
+}
+
+// GetCKProdutoStore é um helper para obter CKProdutoStore diretamente.
+func (c *DSClientImpl) GetCKProdutoStore(ctx context.Context, dbName string) (CKProdutoStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKProdutoStore(ctx)
+}
+
+// GetCKMessageStore é um helper para obter CKMessageStore diretamente.
+func (c *DSClientImpl) GetCKMessageStore(ctx context.Context, dbName string) (CKMessageStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKMessageStore(ctx)
+}
+
+// GetCKMovimentacaoStore é um helper para obter CKMovimentacaoStore diretamente.
+func (c *DSClientImpl) GetCKMovimentacaoStore(ctx context.Context, dbName string) (CKMovimentacaoStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKMovimentacaoStore(ctx)
+}
+
+// NewCKCompanyStore cria um CKCompanyStore a partir de uma conexão.
+func NewCKCompanyStore(ctx context.Context, conn *BackendConnection) (CKCompanyStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKCompanyStore(ctx)
+}
+
+// NewCKOrderStore cria um CKOrderStore a partir de uma conexão.
+func NewCKOrderStore(ctx context.Context, conn *BackendConnection) (CKOrderStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKOrderStore(ctx)
+}
+
+// NewCKInsumoStore cria um CKInsumoStore a partir de uma conexão.
+func NewCKInsumoStore(ctx context.Context, conn *BackendConnection) (CKInsumoStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKInsumoStore(ctx)
+}
+
+// NewCKProdutoStore cria um CKProdutoStore a partir de uma conexão.
+func NewCKProdutoStore(ctx context.Context, conn *BackendConnection) (CKProdutoStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKProdutoStore(ctx)
+}
+
+// NewCKMessageStore cria um CKMessageStore a partir de uma conexão.
+func NewCKMessageStore(ctx context.Context, conn *BackendConnection) (CKMessageStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKMessageStore(ctx)
+}
+
+// NewCKMovimentacaoStore cria um CKMovimentacaoStore a partir de uma conexão.
+func NewCKMovimentacaoStore(ctx context.Context, conn *BackendConnection) (CKMovimentacaoStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKMovimentacaoStore(ctx)
 }
 
 // DefaultRepositoryConfig retorna a configuração padrão do adapter.

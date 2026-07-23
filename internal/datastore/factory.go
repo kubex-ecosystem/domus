@@ -8,6 +8,13 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/execution"
 	"github.com/kubex-ecosystem/domus/internal/provider/flavors"
 
+	bmoristore "github.com/kubex-ecosystem/domus/internal/datastore/bmori_store"
+	ckcompanystore "github.com/kubex-ecosystem/domus/internal/datastore/ck_company_store"
+	ckinsumostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_insumo_store"
+	ckmessagestore "github.com/kubex-ecosystem/domus/internal/datastore/ck_message_store"
+	ckmovimentacaostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_movimentacao_store"
+	ckorderstore "github.com/kubex-ecosystem/domus/internal/datastore/ck_order_store"
+	ckprodutostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_produto_store"
 	commissionstore "github.com/kubex-ecosystem/domus/internal/datastore/commission_store"
 	c "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
@@ -24,6 +31,7 @@ import (
 	prop "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
 	s "github.com/kubex-ecosystem/domus/internal/datastore/schemas_store"
+	session "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	u "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
@@ -75,6 +83,19 @@ func (f *StoreFactory) GetMetadata(storeName string) (*t.StoreMetadata, error) {
 	return GetStoreMetadata(f.driverName, storeName)
 }
 
+// BMoriStore cria um BMoriStore (helper específico).
+func (f *StoreFactory) BMoriStore(ctx context.Context) (bmoristore.BMoriStore, error) {
+	store, err := f.Create(ctx, "bmori")
+	if err != nil {
+		return nil, err
+	}
+	bMoriStore, ok := store.(bmoristore.BMoriStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a BMoriStore")
+	}
+	return bMoriStore, nil
+}
+
 // UserStore cria um UserStore (helper específico).
 func (f *StoreFactory) UserStore(ctx context.Context) (u.UserStore, error) {
 	store, err := f.Create(ctx, "user")
@@ -86,6 +107,19 @@ func (f *StoreFactory) UserStore(ctx context.Context) (u.UserStore, error) {
 		return nil, fmt.Errorf("store is not a UserStore")
 	}
 	return userStore, nil
+}
+
+// SessionStore cria um SessionStore (helper específico).
+func (f *StoreFactory) SessionStore(ctx context.Context) (session.SessionStore, error) {
+	store, err := f.Create(ctx, "session")
+	if err != nil {
+		return nil, err
+	}
+	sessionStore, ok := store.(session.SessionStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a SessionStore")
+	}
+	return sessionStore, nil
 }
 
 // InviteStore cria um InviteStore (helper específico).
@@ -212,6 +246,20 @@ func NewUserStoreFromExecutor(exec execution.Executor) (u.UserStore, error) {
 	}
 
 	return u.NewPGUserStore(pgExec), nil
+}
+
+// NewSessionStoreFromExecutor cria SessionStore diretamente de um Executor.
+func NewSessionStoreFromExecutor(exec execution.Executor) (session.SessionStore, error) {
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("session store requires Postgres backend, got %s", exec.Kind())
+	}
+
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+
+	return session.NewPGSessionStore(pgExec), nil
 }
 
 // NewInviteStoreFromExecutor cria InviteStore diretamente de um Executor.
@@ -747,6 +795,164 @@ func NewVisitEventStoreFromExecutor(exec execution.Executor) (visiteventstore.Vi
 		return nil, fmt.Errorf("PGExecutor is nil")
 	}
 	return visiteventstore.NewPGVisitEventStore(pgExec), nil
+}
+
+// ── Cozinha Pass (KDS) ───────────────────────────────────────────────────────
+
+func (f *StoreFactory) CKCompanyStore(ctx context.Context) (ckcompanystore.CKCompanyStore, error) {
+	store, err := f.Create(ctx, "ck_company")
+	if err != nil {
+		return nil, err
+	}
+	s, ok := store.(ckcompanystore.CKCompanyStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a CKCompanyStore")
+	}
+	return s, nil
+}
+
+func NewCKCompanyStoreFromExecutor(exec execution.Executor) (ckcompanystore.CKCompanyStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("ck_company store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return ckcompanystore.NewPGCKCompanyStore(pgExec), nil
+}
+
+func (f *StoreFactory) CKOrderStore(ctx context.Context) (ckorderstore.CKOrderStore, error) {
+	store, err := f.Create(ctx, "ck_order")
+	if err != nil {
+		return nil, err
+	}
+	s, ok := store.(ckorderstore.CKOrderStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a CKOrderStore")
+	}
+	return s, nil
+}
+
+func NewCKOrderStoreFromExecutor(exec execution.Executor) (ckorderstore.CKOrderStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("ck_order store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return ckorderstore.NewPGCKOrderStore(pgExec), nil
+}
+
+func (f *StoreFactory) CKInsumoStore(ctx context.Context) (ckinsumostore.CKInsumoStore, error) {
+	store, err := f.Create(ctx, "ck_insumo")
+	if err != nil {
+		return nil, err
+	}
+	s, ok := store.(ckinsumostore.CKInsumoStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a CKInsumoStore")
+	}
+	return s, nil
+}
+
+func NewCKInsumoStoreFromExecutor(exec execution.Executor) (ckinsumostore.CKInsumoStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("ck_insumo store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return ckinsumostore.NewPGCKInsumoStore(pgExec), nil
+}
+
+func (f *StoreFactory) CKProdutoStore(ctx context.Context) (ckprodutostore.CKProdutoStore, error) {
+	store, err := f.Create(ctx, "ck_produto")
+	if err != nil {
+		return nil, err
+	}
+	s, ok := store.(ckprodutostore.CKProdutoStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a CKProdutoStore")
+	}
+	return s, nil
+}
+
+func NewCKProdutoStoreFromExecutor(exec execution.Executor) (ckprodutostore.CKProdutoStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("ck_produto store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return ckprodutostore.NewPGCKProdutoStore(pgExec), nil
+}
+
+func (f *StoreFactory) CKMessageStore(ctx context.Context) (ckmessagestore.CKMessageStore, error) {
+	store, err := f.Create(ctx, "ck_message")
+	if err != nil {
+		return nil, err
+	}
+	s, ok := store.(ckmessagestore.CKMessageStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a CKMessageStore")
+	}
+	return s, nil
+}
+
+func NewCKMessageStoreFromExecutor(exec execution.Executor) (ckmessagestore.CKMessageStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("ck_message store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return ckmessagestore.NewPGCKMessageStore(pgExec), nil
+}
+
+func (f *StoreFactory) CKMovimentacaoStore(ctx context.Context) (ckmovimentacaostore.CKMovimentacaoStore, error) {
+	store, err := f.Create(ctx, "ck_movimentacao")
+	if err != nil {
+		return nil, err
+	}
+	s, ok := store.(ckmovimentacaostore.CKMovimentacaoStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a CKMovimentacaoStore")
+	}
+	return s, nil
+}
+
+func NewCKMovimentacaoStoreFromExecutor(exec execution.Executor) (ckmovimentacaostore.CKMovimentacaoStore, error) {
+	if exec == nil {
+		return nil, fmt.Errorf("executor is nil")
+	}
+	if exec.Kind() != execution.BackendPostgres {
+		return nil, fmt.Errorf("ck_movimentacao store requires Postgres, got %s", exec.Kind())
+	}
+	pgExec := exec.PG()
+	if pgExec == nil {
+		return nil, fmt.Errorf("PGExecutor is nil")
+	}
+	return ckmovimentacaostore.NewPGCKMovimentacaoStore(pgExec), nil
 }
 
 // suppress unused import warnings for reflect (used in init.go via same package)
