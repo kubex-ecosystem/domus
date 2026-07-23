@@ -52,6 +52,11 @@ type IntegrationStore interface {
 	CreateConfig(ctx context.Context, input *IntegrationConfig) (*IntegrationConfig, error)
 	GetConfigByID(ctx context.Context, id string) (*IntegrationConfig, error)
 	ListConfigsByTenant(ctx context.Context, tenantID string) ([]IntegrationConfig, error)
+	// UpdateConfig atualiza uma config cifrando os campos sensíveis do Settings,
+	// escopado por tenant (não permite escrita cruzada entre tenants).
+	UpdateConfig(ctx context.Context, input *IntegrationConfig) (*IntegrationConfig, error)
+	// DeleteConfig remove uma config do tenant informado.
+	DeleteConfig(ctx context.Context, tenantID, id string) error
 
 	// Jobs
 	CreateJob(ctx context.Context, input *SyncJob) (*SyncJob, error)
