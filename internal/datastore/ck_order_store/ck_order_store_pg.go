@@ -32,13 +32,13 @@ func (s *pgCKOrderStore) Create(ctx context.Context, input *CreateCKOrderInput) 
 	now := time.Now().UTC()
 	const q = `
 		INSERT INTO cozinha_pass.orders
-			(company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at)
-		VALUES ($1,$2,$3,$4,'new',$5,$6,$7,$8,$8)
-		RETURNING id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at
+			(company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at, external_id)
+		VALUES ($1,$2,$3,$4,'new',$5,$6,$7,$8,$8,$9)
+		RETURNING id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at, external_id
 	`
 	row := s.exec.QueryRow(ctx, q,
 		input.CompanyID, input.Ticket, input.ClientName, input.Channel,
-		input.Destination, input.Note, input.TotalValue, now,
+		input.Destination, input.Note, input.TotalValue, now, input.ExternalID,
 	)
 	order, err := scanCKOrder(row)
 	if err != nil {
@@ -66,7 +66,7 @@ func (s *pgCKOrderStore) GetByID(ctx context.Context, id string) (*CKOrder, erro
 		return nil, nil
 	}
 	const q = `
-		SELECT id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at
+		SELECT id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at, external_id
 		FROM cozinha_pass.orders WHERE id = $1
 	`
 	row := s.exec.QueryRow(ctx, q, id)
@@ -90,7 +90,7 @@ func (s *pgCKOrderStore) GetByTicket(ctx context.Context, companyID, ticket stri
 		return nil, nil
 	}
 	const q = `
-		SELECT id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at
+		SELECT id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at, external_id
 		FROM cozinha_pass.orders WHERE company_id = $1 AND ticket = $2
 	`
 	row := s.exec.QueryRow(ctx, q, companyID, ticket)
@@ -109,6 +109,30 @@ func (s *pgCKOrderStore) GetByTicket(ctx context.Context, companyID, ticket stri
 	return order, nil
 }
 
+func (s *pgCKOrderStore) GetByExternalID(ctx context.Context, companyID, externalID string) (*CKOrder, error) {
+	if strings.TrimSpace(companyID) == "" || strings.TrimSpace(externalID) == "" {
+		return nil, nil
+	}
+	const q = `
+		SELECT id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at, external_id
+		FROM cozinha_pass.orders WHERE company_id = $1 AND external_id = $2
+	`
+	row := s.exec.QueryRow(ctx, q, companyID, externalID)
+	order, err := scanCKOrder(row)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to get ck order by external_id: %w", err)
+	}
+	items, err := s.ListItems(ctx, order.ID)
+	if err != nil {
+		return nil, err
+	}
+	order.Items = items
+	return order, nil
+}
+
 func (s *pgCKOrderStore) UpdateStatus(ctx context.Context, input *UpdateCKOrderStatusInput) (*CKOrder, error) {
 	if input == nil || strings.TrimSpace(input.ID) == "" {
 		return nil, fmt.Errorf("id is required: %w", t.ErrInvalidInput)
@@ -116,7 +140,7 @@ func (s *pgCKOrderStore) UpdateStatus(ctx context.Context, input *UpdateCKOrderS
 	const q = `
 		UPDATE cozinha_pass.orders SET status = $1, updated_at = $2
 		WHERE id = $3
-		RETURNING id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at
+		RETURNING id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at, external_id
 	`
 	row := s.exec.QueryRow(ctx, q, input.Status, time.Now().UTC(), input.ID)
 	order, err := scanCKOrder(row)
@@ -189,7 +213,7 @@ func (s *pgCKOrderStore) List(ctx context.Context, filters *CKOrderFilters) (*t.
 
 	args = append(args, limit, offset)
 	rows, err := s.exec.Query(ctx, fmt.Sprintf(`
-		SELECT id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at
+		SELECT id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at, external_id
 		FROM cozinha_pass.orders %s
 		ORDER BY created_at DESC LIMIT $%d OFFSET $%d
 	`, where, idx, idx+1), args...)
@@ -245,7 +269,7 @@ func scanCKOrder(scanner interface{ Scan(...any) error }) (*CKOrder, error) {
 	var createdAt, updatedAt time.Time
 	err := scanner.Scan(
 		&o.ID, &o.CompanyID, &o.Ticket, &o.ClientName, &o.Channel,
-		&o.Status, &o.Destination, &o.Note, &o.TotalValue, &createdAt, &updatedAt,
+		&o.Status, &o.Destination, &o.Note, &o.TotalValue, &createdAt, &updatedAt, &o.ExternalID,
 	)
 	if err != nil {
 		return nil, err

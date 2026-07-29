@@ -95,13 +95,22 @@ func (s *CozinhaPassSchema) Statements() []string {
 			destination TEXT,
 			note        TEXT,
 			total_value NUMERIC(12,2) NOT NULL DEFAULT 0,
+			external_id TEXT,
 			created_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
 			updated_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
 			UNIQUE (company_id, ticket)
 		)`,
 
+		// external_id: ID do pedido na plataforma de origem (idempotência de
+		// marketplace). ADD COLUMN IF NOT EXISTS cobre installs anteriores à coluna.
+		`ALTER TABLE cozinha_pass.orders ADD COLUMN IF NOT EXISTS external_id TEXT`,
+
 		`CREATE INDEX IF NOT EXISTS idx_ck_orders_company_status  ON cozinha_pass.orders (company_id, status)`,
 		`CREATE INDEX IF NOT EXISTS idx_ck_orders_company_created ON cozinha_pass.orders (company_id, created_at DESC)`,
+		// Idempotência: um pedido externo entra uma vez por empresa. Parcial —
+		// pedidos manuais (external_id NULL) não colidem entre si.
+		`CREATE UNIQUE INDEX IF NOT EXISTS uq_ck_orders_company_external
+			ON cozinha_pass.orders (company_id, external_id) WHERE external_id IS NOT NULL`,
 
 		`CREATE TABLE IF NOT EXISTS cozinha_pass.order_item (
 			id         UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
