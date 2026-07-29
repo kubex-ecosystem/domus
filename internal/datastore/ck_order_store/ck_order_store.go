@@ -27,6 +27,10 @@ type CKOrder struct {
 	Destination *string       `json:"destination,omitempty"`
 	Note        *string       `json:"note,omitempty"`
 	TotalValue  float64       `json:"total_value"`
+	// ExternalID é o ID do pedido na plataforma de origem (ex. order.id do iFood).
+	// Chave de idempotência estável — o Ticket é o número curto visível na comanda,
+	// que pode repetir entre lojas/dias. Nulo em pedidos manuais/sem origem externa.
+	ExternalID  *string       `json:"external_id,omitempty"`
 	CreatedAt   *time.Time    `json:"created_at,omitempty"`
 	UpdatedAt   *time.Time    `json:"updated_at,omitempty"`
 	Items       []CKOrderItem `json:"items,omitempty"`
@@ -48,6 +52,7 @@ type CreateCKOrderInput struct {
 	Destination *string
 	Note        *string
 	TotalValue  float64
+	ExternalID  *string // ID na plataforma de origem (idempotência); nulo se manual
 	Items       []CreateCKOrderItemInput
 }
 
@@ -70,6 +75,9 @@ type CKOrderStore interface {
 	Create(ctx context.Context, input *CreateCKOrderInput) (*CKOrder, error)
 	GetByID(ctx context.Context, id string) (*CKOrder, error)
 	GetByTicket(ctx context.Context, companyID, ticket string) (*CKOrder, error)
+	// GetByExternalID busca por (empresa, ID da plataforma de origem) — a via de
+	// idempotência de pedidos de marketplace. (nil,nil) se não existir.
+	GetByExternalID(ctx context.Context, companyID, externalID string) (*CKOrder, error)
 	UpdateStatus(ctx context.Context, input *UpdateCKOrderStatusInput) (*CKOrder, error)
 	Delete(ctx context.Context, id string) error
 	List(ctx context.Context, filters *CKOrderFilters) (*t.PaginatedResult[CKOrder], error)
