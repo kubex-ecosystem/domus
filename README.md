@@ -2,6 +2,8 @@
 
 Portuguese (Brazil) version: [docs/README.pt-BR.md](./docs/README.pt-BR.md)
 
+Ecosystem architecture blueprint: [gnyx/docs/BLUEPRINT.md](https://github.com/kubex-ecosystem/gnyx/blob/main/docs/BLUEPRINT.md) — how this repository fits into the wider Kubex platform.
+
 ## Table of Contents
 
 - [Overview](#overview)
