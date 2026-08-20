@@ -32,6 +32,10 @@ import (
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
 	s "github.com/kubex-ecosystem/domus/internal/datastore/schemas_store"
 	session "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
+	siftleadeventstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_event_store"
+	siftleadstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_store"
+	siftstagestore "github.com/kubex-ecosystem/domus/internal/datastore/sift_stage_store"
+	siftturmastore "github.com/kubex-ecosystem/domus/internal/datastore/sift_turma_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	u "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
@@ -833,6 +837,66 @@ func (f *StoreFactory) CKOrderStore(ctx context.Context) (ckorderstore.CKOrderSt
 	s, ok := store.(ckorderstore.CKOrderStore)
 	if !ok {
 		return nil, fmt.Errorf("store is not a CKOrderStore")
+	}
+	return s, nil
+}
+
+// SiftStageStore devolve o store de sift_stage do Sift. Caminho keyless: nenhum campo do
+// Sift é cifrado, então o factory por nome serve (ao contrário do
+// IntegrationStore, que precisa da chave-mestra na construção).
+func (f *StoreFactory) SiftStageStore(ctx context.Context) (siftstagestore.SiftStageStore, error) {
+	store, err := f.Create(ctx, "sift_stage")
+	if err != nil {
+		return nil, err
+	}
+	s, ok := store.(siftstagestore.SiftStageStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a SiftStageStore")
+	}
+	return s, nil
+}
+
+// SiftTurmaStore devolve o store de sift_turma do Sift. Caminho keyless: nenhum campo do
+// Sift é cifrado, então o factory por nome serve (ao contrário do
+// IntegrationStore, que precisa da chave-mestra na construção).
+func (f *StoreFactory) SiftTurmaStore(ctx context.Context) (siftturmastore.SiftTurmaStore, error) {
+	store, err := f.Create(ctx, "sift_turma")
+	if err != nil {
+		return nil, err
+	}
+	s, ok := store.(siftturmastore.SiftTurmaStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a SiftTurmaStore")
+	}
+	return s, nil
+}
+
+// SiftLeadStore devolve o store de sift_lead do Sift. Caminho keyless: nenhum campo do
+// Sift é cifrado, então o factory por nome serve (ao contrário do
+// IntegrationStore, que precisa da chave-mestra na construção).
+func (f *StoreFactory) SiftLeadStore(ctx context.Context) (siftleadstore.SiftLeadStore, error) {
+	store, err := f.Create(ctx, "sift_lead")
+	if err != nil {
+		return nil, err
+	}
+	s, ok := store.(siftleadstore.SiftLeadStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a SiftLeadStore")
+	}
+	return s, nil
+}
+
+// SiftLeadEventStore devolve o store de sift_lead_event do Sift. Caminho keyless: nenhum campo do
+// Sift é cifrado, então o factory por nome serve (ao contrário do
+// IntegrationStore, que precisa da chave-mestra na construção).
+func (f *StoreFactory) SiftLeadEventStore(ctx context.Context) (siftleadeventstore.SiftLeadEventStore, error) {
+	store, err := f.Create(ctx, "sift_lead_event")
+	if err != nil {
+		return nil, err
+	}
+	s, ok := store.(siftleadeventstore.SiftLeadEventStore)
+	if !ok {
+		return nil, fmt.Errorf("store is not a SiftLeadEventStore")
 	}
 	return s, nil
 }

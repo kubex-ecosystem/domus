@@ -31,6 +31,10 @@ import (
 	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
 	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
+	siftleadeventstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_event_store"
+	siftleadstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_store"
+	siftstagestore "github.com/kubex-ecosystem/domus/internal/datastore/sift_stage_store"
+	siftturmastore "github.com/kubex-ecosystem/domus/internal/datastore/sift_turma_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
@@ -113,6 +117,12 @@ type (
 	CKProdutoStore      = ckprodutostore.CKProdutoStore
 	CKMessageStore      = ckmessagestore.CKMessageStore
 	CKMovimentacaoStore = ckmovimentacaostore.CKMovimentacaoStore
+
+	// Sift stores (CRM de captação — Growth Production)
+	SiftStageStore     = siftstagestore.SiftStageStore
+	SiftTurmaStore     = siftturmastore.SiftTurmaStore
+	SiftLeadStore      = siftleadstore.SiftLeadStore
+	SiftLeadEventStore = siftleadeventstore.SiftLeadEventStore
 )
 
 // BackendConnections is an alias for the database manager type.

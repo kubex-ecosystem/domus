@@ -26,6 +26,10 @@ import (
 	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
 	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
+	siftleadeventstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_event_store"
+	siftleadstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_store"
+	siftstagestore "github.com/kubex-ecosystem/domus/internal/datastore/sift_stage_store"
+	siftturmastore "github.com/kubex-ecosystem/domus/internal/datastore/sift_turma_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
@@ -154,6 +158,20 @@ type (
 	CreateCKCompanyInput = ckcompanystore.CreateCKCompanyInput
 	UpdateCKCompanyInput = ckcompanystore.UpdateCKCompanyInput
 	CKCompanyFilters     = ckcompanystore.CKCompanyFilters
+
+	// Sift types (CRM de captação — Growth Production)
+	SiftStage            = siftstagestore.Stage
+	UpsertSiftStageInput = siftstagestore.UpsertStageInput
+
+	SiftTurma            = siftturmastore.Turma
+	CreateSiftTurmaInput = siftturmastore.CreateTurmaInput
+
+	SiftLead            = siftleadstore.Lead
+	CreateSiftLeadInput = siftleadstore.CreateLeadInput
+	SiftLeadFilters     = siftleadstore.LeadFilters
+
+	SiftLeadEvent            = siftleadeventstore.LeadEvent
+	CreateSiftLeadEventInput = siftleadeventstore.CreateLeadEventInput
 
 	CKOrder                  = ckorderstore.CKOrder
 	CKOrderItem              = ckorderstore.CKOrderItem
@@ -675,6 +693,30 @@ func (c *DSClientImpl) GetCKMovimentacaoStore(ctx context.Context, dbName string
 func NewCKCompanyStore(ctx context.Context, conn *BackendConnection) (CKCompanyStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.CKCompanyStore(ctx)
+}
+
+// NewSiftStageStore cria um SiftStageStore a partir de uma conexão.
+func NewSiftStageStore(ctx context.Context, conn *BackendConnection) (SiftStageStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SiftStageStore(ctx)
+}
+
+// NewSiftTurmaStore cria um SiftTurmaStore a partir de uma conexão.
+func NewSiftTurmaStore(ctx context.Context, conn *BackendConnection) (SiftTurmaStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SiftTurmaStore(ctx)
+}
+
+// NewSiftLeadStore cria um SiftLeadStore a partir de uma conexão.
+func NewSiftLeadStore(ctx context.Context, conn *BackendConnection) (SiftLeadStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SiftLeadStore(ctx)
+}
+
+// NewSiftLeadEventStore cria um SiftLeadEventStore a partir de uma conexão.
+func NewSiftLeadEventStore(ctx context.Context, conn *BackendConnection) (SiftLeadEventStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SiftLeadEventStore(ctx)
 }
 
 // NewCKOrderStore cria um CKOrderStore a partir de uma conexão.

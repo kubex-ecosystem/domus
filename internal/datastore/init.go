@@ -25,6 +25,10 @@ import (
 	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
 	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
 	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
+	siftleadeventstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_event_store"
+	siftleadstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_store"
+	siftstagestore "github.com/kubex-ecosystem/domus/internal/datastore/sift_stage_store"
+	siftturmastore "github.com/kubex-ecosystem/domus/internal/datastore/sift_turma_store"
 	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	userstore "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
 	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
@@ -818,6 +822,110 @@ func registerPostgresStores() {
 	}
 	if err := RegisterStore(driverName, "ck_order", ckOrderMetadata, ckOrderFactory); err != nil {
 		gl.Errorf("Failed to register ck_order store: %v", err)
+	}
+
+	siftStageMetadata := &t.StoreMetadata{
+		Name:         "sift_stage",
+		Type:         reflect.TypeFor[siftstagestore.Stage](),
+		DriverName:   driverName,
+		Description:  "Sift — estágios do pipeline (dado, não código: a operação reordena sem deploy)",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "upsert_idempotente", "tenant_scoped"},
+	}
+	siftStageFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("sift_stage store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return siftstagestore.NewPGSiftStageStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "sift_stage", siftStageMetadata, siftStageFactory); err != nil {
+		gl.Errorf("Failed to register sift_stage store: %v", err)
+	}
+
+	siftTurmaMetadata := &t.StoreMetadata{
+		Name:         "sift_turma",
+		Type:         reflect.TypeFor[siftturmastore.Turma](),
+		DriverName:   driverName,
+		Description:  "Sift — turmas; resolvidas por landing_slug global na landing anônima",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "slug_lookup", "tenant_scoped"},
+	}
+	siftTurmaFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("sift_turma store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return siftturmastore.NewPGSiftTurmaStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "sift_turma", siftTurmaMetadata, siftTurmaFactory); err != nil {
+		gl.Errorf("Failed to register sift_turma store: %v", err)
+	}
+
+	siftLeadMetadata := &t.StoreMetadata{
+		Name:         "sift_lead",
+		Type:         reflect.TypeFor[siftleadstore.Lead](),
+		DriverName:   driverName,
+		Description:  "Sift — leads do funil de captação, com origem opcional e quem captou",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "dedupe", "pagination", "filtering", "tenant_scoped"},
+	}
+	siftLeadFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("sift_lead store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return siftleadstore.NewPGSiftLeadStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "sift_lead", siftLeadMetadata, siftLeadFactory); err != nil {
+		gl.Errorf("Failed to register sift_lead store: %v", err)
+	}
+
+	siftLeadEventMetadata := &t.StoreMetadata{
+		Name:         "sift_lead_event",
+		Type:         reflect.TypeFor[siftleadeventstore.LeadEvent](),
+		DriverName:   driverName,
+		Description:  "Sift — trilha de eventos do lead (tempo-em-estágio e tempo-até-escalar sem cálculo posterior)",
+		Version:      "1.0.0",
+		Capabilities: []string{"append_only", "timeline", "tenant_scoped"},
+	}
+	siftLeadEventFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("sift_lead_event store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return siftleadeventstore.NewPGSiftLeadEventStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "sift_lead_event", siftLeadEventMetadata, siftLeadEventFactory); err != nil {
+		gl.Errorf("Failed to register sift_lead_event store: %v", err)
 	}
 
 	ckInsumoMetadata := &t.StoreMetadata{
