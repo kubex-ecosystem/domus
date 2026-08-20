@@ -120,7 +120,14 @@ SELECT
            'Regina','Sandra','Tereza','Vera'])[1 + ((d.seq - 1) % 20)]
       || ' ' ||
     (ARRAY['Andrade','Barbosa','Carvalho'])[1 + ((d.seq - 1) / 20)],
-    '@' ||
+    -- SEM o '@': o handle é guardado na forma canônica, que é o identificador
+    -- puro (instagram.com/adriana.andrade não leva arroba). O '@' é prefixo de
+    -- exibição e entra na UI, não no dado.
+    --
+    -- Isto não é cosmético: o índice único de dedupe é sobre lower(ig_handle),
+    -- e a captura pública normaliza o que a pessoa digita tirando o '@'. Se o
+    -- seed gravasse '@fulana' e a captura procurasse 'fulana', a mesma pessoa
+    -- viraria dois cards — exatamente a memória que o CRM existe para dar.
     lower((ARRAY['adriana','beatriz','cristina','denise','eliana','fernanda','glaucia','helena',
                  'isabel','juliana','katia','lucia','marta','neide','olivia','patricia',
                  'regina','sandra','tereza','vera'])[1 + ((d.seq - 1) % 20)])
