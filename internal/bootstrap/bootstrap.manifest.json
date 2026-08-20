@@ -312,6 +312,44 @@
       ],
       "critical": false,
       "rollback_safe": true
+    },
+    {
+      "step": 26,
+      "name": "Sift — CRM de captação (Growth Production)",
+      "file": "core/etapa_26_sift.sql",
+      "description": "Cria o schema sift, autônomo: estágios do pipeline, turma, lead com origem opcional e atribuição, timeline de eventos, mensagens dos dois canais, escalação, perfil do Instagram e o mapa phone_number_id -> tenant que falta na etapa 13",
+      "estimated_duration_seconds": 2,
+      "dependencies": ["etapa_7_triggers.sql"],
+      "creates": [
+        "schema: sift",
+        "table: sift.stage",
+        "table: sift.turma",
+        "table: sift.lead",
+        "table: sift.lead_event",
+        "table: sift.message",
+        "table: sift.escalation",
+        "table: sift.ig_profile",
+        "table: sift.wa_number"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 27,
+      "name": "Sift — massa de demonstração",
+      "file": "core/etapa_27_sift_seed_demo.sql",
+      "description": "Popula o schema sift com um funil verossímil (40 leads, 3 turmas, timeline, mensagens dos dois canais, escalações) confinado ao tenant de demonstração da etapa 8. Idempotente e removível por DELETE de tenant_id, sem tocar no schema",
+      "estimated_duration_seconds": 1,
+      "dependencies": ["etapa_8_seed_data.sql", "etapa_26_sift.sql"],
+      "creates": [
+        "seed: 3 usuários de demonstração (sem senha)",
+        "seed: 8 estágios do pipeline",
+        "seed: 3 turmas",
+        "seed: 40 leads",
+        "seed: eventos, mensagens, escalações e perfis de Instagram"
+      ],
+      "critical": false,
+      "rollback_safe": true
     }
   ],
   "total_estimated_duration_seconds": 21,
