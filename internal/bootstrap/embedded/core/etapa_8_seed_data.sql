@@ -419,7 +419,7 @@ VALUES (
         '10000000-0000-0000-0000-000000000001',
         'Kubex Demo Corp',
         'gnyx-demo',
-        'demo.kubex.world',
+        'demo.kubex.space',
         'professional',
         true,
         false,

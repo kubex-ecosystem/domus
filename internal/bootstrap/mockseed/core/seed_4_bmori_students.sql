@@ -26,7 +26,7 @@ INSERT INTO "user" (id, email, name, last_name, password_hash, status, created_a
 VALUES
   (
     '71000000-0000-0000-0000-000000000001',
-    'coach.bmori@kubex.world',
+    'coach.bmori@kubex.space',
     'Marina',
     'Costa',
     crypt('kubex123', gen_salt('bf')),
@@ -35,7 +35,7 @@ VALUES
   ),
   (
     '71000000-0000-0000-0000-000000000011',
-    'ana.aluno@kubex.world',
+    'ana.aluno@kubex.space',
     'Ana',
     'Oliveira',
     crypt('kubex123', gen_salt('bf')),
@@ -44,7 +44,7 @@ VALUES
   ),
   (
     '71000000-0000-0000-0000-000000000012',
-    'bruno.aluno@kubex.world',
+    'bruno.aluno@kubex.space',
     'Bruno',
     'Melo',
     crypt('kubex123', gen_salt('bf')),
@@ -53,7 +53,7 @@ VALUES
   ),
   (
     '71000000-0000-0000-0000-000000000013',
-    'livia.aluno@kubex.world',
+    'livia.aluno@kubex.space',
     'Livia',
     'Reis',
     crypt('kubex123', gen_salt('bf')),
@@ -84,7 +84,7 @@ SELECT
   u.id AS user_id,
   t.id AS tenant_id,
   CASE
-    WHEN u.email = 'coach.bmori@kubex.world'
+    WHEN u.email = 'coach.bmori@kubex.space'
       THEN COALESCE(
         (SELECT id FROM role_map WHERE code = 'coach'),
         (SELECT id FROM role_map WHERE code = 'trainer'),
@@ -102,10 +102,10 @@ SELECT
 FROM "user" u
 CROSS JOIN target_tenant t
 WHERE u.email IN (
-  'coach.bmori@kubex.world',
-  'ana.aluno@kubex.world',
-  'bruno.aluno@kubex.world',
-  'livia.aluno@kubex.world'
+  'coach.bmori@kubex.space',
+  'ana.aluno@kubex.space',
+  'bruno.aluno@kubex.space',
+  'livia.aluno@kubex.space'
 )
 ON CONFLICT (user_id, tenant_id) DO UPDATE
 SET

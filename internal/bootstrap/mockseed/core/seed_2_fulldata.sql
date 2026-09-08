@@ -47,7 +47,7 @@ VALUES (
     '20000000-0000-0000-0000-000000000001',
     'Kubex HQ',
     'gnyx-hq',
-    'hq.kubex.world',
+    'hq.kubex.space',
     'enterprise',
     true,
     false,
@@ -59,7 +59,7 @@ VALUES (
     '20000000-0000-0000-0000-000000000001',
     'Kubex Sales',
     'gnyx-sales',
-    'sales.kubex.world',
+    'sales.kubex.space',
     'professional',
     true,
     false,
@@ -549,7 +549,7 @@ INSERT INTO "user" (
 VALUES -- Kubex HQ Users
   (
     '60000000-0000-0000-0000-000000000001',
-    'rafael@kubex.world',
+    'rafael@kubex.space',
     'Rafael',
     'Mori',
     crypt('kubex123', gen_salt('bf')),
@@ -559,7 +559,7 @@ VALUES -- Kubex HQ Users
   ),
   (
     '60000000-0000-0000-0000-000000000002',
-    'thiago@kubex.world',
+    'thiago@kubex.space',
     'Thiago',
     'Silva',
     crypt('kubex123', gen_salt('bf')),
@@ -569,7 +569,7 @@ VALUES -- Kubex HQ Users
   ),
   (
     '60000000-0000-0000-0000-000000000003',
-    'maria@kubex.world',
+    'maria@kubex.space',
     'Maria',
     'Santos',
     crypt('kubex123', gen_salt('bf')),
@@ -579,7 +579,7 @@ VALUES -- Kubex HQ Users
   ),
   (
     '60000000-0000-0000-0000-000000000004',
-    'joao@kubex.world',
+    'joao@kubex.space',
     'João',
     'Oliveira',
     crypt('kubex123', gen_salt('bf')),
@@ -589,7 +589,7 @@ VALUES -- Kubex HQ Users
   ),
   (
     '60000000-0000-0000-0000-000000000005',
-    'ana@kubex.world',
+    'ana@kubex.space',
     'Ana',
     'Costa',
     crypt('kubex123', gen_salt('bf')),

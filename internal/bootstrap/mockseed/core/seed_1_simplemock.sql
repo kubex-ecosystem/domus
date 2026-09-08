@@ -200,7 +200,7 @@ INSERT INTO
 VALUES -- Usuário principal (Rafael)
     (
         '50000000-0000-0000-0000-000000000001',
-        'rafael@kubex.world',
+        'rafael@kubex.space',
         'Rafael',
         'Mori',
         crypt ('kubex123', gen_salt ('bf')),
@@ -210,7 +210,7 @@ VALUES -- Usuário principal (Rafael)
     -- Usuário secundário (Thiago)
     (
         '50000000-0000-0000-0000-000000000002',
-        'thiago@kubex.world',
+        'thiago@kubex.space',
         'Thiago',
         'CTO',
         crypt ('kubex123', gen_salt ('bf')),
