@@ -8,8 +8,9 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/execution"
 	"github.com/kubex-ecosystem/domus/internal/types"
 	logz "github.com/kubex-ecosystem/logz"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type MongoDriver struct {
@@ -34,10 +35,10 @@ func (d *MongoDriver) Connect(ctx context.Context, cfg *types.DBConfig) error {
 
 	clientOpts := options.Client().ApplyURI(cfg.DSN)
 
-	ctxConn, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
+	// ctxConn, cancel := context.WithTimeout(ctx, 10*time.Second)
+	// defer cancel()
 
-	client, err := mongo.Connect(ctxConn, clientOpts)
+	client, err := mongo.Connect(clientOpts)
 	if err != nil {
 		return fmt.Errorf("mongodb: connect error: %v", err)
 	}
@@ -87,11 +88,11 @@ func (d *MongoDriver) Executor(ctx context.Context) (execution.Executor, error) 
 		return nil, fmt.Errorf("executor requested but ping failed")
 	}
 
-	// mongoExec := execution.NewMongoExecutor(d.client)
-	// d.executor = execution.NewExecutor(
-	// 	execution.WithKind(execution.BackendMongo),
-	// 	execution.WithMongo(mongoExec),
-	// )
+	mongoExec := execution.NewMongoExecutor(d.client)
+	d.executor = execution.NewExecutor(
+		execution.WithKind(execution.BackendMongo),
+		execution.WithMongo(mongoExec),
+	)
 
 	// return d.executor, nil
 	return nil, fmt.Errorf("mongodb executor not implemented yet")

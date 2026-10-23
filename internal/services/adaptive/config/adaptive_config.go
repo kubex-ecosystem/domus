@@ -4,9 +4,9 @@ package adaptive
 import (
 	"reflect"
 
-	"github.com/kubex-ecosystem/domus/internal/module/kbx"
 	"github.com/kubex-ecosystem/domus/internal/services/adaptive/data"
 	"github.com/kubex-ecosystem/domus/internal/types"
+	kbxTypes "github.com/kubex-ecosystem/kbx/types"
 )
 
 type AdaptiveConfig[T any, A data.AdaptiveService[T]] = ConfigImpl[T, A]
@@ -16,7 +16,7 @@ type IAdaptiveConfig[T any, A data.AdaptiveService[T]] interface {
 
 type General struct {
 	// Identification fields
-	Reference kbx.Reference `json:"reference" yaml:"reference" xml:"reference" toml:"reference" mapstructure:"reference,squash"`
+	Reference kbxTypes.GlobalRef `json:"reference" yaml:"reference" xml:"reference" toml:"reference" mapstructure:"reference,squash"`
 
 	// General fields
 	Enabled     bool         `json:"enabled" yaml:"enabled" xml:"enabled" toml:"enabled" mapstructure:"enabled"`
@@ -27,7 +27,7 @@ type General struct {
 
 func NewGeneral(name string, enabled bool, debug bool, autoMigrate bool, dbType reflect.Type) *General {
 	return &General{
-		Reference:   kbx.NewReference(name),
+		Reference:   kbxTypes.NewGlobalRef(name),
 		Enabled:     enabled,
 		Debug:       debug,
 		AutoMigrate: autoMigrate,

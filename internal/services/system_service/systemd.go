@@ -14,7 +14,8 @@ import (
 	"time"
 
 	"github.com/kubex-ecosystem/domus/internal/interfaces"
-	"github.com/kubex-ecosystem/domus/internal/module/kbx"
+	kbxMod "github.com/kubex-ecosystem/domus/internal/module/kbx"
+
 	"github.com/kubex-ecosystem/domus/internal/types"
 	"github.com/kubex-ecosystem/logz"
 	_ "github.com/lib/pq" // se for postgres, por exemplo
@@ -31,9 +32,9 @@ type Config struct {
 
 var lastOK atomic.Value
 
-func StartSystemService(args *kbx.InitArgs) error {
+func StartSystemService(args *kbxMod.InitArgs) error {
 	if args == nil {
-		args = &kbx.InitArgs{}
+		args = &kbxMod.InitArgs{}
 	}
 	logz.SetDebugMode(args.Debug)
 	sigChan := make(chan string, 1)

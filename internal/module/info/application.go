@@ -12,10 +12,21 @@ import (
 
 var banners = []string{
 	`
-	
-	`,
+        |       \
+        | ▓▓▓▓▓▓▓\ ______  ______ ____  __    __  _______
+        | ▓▓  | ▓▓/      \|      \    \|  \  |  \/       \
+        | ▓▓  | ▓▓  ▓▓▓▓▓▓\ ▓▓▓▓▓▓\▓▓▓▓\ ▓▓  | ▓▓  ▓▓▓▓▓▓▓
+        | ▓▓  | ▓▓ ▓▓  | ▓▓ ▓▓ | ▓▓ | ▓▓ ▓▓  | ▓▓\▓▓    \
+        | ▓▓__/ ▓▓ ▓▓__/ ▓▓ ▓▓ | ▓▓ | ▓▓ ▓▓__/ ▓▓_\▓▓▓▓▓▓\
+        | ▓▓    ▓▓\▓▓    ▓▓ ▓▓ | ▓▓ | ▓▓\▓▓    ▓▓       ▓▓
+         \▓▓▓▓▓▓▓  \▓▓▓▓▓▓ \▓▓  \▓▓  \▓▓ \▓▓▓▓▓▓ \▓▓▓▓▓▓▓
+			%sPowered by - Kubex Ecosystem %s%s
+`,
 }
 
+// GetDescriptions returns a map containing the banner and description of the application.
+// If descriptionArg is provided, it will be used as the description of the application.
+// If descriptionArg is not provided, it will be read from the manifest.json file.
 func GetDescriptions(descriptionArg []string, _ bool) map[string]string {
 	var description, banner string
 
@@ -33,8 +44,8 @@ func GetDescriptions(descriptionArg []string, _ bool) map[string]string {
 	if err != nil {
 		description += ""
 	} else {
-		if manifest.GetDescription() != "" {
-			description += manifest.GetDescription()
+		if manifest.GetDescription() != "" && description == "" {
+			description = manifest.GetDescription()
 		}
 	}
 

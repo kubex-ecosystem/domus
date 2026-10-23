@@ -153,10 +153,16 @@ func (d *DockerService) InitializeWithConfig(ctx context.Context, dbConfig *kbx.
 }
 
 func (d *DockerService) GetContainerLogs(ctx context.Context, containerName string, follow bool) error {
-	cli, err := k.NewClientWithOpts(k.FromEnv, k.WithAPIVersionNegotiation())
-	if err != nil {
-		return fmt.Errorf("error creating Docker client: %v", err)
-	}
+	cli, err := k.NewClientWithOpts(
+		k.WithHost("unix:///run/user/388000594/docker/containerd/containerd.sock"),
+		k.FromEnv,
+		k.WithAPIVersionNegotiation(),
+	)
+
+	// cli, err := k.NewClientWithOpts(k.FromEnv, k.WithAPIVersionNegotiation())
+	// if err != nil {
+	// 	return fmt.Errorf("error creating Docker client: %v", err)
+	// }
 
 	logsReader, err := cli.ContainerLogs(ctx, containerName, c.LogsOptions{
 		ShowStdout: true,

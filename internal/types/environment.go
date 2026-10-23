@@ -19,9 +19,9 @@ import (
 	"time"
 
 	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
+	kbxCrp "github.com/kubex-ecosystem/ethyr/tools/security/crypto"
+	kbxSec "github.com/kubex-ecosystem/ethyr/tools/security/interfaces"
 	kbx "github.com/kubex-ecosystem/kbx"
-	kbxCrp "github.com/kubex-ecosystem/kbx/tools/security/crypto"
-	kbxSec "github.com/kubex-ecosystem/kbx/tools/security/interfaces"
 	logz "github.com/kubex-ecosystem/logz"
 )
 

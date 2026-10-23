@@ -5,11 +5,36 @@ import (
 
 	"github.com/kubex-ecosystem/domus/internal/adapter"
 	store "github.com/kubex-ecosystem/domus/internal/datastore"
+	ckcompanystore "github.com/kubex-ecosystem/domus/internal/datastore/ck_company_store"
+	ckinsumostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_insumo_store"
+	ckmessagestore "github.com/kubex-ecosystem/domus/internal/datastore/ck_message_store"
+	ckmovimentacaostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_movimentacao_store"
+	ckorderstore "github.com/kubex-ecosystem/domus/internal/datastore/ck_order_store"
+	ckprodutostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_produto_store"
+	commissionstore "github.com/kubex-ecosystem/domus/internal/datastore/commission_store"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
+	leadconvstore "github.com/kubex-ecosystem/domus/internal/datastore/lead_conversation_store"
+	leadeventstore "github.com/kubex-ecosystem/domus/internal/datastore/lead_event_store"
+	leadstore "github.com/kubex-ecosystem/domus/internal/datastore/lead_store"
+	membershipstore "github.com/kubex-ecosystem/domus/internal/datastore/membership_store"
+	notificationstore "github.com/kubex-ecosystem/domus/internal/datastore/notification_store"
 	pendingaccess "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
+	pipelinecardstore "github.com/kubex-ecosystem/domus/internal/datastore/pipeline_card_store"
+	propsharestore "github.com/kubex-ecosystem/domus/internal/datastore/property_share_store"
+	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
+	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
+	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
+	siftleadeventstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_event_store"
+	siftleadstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_store"
+	siftstagestore "github.com/kubex-ecosystem/domus/internal/datastore/sift_stage_store"
+	siftturmastore "github.com/kubex-ecosystem/domus/internal/datastore/sift_turma_store"
+	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	user "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
+	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
+	wappmsgstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_message_store"
+	wappwebhookstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_webhook_store"
 	"github.com/kubex-ecosystem/domus/internal/execution"
 	t "github.com/kubex-ecosystem/domus/internal/types"
 )
@@ -22,10 +47,12 @@ type (
 	UpdateUserInput = user.UpdateUserInput
 	UserFilters     = user.UserFilters
 
+	// Session types
+	Session = sessionstore.Session
+
 	Executor = execution.Executor
 
 	// Invite types (InviteStore já declarado em client.go)
-
 	Invitation            = invite.Invitation
 	InvitationType        = invite.InvitationType
 	InvitationStatus      = invite.InvitationStatus
@@ -40,7 +67,7 @@ type (
 	CompanyFilters     = company.CompanyFilters
 
 	// Pending access types
-
+	PendingAccessStatus             = pendingaccess.PendingAccessStatus
 	PendingAccessRequest            = pendingaccess.PendingAccessRequest
 	CreatePendingAccessRequestInput = pendingaccess.CreatePendingAccessRequestInput
 	UpdatePendingAccessRequestInput = pendingaccess.UpdatePendingAccessRequestInput
@@ -51,8 +78,128 @@ type (
 	UpsertExternalMetadataInput = externalmetadata.UpsertExternalMetadataInput
 	ExternalMetadataFilters     = externalmetadata.ExternalMetadataFilters
 
-	// Adapter types - apenas os não-genéricos
+	// Property types (Colonial NetImóveis)
+	Property            = propertystore.Property
+	PropertyImage       = propertystore.PropertyImage
+	CreatePropertyInput = propertystore.CreatePropertyInput
+	UpdatePropertyInput = propertystore.UpdatePropertyInput
+	PropertyFilters     = propertystore.PropertyFilters
 
+	// PropertyShare types (Colonial NetImóveis)
+	ShareRecord   = propsharestore.ShareRecord
+	ShareSummary  = propsharestore.ShareSummary
+	LogShareInput = propsharestore.LogShareInput
+
+	// WappMessage types (Colonial NetImóveis)
+	WappMessage      = wappmsgstore.WappMessage
+	ThreadSummary    = wappmsgstore.ThreadSummary
+	SaveMessageInput = wappmsgstore.SaveMessageInput
+
+	// LeadConversation types (Colonial NetImóveis)
+	LeadConversation        = leadconvstore.LeadConversation
+	CreateConversationInput = leadconvstore.CreateConversationInput
+	ConversationFilters     = leadconvstore.ConversationFilters
+
+	// WappWebhook types (raw Meta webhook events)
+	WebhookMessage          = wappwebhookstore.WebhookMessage
+	WebhookStatus           = wappwebhookstore.WebhookStatus
+	SaveWebhookMessageInput = wappwebhookstore.SaveWebhookMessageInput
+	SaveWebhookStatusInput  = wappwebhookstore.SaveWebhookStatusInput
+
+	// Notification types (Calm UX — Colonial NetImóveis)
+	Notification                = notificationstore.Notification
+	CreateNotificationInput     = notificationstore.CreateNotificationInput
+	NotificationFilters         = notificationstore.NotificationFilters
+	NotificationPref            = notificationstore.NotificationPref
+	UpsertNotificationPrefInput = notificationstore.UpsertNotificationPrefInput
+
+	// Commission types (Financial — Colonial NetImóveis)
+	Commission            = commissionstore.Commission
+	CreateCommissionInput = commissionstore.CreateCommissionInput
+	CommissionFilters     = commissionstore.CommissionFilters
+
+	// LeadEvent types (timeline — Colonial NetImóveis)
+	LeadEvent            = leadeventstore.LeadEvent
+	CreateLeadEventInput = leadeventstore.CreateLeadEventInput
+
+	// Lead types (CRM — Colonial NetImóveis)
+	Lead            = leadstore.Lead
+	CreateLeadInput = leadstore.CreateLeadInput
+	UpdateLeadInput = leadstore.UpdateLeadInput
+	LeadFilters     = leadstore.LeadFilters
+
+	// PipelineCard types (kanban CRM — Colonial NetImóveis)
+	PipelineCard            = pipelinecardstore.PipelineCard
+	CreatePipelineCardInput = pipelinecardstore.CreatePipelineCardInput
+	PipelineCardFilters     = pipelinecardstore.PipelineCardFilters
+
+	// Role/Membership types (RBAC)
+	Role                  = rolestore.Role
+	MemberWithPermissions = membershipstore.MemberWithPermissions
+	UpsertMembershipInput = membershipstore.UpsertMembershipInput
+	UpdateRoleInput       = membershipstore.UpdateRoleInput
+
+	// Transaction types (Colonial NetImóveis — fechamento imobiliário)
+	Transaction            = transactionstore.Transaction
+	CreateTransactionInput = transactionstore.CreateTransactionInput
+	TransactionFilters     = transactionstore.TransactionFilters
+	TransactionStep        = transactionstore.TransactionStep
+	UpdateStepInput        = transactionstore.UpdateStepInput
+	TransactionDoc         = transactionstore.TransactionDoc
+	AddDocInput            = transactionstore.AddDocInput
+
+	// Visit agenda types (Colonial NetImóveis — roteiro de visitas)
+	VisitEvent            = visiteventstore.VisitEvent
+	CreateVisitEventInput = visiteventstore.CreateVisitEventInput
+	VisitEventFilters     = visiteventstore.VisitEventFilters
+
+	// Cozinha Pass types (KDS — shared kitchen)
+	CKCompany            = ckcompanystore.CKCompany
+	CreateCKCompanyInput = ckcompanystore.CreateCKCompanyInput
+	UpdateCKCompanyInput = ckcompanystore.UpdateCKCompanyInput
+	CKCompanyFilters     = ckcompanystore.CKCompanyFilters
+
+	// Sift types (CRM de captação — Growth Production)
+	SiftStage            = siftstagestore.Stage
+	UpsertSiftStageInput = siftstagestore.UpsertStageInput
+
+	SiftTurma            = siftturmastore.Turma
+	CreateSiftTurmaInput = siftturmastore.CreateTurmaInput
+
+	SiftLead            = siftleadstore.Lead
+	CreateSiftLeadInput = siftleadstore.CreateLeadInput
+	SiftLeadFilters     = siftleadstore.LeadFilters
+
+	SiftLeadEvent            = siftleadeventstore.LeadEvent
+	CreateSiftLeadEventInput = siftleadeventstore.CreateLeadEventInput
+
+	CKOrder                  = ckorderstore.CKOrder
+	CKOrderItem              = ckorderstore.CKOrderItem
+	CreateCKOrderInput       = ckorderstore.CreateCKOrderInput
+	CreateCKOrderItemInput   = ckorderstore.CreateCKOrderItemInput
+	UpdateCKOrderStatusInput = ckorderstore.UpdateCKOrderStatusInput
+	CKOrderFilters           = ckorderstore.CKOrderFilters
+
+	CKInsumo            = ckinsumostore.CKInsumo
+	CreateCKInsumoInput = ckinsumostore.CreateCKInsumoInput
+	UpdateCKInsumoInput = ckinsumostore.UpdateCKInsumoInput
+	CKInsumoFilters     = ckinsumostore.CKInsumoFilters
+
+	CKProduto               = ckprodutostore.CKProduto
+	CKComponente            = ckprodutostore.CKComponente
+	CreateCKProdutoInput    = ckprodutostore.CreateCKProdutoInput
+	UpdateCKProdutoInput    = ckprodutostore.UpdateCKProdutoInput
+	CreateCKComponenteInput = ckprodutostore.CreateCKComponenteInput
+	CKProdutoFilters        = ckprodutostore.CKProdutoFilters
+
+	CKMessage            = ckmessagestore.CKMessage
+	CreateCKMessageInput = ckmessagestore.CreateCKMessageInput
+	CKMessageFilters     = ckmessagestore.CKMessageFilters
+
+	CKMovimentacao             = ckmovimentacaostore.CKMovimentacao
+	RegistrarMovimentacaoInput = ckmovimentacaostore.RegistrarMovimentacaoInput
+
+	// Adapter types - apenas os não-genéricos
 	AdapterFactory   = adapter.AdapterFactory
 	RepositoryConfig = adapter.RepositoryConfig
 )
@@ -88,6 +235,17 @@ func (c *DSClientImpl) GetUserStore(ctx context.Context, dbName string) (UserSto
 
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.UserStore(ctx)
+}
+
+// GetSessionStore é um helper para obter SessionStore diretamente.
+func (c *DSClientImpl) GetSessionStore(ctx context.Context, dbName string) (SessionStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SessionStore(ctx)
 }
 
 // GetInviteStore é um helper para obter InviteStore diretamente.
@@ -134,12 +292,117 @@ func (c *DSClientImpl) GetExternalMetadataStore(ctx context.Context, dbName stri
 	return factory.ExternalMetadataStore(ctx)
 }
 
+// GetPropertyStore é um helper para obter PropertyStore diretamente.
+func (c *DSClientImpl) GetPropertyStore(ctx context.Context, dbName string) (PropertyStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.PropertyStore(ctx)
+}
+
+// GetPropertyShareStore é um helper para obter PropertyShareStore diretamente.
+func (c *DSClientImpl) GetPropertyShareStore(ctx context.Context, dbName string) (PropertyShareStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.PropertyShareStore(ctx)
+}
+
+// GetWappMessageStore é um helper para obter WappMessageStore diretamente.
+func (c *DSClientImpl) GetWappMessageStore(ctx context.Context, dbName string) (WappMessageStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.WappMessageStore(ctx)
+}
+
+// GetLeadConversationStore é um helper para obter LeadConversationStore diretamente.
+func (c *DSClientImpl) GetLeadConversationStore(ctx context.Context, dbName string) (LeadConversationStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.LeadConversationStore(ctx)
+}
+
+// GetWappWebhookStore é um helper para obter WappWebhookStore diretamente.
+func (c *DSClientImpl) GetWappWebhookStore(ctx context.Context, dbName string) (WappWebhookStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.WappWebhookStore(ctx)
+}
+
+// GetRoleStore é um helper para obter RoleStore diretamente.
+func (c *DSClientImpl) GetRoleStore(ctx context.Context, dbName string) (RoleStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.RoleStore(ctx)
+}
+
+// GetMembershipStore é um helper para obter MembershipStore diretamente.
+func (c *DSClientImpl) GetMembershipStore(ctx context.Context, dbName string) (MembershipStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.MembershipStore(ctx)
+}
+
+// GetBMoriStore é um helper para obter BMoriStore diretamente.
+func (c *DSClientImpl) GetBMoriStore(ctx context.Context, dbName string) (BMoriStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.BMoriStore(ctx)
+}
+
+// NewWappWebhookStore cria um WappWebhookStore a partir de uma conexão.
+func NewWappWebhookStore(ctx context.Context, conn *BackendConnection) (WappWebhookStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.WappWebhookStore(ctx)
+}
+
+// NewRoleStore cria um RoleStore a partir de uma conexão.
+func NewRoleStore(ctx context.Context, conn *BackendConnection) (RoleStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.RoleStore(ctx)
+}
+
+// NewMembershipStore cria um MembershipStore a partir de uma conexão.
+func NewMembershipStore(ctx context.Context, conn *BackendConnection) (MembershipStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.MembershipStore(ctx)
+}
+
 // Funções standalone para criação de stores a partir de BackendConnection
 
 // NewUserStore cria um UserStore a partir de uma conexão.
 func NewUserStore(ctx context.Context, conn *BackendConnection) (UserStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
 	return factory.UserStore(ctx)
+}
+
+// NewSessionStore cria um SessionStore a partir de uma conexão.
+func NewSessionStore(ctx context.Context, conn *BackendConnection) (SessionStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SessionStore(ctx)
 }
 
 // NewInviteStore cria um InviteStore a partir de uma conexão.
@@ -166,9 +429,324 @@ func NewExternalMetadataStore(ctx context.Context, conn *BackendConnection) (Ext
 	return factory.ExternalMetadataStore(ctx)
 }
 
-func NewIntegrationStore(ctx context.Context, conn *BackendConnection, mKey []byte) (IntegrationStore, error) {
+// NewPropertyStore cria um PropertyStore a partir de uma conexão.
+func NewPropertyStore(ctx context.Context, conn *BackendConnection) (PropertyStore, error) {
 	factory := store.NewStoreFactory(conn.Driver)
-	return factory.IntegrationStore(ctx, mKey)
+	return factory.PropertyStore(ctx)
+}
+
+// NewPropertyShareStore cria um PropertyShareStore a partir de uma conexão.
+func NewPropertyShareStore(ctx context.Context, conn *BackendConnection) (PropertyShareStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.PropertyShareStore(ctx)
+}
+
+// NewWappMessageStore cria um WappMessageStore a partir de uma conexão.
+func NewWappMessageStore(ctx context.Context, conn *BackendConnection) (WappMessageStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.WappMessageStore(ctx)
+}
+
+// NewLeadConversationStore cria um LeadConversationStore a partir de uma conexão.
+func NewLeadConversationStore(ctx context.Context, conn *BackendConnection) (LeadConversationStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.LeadConversationStore(ctx)
+}
+
+func NewIntegrationStore(ctx context.Context, conn *BackendConnection, mKey []byte) (IntegrationStore, error) {
+	// O cofre de integrações precisa da chave-mestra de cifragem na construção,
+	// o que não cabe no factory keyless por nome ("integration" não está no
+	// registry). Usa o caminho keyed via executor, que injeta a mKey.
+	exec, err := conn.Driver.Executor(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return store.NewIntegrationStoreFromExecutor(exec, mKey)
+}
+
+// NewSessionStoreFromExecutor cria um SessionStore a partir de um Executor.
+func NewSessionStoreFromExecutor(exec Executor) (SessionStore, error) {
+	return store.NewSessionStoreFromExecutor(exec)
+}
+
+// GetLeadEventStore é um helper para obter LeadEventStore diretamente.
+func (c *DSClientImpl) GetLeadEventStore(ctx context.Context, dbName string) (LeadEventStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.LeadEventStore(ctx)
+}
+
+// NewLeadEventStore cria um LeadEventStore a partir de uma conexão.
+func NewLeadEventStore(ctx context.Context, conn *BackendConnection) (LeadEventStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.LeadEventStore(ctx)
+}
+
+// GetLeadStore é um helper para obter LeadStore diretamente.
+func (c *DSClientImpl) GetLeadStore(ctx context.Context, dbName string) (LeadStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.LeadStore(ctx)
+}
+
+// GetPipelineCardStore é um helper para obter PipelineCardStore diretamente.
+func (c *DSClientImpl) GetPipelineCardStore(ctx context.Context, dbName string) (PipelineCardStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.PipelineCardStore(ctx)
+}
+
+// NewLeadStore cria um LeadStore a partir de uma conexão.
+func NewLeadStore(ctx context.Context, conn *BackendConnection) (LeadStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.LeadStore(ctx)
+}
+
+// NewPipelineCardStore cria um PipelineCardStore a partir de uma conexão.
+func NewPipelineCardStore(ctx context.Context, conn *BackendConnection) (PipelineCardStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.PipelineCardStore(ctx)
+}
+
+// GetNotificationStore é um helper para obter NotificationStore diretamente.
+func (c *DSClientImpl) GetNotificationStore(ctx context.Context, dbName string) (NotificationStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.NotificationStore(ctx)
+}
+
+// GetNotificationPrefStore é um helper para obter NotificationPrefStore diretamente.
+func (c *DSClientImpl) GetNotificationPrefStore(ctx context.Context, dbName string) (NotificationPrefStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.NotificationPrefStore(ctx)
+}
+
+// NewNotificationStore cria um NotificationStore a partir de uma conexão.
+func NewNotificationStore(ctx context.Context, conn *BackendConnection) (NotificationStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.NotificationStore(ctx)
+}
+
+// NewNotificationPrefStore cria um NotificationPrefStore a partir de uma conexão.
+func NewNotificationPrefStore(ctx context.Context, conn *BackendConnection) (NotificationPrefStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.NotificationPrefStore(ctx)
+}
+
+// GetCommissionStore é um helper para obter CommissionStore diretamente.
+func (c *DSClientImpl) GetCommissionStore(ctx context.Context, dbName string) (CommissionStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CommissionStore(ctx)
+}
+
+// NewCommissionStore cria um CommissionStore a partir de uma conexão.
+func NewCommissionStore(ctx context.Context, conn *BackendConnection) (CommissionStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CommissionStore(ctx)
+}
+
+// GetTransactionStore é um helper para obter TransactionStore diretamente.
+func (c *DSClientImpl) GetTransactionStore(ctx context.Context, dbName string) (TransactionStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.TransactionStore(ctx)
+}
+
+// NewTransactionStore cria um TransactionStore a partir de uma conexão.
+func NewTransactionStore(ctx context.Context, conn *BackendConnection) (TransactionStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.TransactionStore(ctx)
+}
+
+// GetTransactionStepStore é um helper para obter TransactionStepStore diretamente.
+func (c *DSClientImpl) GetTransactionStepStore(ctx context.Context, dbName string) (TransactionStepStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.TransactionStepStore(ctx)
+}
+
+// NewTransactionStepStore cria um TransactionStepStore a partir de uma conexão.
+func NewTransactionStepStore(ctx context.Context, conn *BackendConnection) (TransactionStepStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.TransactionStepStore(ctx)
+}
+
+// GetTransactionDocStore é um helper para obter TransactionDocStore diretamente.
+func (c *DSClientImpl) GetTransactionDocStore(ctx context.Context, dbName string) (TransactionDocStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.TransactionDocStore(ctx)
+}
+
+// NewTransactionDocStore cria um TransactionDocStore a partir de uma conexão.
+func NewTransactionDocStore(ctx context.Context, conn *BackendConnection) (TransactionDocStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.TransactionDocStore(ctx)
+}
+
+// GetVisitEventStore é um helper para obter VisitEventStore diretamente.
+func (c *DSClientImpl) GetVisitEventStore(ctx context.Context, dbName string) (VisitEventStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.VisitEventStore(ctx)
+}
+
+// NewVisitEventStore cria um VisitEventStore a partir de uma conexão.
+func NewVisitEventStore(ctx context.Context, conn *BackendConnection) (VisitEventStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.VisitEventStore(ctx)
+}
+
+// GetCKCompanyStore é um helper para obter CKCompanyStore diretamente.
+func (c *DSClientImpl) GetCKCompanyStore(ctx context.Context, dbName string) (CKCompanyStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKCompanyStore(ctx)
+}
+
+// GetCKOrderStore é um helper para obter CKOrderStore diretamente.
+func (c *DSClientImpl) GetCKOrderStore(ctx context.Context, dbName string) (CKOrderStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKOrderStore(ctx)
+}
+
+// GetCKInsumoStore é um helper para obter CKInsumoStore diretamente.
+func (c *DSClientImpl) GetCKInsumoStore(ctx context.Context, dbName string) (CKInsumoStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKInsumoStore(ctx)
+}
+
+// GetCKProdutoStore é um helper para obter CKProdutoStore diretamente.
+func (c *DSClientImpl) GetCKProdutoStore(ctx context.Context, dbName string) (CKProdutoStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKProdutoStore(ctx)
+}
+
+// GetCKMessageStore é um helper para obter CKMessageStore diretamente.
+func (c *DSClientImpl) GetCKMessageStore(ctx context.Context, dbName string) (CKMessageStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKMessageStore(ctx)
+}
+
+// GetCKMovimentacaoStore é um helper para obter CKMovimentacaoStore diretamente.
+func (c *DSClientImpl) GetCKMovimentacaoStore(ctx context.Context, dbName string) (CKMovimentacaoStore, error) {
+	conn, err := c.GetConn(ctx, dbName)
+	if err != nil {
+		return nil, err
+	}
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKMovimentacaoStore(ctx)
+}
+
+// NewCKCompanyStore cria um CKCompanyStore a partir de uma conexão.
+func NewCKCompanyStore(ctx context.Context, conn *BackendConnection) (CKCompanyStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKCompanyStore(ctx)
+}
+
+// NewSiftStageStore cria um SiftStageStore a partir de uma conexão.
+func NewSiftStageStore(ctx context.Context, conn *BackendConnection) (SiftStageStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SiftStageStore(ctx)
+}
+
+// NewSiftTurmaStore cria um SiftTurmaStore a partir de uma conexão.
+func NewSiftTurmaStore(ctx context.Context, conn *BackendConnection) (SiftTurmaStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SiftTurmaStore(ctx)
+}
+
+// NewSiftLeadStore cria um SiftLeadStore a partir de uma conexão.
+func NewSiftLeadStore(ctx context.Context, conn *BackendConnection) (SiftLeadStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SiftLeadStore(ctx)
+}
+
+// NewSiftLeadEventStore cria um SiftLeadEventStore a partir de uma conexão.
+func NewSiftLeadEventStore(ctx context.Context, conn *BackendConnection) (SiftLeadEventStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.SiftLeadEventStore(ctx)
+}
+
+// NewCKOrderStore cria um CKOrderStore a partir de uma conexão.
+func NewCKOrderStore(ctx context.Context, conn *BackendConnection) (CKOrderStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKOrderStore(ctx)
+}
+
+// NewCKInsumoStore cria um CKInsumoStore a partir de uma conexão.
+func NewCKInsumoStore(ctx context.Context, conn *BackendConnection) (CKInsumoStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKInsumoStore(ctx)
+}
+
+// NewCKProdutoStore cria um CKProdutoStore a partir de uma conexão.
+func NewCKProdutoStore(ctx context.Context, conn *BackendConnection) (CKProdutoStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKProdutoStore(ctx)
+}
+
+// NewCKMessageStore cria um CKMessageStore a partir de uma conexão.
+func NewCKMessageStore(ctx context.Context, conn *BackendConnection) (CKMessageStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKMessageStore(ctx)
+}
+
+// NewCKMovimentacaoStore cria um CKMovimentacaoStore a partir de uma conexão.
+func NewCKMovimentacaoStore(ctx context.Context, conn *BackendConnection) (CKMovimentacaoStore, error) {
+	factory := store.NewStoreFactory(conn.Driver)
+	return factory.CKMovimentacaoStore(ctx)
 }
 
 // DefaultRepositoryConfig retorna a configuração padrão do adapter.

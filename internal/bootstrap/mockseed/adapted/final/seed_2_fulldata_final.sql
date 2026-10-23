@@ -49,7 +49,7 @@ VALUES (
     '20000000-0000-0000-0000-000000000001',
     'Kubex HQ',
     'gnyx-hq',
-    'hq.kubex.world',
+    'hq.kubex.space',
     seed_utils.get_mapped_uuid('enterprise'),
     true,
     false,
@@ -61,7 +61,7 @@ VALUES (
     '20000000-0000-0000-0000-000000000001',
     'Kubex Sales',
     'gnyx-sales',
-    'sales.kubex.world',
+    'sales.kubex.space',
     seed_utils.get_mapped_uuid('professional'),
     true,
     false,
@@ -572,7 +572,7 @@ INSERT INTO "user" (
 VALUES -- Kubex HQ Users
   (
     '60000000-0000-0000-0000-000000000001',
-    'rafael@kubex.world',
+    'rafael@kubex.space',
     'Rafael',
     'Mori',
     crypt(
@@ -585,7 +585,7 @@ VALUES -- Kubex HQ Users
   ),
   (
     '60000000-0000-0000-0000-000000000002',
-    'thiago@kubex.world',
+    'thiago@kubex.space',
     'Thiago',
     'Silva',
     crypt(
@@ -598,7 +598,7 @@ VALUES -- Kubex HQ Users
   ),
   (
     '60000000-0000-0000-0000-000000000003',
-    'maria@kubex.world',
+    'maria@kubex.space',
     'Maria',
     'Santos',
     crypt(
@@ -611,7 +611,7 @@ VALUES -- Kubex HQ Users
   ),
   (
     '60000000-0000-0000-0000-000000000004',
-    'joao@kubex.world',
+    'joao@kubex.space',
     'João',
     'Oliveira',
     crypt(
@@ -624,7 +624,7 @@ VALUES -- Kubex HQ Users
   ),
   (
     '60000000-0000-0000-0000-000000000005',
-    'ana@kubex.world',
+    'ana@kubex.space',
     'Ana',
     'Costa',
     crypt(

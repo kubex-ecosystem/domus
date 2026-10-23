@@ -3,7 +3,7 @@
   "database_url": "postgresql:***@aws-1-sa-east-1.pooler.supabase.com:6543/postgres",
   "total_duration_seconds": 13,
   "status": "success",
-  "log_file": "/ALL/KUBEX/SHOWCASE/projects/domus/internal/bootstrap/embedded/logs/bootstrap_20260314_133509.log",
+  "log_file": "/projects/kubex/domus/internal/bootstrap/embedded/logs/bootstrap_20260314_133509.log",
   "steps_executed": 11,
   "manifest_version": "3.0.0",
   "schema_version": "hybrid-v1.0",

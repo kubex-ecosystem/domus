@@ -1,7 +1,6 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -18,21 +17,6 @@ type PaginatedResult[T any] struct {
 	Limit      int   `json:"limit"`
 	TotalPages int   `json:"total_pages"`
 }
-
-// Common store errors.
-var (
-
-	// ErrNotFound indica que o registro não foi encontrado.
-	// Nota: stores devem retornar (nil, nil) em GetByID quando não encontrado,
-	// mas podem usar ErrNotFound em outros métodos quando apropriado.
-	ErrNotFound = errors.New("not found")
-
-	// ErrInvalidInput indica que os dados de entrada são inválidos.
-	ErrInvalidInput = errors.New("invalid input")
-
-	// ErrConflict indica violação de constraint (ex: unique key).
-	ErrConflict = errors.New("conflict")
-)
 
 func IsShellSpecialVar(c uint8) bool {
 	switch c {

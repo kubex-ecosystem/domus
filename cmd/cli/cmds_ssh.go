@@ -10,7 +10,6 @@ import (
 
 	"github.com/kubex-ecosystem/domus/internal/module/info"
 	"github.com/kubex-ecosystem/domus/utils"
-	kbxInfo "github.com/kubex-ecosystem/kbx/tools/info"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +24,7 @@ func SSHCmds() *cobra.Command {
 		Aliases:     []string{"s", "ss"},
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
+		Annotations: info.GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 	}
 
 	rootCmd.AddCommand(sshTunnelCmd())
@@ -48,7 +47,7 @@ func sshTunnelCmd() *cobra.Command {
 		Use:         "tunnel",
 		Aliases:     []string{"tun", "t"},
 		Short:       shortDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
+		Annotations: info.GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if background {
 				sshCmdRun := exec.Command("kbx", "u", "s", "tunnel-service-background", "--sshUser", sshUser, "--sshCert", sshCert, "--sshPassword", sshPassword, "--sshAddress", sshAddress, "--sshPort", sshPort, "--tunnels", strings.Join(tunnels, ","))
@@ -100,8 +99,9 @@ func sshTunnelServiceCmd() *cobra.Command {
 	var sshUser, sshCert, sshPassword, sshAddress, sshPort string
 	var tunnels []string
 	rootCmd := &cobra.Command{
-		Use:    "tunnel-service-background",
-		Hidden: true,
+		Use:         "tunnel-service-background",
+		Hidden:      true,
+		Annotations: info.GetDescriptions([]string{"SSH tunnel service background", "SSH tunnel service background"}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			var sshCred utils.SSHCred
 			sshCred.User = sshUser

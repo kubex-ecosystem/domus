@@ -84,3 +84,6 @@ configs/**/*.json
 internal/**/*.txt
 */**/*.lkt.txt
 */**/config.yaml
+
+# Log de execução mutável (regenerado a cada boot)
+internal/bootstrap/embedded/logs/execution_summary.csv

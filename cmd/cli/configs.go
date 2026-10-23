@@ -6,7 +6,6 @@ import (
 
 	"github.com/kubex-ecosystem/domus/internal/module/info"
 	"github.com/kubex-ecosystem/domus/internal/module/kbx"
-	kbxInfo "github.com/kubex-ecosystem/kbx/tools/info"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -21,7 +20,7 @@ func ConfigCmd() *cobra.Command {
 		Use:         "config",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: kbxInfo.CLIBannerStyle(info.GetBanners(), []string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
+		Annotations: info.GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEX_DOMUS_HIDEBANNER") == "true")),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config, err := ReadConfig(initArgs.ConfigFile)
 			if err != nil {

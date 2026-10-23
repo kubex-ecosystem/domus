@@ -18,6 +18,7 @@ const (
 	TypeTrial    InvitationType = "trial_partner"
 	TypeEmployee InvitationType = "employee"
 	TypeGuest    InvitationType = "guest"
+	TypeUser     InvitationType = "user"
 )
 
 // InvitationStatus define o status do convite.

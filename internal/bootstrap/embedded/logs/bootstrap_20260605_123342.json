@@ -1,0 +1,17 @@
+{
+  "execution_timestamp": "2026-06-05T12:33:49-03:00",
+  "database_url": "postgres:***@127.0.0.1:5678/postgres?sslmode=disable",
+  "total_duration_seconds": 7,
+  "status": "success",
+  "log_file": "/projects/kubex/domus/internal/bootstrap/embedded/logs/bootstrap_20260605_123342.log",
+  "steps_executed": 18,
+  "manifest_version": "3.0.0",
+  "schema_version": "hybrid-v1.0",
+  "features": {
+    "multi_tenancy": true,
+    "rbac_hierarchy": true,
+    "invites": true,
+    "business_entities": true,
+    "saas_tiers": true
+  }
+}

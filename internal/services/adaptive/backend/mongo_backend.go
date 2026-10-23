@@ -3,8 +3,8 @@ package backend
 import (
 	"context"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
+	primitive "go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 // MongoBackend is a backend implementation for MongoDB.

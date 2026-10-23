@@ -6,7 +6,7 @@ import (
 	"time"
 
 	logz "github.com/kubex-ecosystem/logz"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type MongoHealthHandler struct {

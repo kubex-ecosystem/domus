@@ -4,11 +4,36 @@ import (
 	"context"
 	"reflect"
 
+	ckcompanystore "github.com/kubex-ecosystem/domus/internal/datastore/ck_company_store"
+	ckinsumostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_insumo_store"
+	ckmessagestore "github.com/kubex-ecosystem/domus/internal/datastore/ck_message_store"
+	ckmovimentacaostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_movimentacao_store"
+	ckorderstore "github.com/kubex-ecosystem/domus/internal/datastore/ck_order_store"
+	ckprodutostore "github.com/kubex-ecosystem/domus/internal/datastore/ck_produto_store"
+	commissionstore "github.com/kubex-ecosystem/domus/internal/datastore/commission_store"
 	company "github.com/kubex-ecosystem/domus/internal/datastore/company_store"
 	externalmetadata "github.com/kubex-ecosystem/domus/internal/datastore/external_metadata_store"
 	invite "github.com/kubex-ecosystem/domus/internal/datastore/invite_store"
+	leadconversationstore "github.com/kubex-ecosystem/domus/internal/datastore/lead_conversation_store"
+	leadeventstore "github.com/kubex-ecosystem/domus/internal/datastore/lead_event_store"
+	leadstore "github.com/kubex-ecosystem/domus/internal/datastore/lead_store"
+	membershipstore "github.com/kubex-ecosystem/domus/internal/datastore/membership_store"
+	notificationstore "github.com/kubex-ecosystem/domus/internal/datastore/notification_store"
 	pendingaccess "github.com/kubex-ecosystem/domus/internal/datastore/pending_access_store"
+	pipelinecardstore "github.com/kubex-ecosystem/domus/internal/datastore/pipeline_card_store"
+	propertysharesstore "github.com/kubex-ecosystem/domus/internal/datastore/property_share_store"
+	propertystore "github.com/kubex-ecosystem/domus/internal/datastore/property_store"
+	rolestore "github.com/kubex-ecosystem/domus/internal/datastore/role_store"
+	sessionstore "github.com/kubex-ecosystem/domus/internal/datastore/session_store"
+	siftleadeventstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_event_store"
+	siftleadstore "github.com/kubex-ecosystem/domus/internal/datastore/sift_lead_store"
+	siftstagestore "github.com/kubex-ecosystem/domus/internal/datastore/sift_stage_store"
+	siftturmastore "github.com/kubex-ecosystem/domus/internal/datastore/sift_turma_store"
+	transactionstore "github.com/kubex-ecosystem/domus/internal/datastore/transaction_store"
 	userstore "github.com/kubex-ecosystem/domus/internal/datastore/user_store"
+	visiteventstore "github.com/kubex-ecosystem/domus/internal/datastore/visit_event_store"
+	wappmessagestore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_message_store"
+	wappwebhookstore "github.com/kubex-ecosystem/domus/internal/datastore/wapp_webhook_store"
 	"github.com/kubex-ecosystem/domus/internal/execution"
 	"github.com/kubex-ecosystem/domus/internal/provider/flavors"
 
@@ -75,6 +100,41 @@ func registerPostgresStores() {
 
 	if err := RegisterStore(driverName, "user", userMetadata, userFactory); err != nil {
 		gl.Errorf("Failed to register user store: %v", err)
+	}
+
+	// Registra SessionStore
+	sessionMetadata := &t.StoreMetadata{
+		Name:        "session",
+		Type:        reflect.TypeFor[sessionstore.Session](),
+		DriverName:  driverName,
+		Description: "Auth session management store",
+		Version:     "1.0.0",
+		Capabilities: []string{
+			"crud",
+			"refresh_token",
+		},
+	}
+
+	sessionFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("session store requires Postgres, got %s", exec.Kind())
+		}
+
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+
+		return sessionstore.NewPGSessionStore(pgExec), nil
+	}
+
+	if err := RegisterStore(driverName, "session", sessionMetadata, sessionFactory); err != nil {
+		gl.Errorf("Failed to register session store: %v", err)
 	}
 
 	// Registra InviteStore
@@ -223,6 +283,753 @@ func registerPostgresStores() {
 
 	if err := RegisterStore(driverName, "external_metadata", externalMetadata, externalMetadataFactory); err != nil {
 		gl.Errorf("Failed to register external metadata store: %v", err)
+	}
+
+	// Registra PropertyStore (Colonial NetImóveis)
+	propertyMetadata := &t.StoreMetadata{
+		Name:        "property",
+		Type:        reflect.TypeFor[propertystore.Property](),
+		DriverName:  driverName,
+		Description: "Property management store (Colonial NetImóveis)",
+		Version:     "1.0.0",
+		Capabilities: []string{
+			"crud",
+			"pagination",
+			"filtering",
+			"image_management",
+		},
+	}
+
+	propertyFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("property store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return propertystore.NewPGPropertyStore(pgExec), nil
+	}
+
+	if err := RegisterStore(driverName, "property", propertyMetadata, propertyFactory); err != nil {
+		gl.Errorf("Failed to register property store: %v", err)
+	}
+
+	// Registra PropertyShareStore (Colonial NetImóveis)
+	propertyShareMetadata := &t.StoreMetadata{
+		Name:        "property_share",
+		Type:        reflect.TypeFor[propertysharesstore.ShareRecord](),
+		DriverName:  driverName,
+		Description: "Property share events store (Colonial NetImóveis)",
+		Version:     "1.0.0",
+		Capabilities: []string{
+			"append",
+			"phone_lookup",
+			"aggregation",
+		},
+	}
+
+	propertyShareFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("property share store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return propertysharesstore.NewPGPropertyShareStore(pgExec), nil
+	}
+
+	if err := RegisterStore(driverName, "property_share", propertyShareMetadata, propertyShareFactory); err != nil {
+		gl.Errorf("Failed to register property share store: %v", err)
+	}
+
+	// Registra WappMessageStore (Colonial NetImóveis)
+	wappMessageMetadata := &t.StoreMetadata{
+		Name:        "wapp_message",
+		Type:        reflect.TypeFor[wappmessagestore.WappMessage](),
+		DriverName:  driverName,
+		Description: "WhatsApp threaded message store (Colonial NetImóveis)",
+		Version:     "1.0.0",
+		Capabilities: []string{
+			"append",
+			"thread_listing",
+			"phone_lookup",
+		},
+	}
+
+	wappMessageFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("wapp message store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return wappmessagestore.NewPGWappMessageStore(pgExec), nil
+	}
+
+	if err := RegisterStore(driverName, "wapp_message", wappMessageMetadata, wappMessageFactory); err != nil {
+		gl.Errorf("Failed to register wapp message store: %v", err)
+	}
+
+	// Registra LeadConversationStore (Colonial NetImóveis)
+	leadConvMetadata := &t.StoreMetadata{
+		Name:        "lead_conversation",
+		Type:        reflect.TypeFor[leadconversationstore.LeadConversation](),
+		DriverName:  driverName,
+		Description: "Lead qualification conversation store (Colonial NetImóveis)",
+		Version:     "1.0.0",
+		Capabilities: []string{
+			"crud",
+			"pagination",
+			"filtering",
+			"status_update",
+		},
+	}
+
+	leadConvFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("lead conversation store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return leadconversationstore.NewPGLeadConversationStore(pgExec), nil
+	}
+
+	if err := RegisterStore(driverName, "lead_conversation", leadConvMetadata, leadConvFactory); err != nil {
+		gl.Errorf("Failed to register lead conversation store: %v", err)
+	}
+
+	// Registra WappWebhookStore (eventos brutos de webhook Meta)
+	wappWebhookMetadata := &t.StoreMetadata{
+		Name:         "wapp_webhook",
+		Type:         reflect.TypeFor[wappwebhookstore.WebhookMessage](),
+		DriverName:   driverName,
+		Description:  "Raw WhatsApp webhook event store (public.whatsapp_messages + whatsapp_statuses)",
+		Version:      "1.0.0",
+		Capabilities: []string{"append", "idempotent"},
+	}
+	wappWebhookFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("wapp webhook store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return wappwebhookstore.NewPGWappWebhookStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "wapp_webhook", wappWebhookMetadata, wappWebhookFactory); err != nil {
+		gl.Errorf("Failed to register wapp webhook store: %v", err)
+	}
+
+	// Registra RoleStore (leitura de roles do RBAC)
+	roleMetadata := &t.StoreMetadata{
+		Name:         "role",
+		Type:         reflect.TypeFor[rolestore.Role](),
+		DriverName:   driverName,
+		Description:  "Role and permission store (RBAC)",
+		Version:      "1.0.0",
+		Capabilities: []string{"read", "code_lookup"},
+	}
+	roleFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("role store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return rolestore.NewPGRoleStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "role", roleMetadata, roleFactory); err != nil {
+		gl.Errorf("Failed to register role store: %v", err)
+	}
+
+	// Registra MembershipStore (tenant_membership com roles e permissões)
+	membershipMetadata := &t.StoreMetadata{
+		Name:         "membership",
+		Type:         reflect.TypeFor[membershipstore.MemberWithPermissions](),
+		DriverName:   driverName,
+		Description:  "Tenant membership store with role and permission joins",
+		Version:      "1.0.0",
+		Capabilities: []string{"upsert", "update_role", "list_with_permissions"},
+	}
+	membershipFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("membership store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return membershipstore.NewPGMembershipStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "membership", membershipMetadata, membershipFactory); err != nil {
+		gl.Errorf("Failed to register membership store: %v", err)
+	}
+
+	// Registra LeadStore (CRM de leads — Colonial NetImóveis)
+	leadMetadata := &t.StoreMetadata{
+		Name:         "lead",
+		Type:         reflect.TypeFor[leadstore.Lead](),
+		DriverName:   driverName,
+		Description:  "Lead CRM store (Colonial NetImóveis)",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "phone_lookup", "pagination", "filtering", "notes"},
+	}
+	leadFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("lead store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return leadstore.NewPGLeadStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "lead", leadMetadata, leadFactory); err != nil {
+		gl.Errorf("Failed to register lead store: %v", err)
+	}
+
+	// Registra PipelineCardStore (kanban CRM — Colonial NetImóveis)
+	pipelineCardMetadata := &t.StoreMetadata{
+		Name:         "pipeline_card",
+		Type:         reflect.TypeFor[pipelinecardstore.PipelineCard](),
+		DriverName:   driverName,
+		Description:  "Pipeline kanban card store (Colonial NetImóveis)",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "column_move", "reorder"},
+	}
+	pipelineCardFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("pipeline card store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return pipelinecardstore.NewPGPipelineCardStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "pipeline_card", pipelineCardMetadata, pipelineCardFactory); err != nil {
+		gl.Errorf("Failed to register pipeline card store: %v", err)
+	}
+
+	// Registra CommissionStore (módulo financeiro — Colonial NetImóveis)
+	commissionMetadata := &t.StoreMetadata{
+		Name:         "commission",
+		Type:         reflect.TypeFor[commissionstore.Commission](),
+		DriverName:   driverName,
+		Description:  "Commission tracking store (Colonial NetImóveis)",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "pagination", "filtering", "sum_by_period"},
+	}
+	commissionFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("commission store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return commissionstore.NewPGCommissionStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "commission", commissionMetadata, commissionFactory); err != nil {
+		gl.Errorf("Failed to register commission store: %v", err)
+	}
+
+	// Registra LeadEventStore (timeline de atividades — Colonial NetImóveis)
+	leadEventMetadata := &t.StoreMetadata{
+		Name:         "lead_event",
+		Type:         reflect.TypeFor[leadeventstore.LeadEvent](),
+		DriverName:   driverName,
+		Description:  "Lead activity timeline store (Colonial NetImóveis)",
+		Version:      "1.0.0",
+		Capabilities: []string{"append", "list_by_lead"},
+	}
+	leadEventFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("lead event store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return leadeventstore.NewPGLeadEventStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "lead_event", leadEventMetadata, leadEventFactory); err != nil {
+		gl.Errorf("Failed to register lead event store: %v", err)
+	}
+
+	// Registra NotificationStore (centro de notificações — Colonial NetImóveis)
+	notifMetadata := &t.StoreMetadata{
+		Name:         "notification",
+		Type:         reflect.TypeFor[notificationstore.Notification](),
+		DriverName:   driverName,
+		Description:  "Notification store (Colonial NetImóveis) — Calm UX",
+		Version:      "1.0.0",
+		Capabilities: []string{"append", "mark_read", "unread_count", "pagination"},
+	}
+	notifFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("notification store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return notificationstore.NewPGNotificationStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "notification", notifMetadata, notifFactory); err != nil {
+		gl.Errorf("Failed to register notification store: %v", err)
+	}
+
+	// Registra NotificationPrefStore (preferências Calm UX — mute-by-default)
+	notifPrefMetadata := &t.StoreMetadata{
+		Name:         "notification_pref",
+		Type:         reflect.TypeFor[notificationstore.NotificationPref](),
+		DriverName:   driverName,
+		Description:  "Notification preferences store (mute-by-default) — Colonial NetImóveis",
+		Version:      "1.0.0",
+		Capabilities: []string{"upsert", "list_by_user"},
+	}
+	notifPrefFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("notification pref store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return notificationstore.NewPGNotificationPrefStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "notification_pref", notifPrefMetadata, notifPrefFactory); err != nil {
+		gl.Errorf("Failed to register notification pref store: %v", err)
+	}
+
+	// Registra TransactionStore (negociações imobiliárias — Colonial NetImóveis)
+	txMetadata := &t.StoreMetadata{
+		Name:         "transaction",
+		Type:         reflect.TypeFor[transactionstore.Transaction](),
+		DriverName:   driverName,
+		Description:  "Transaction store (Colonial NetImóveis) — negociações imobiliárias",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "pagination", "filtering", "status_lifecycle"},
+	}
+	txFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("transaction store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return transactionstore.NewPGTransactionStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "transaction", txMetadata, txFactory); err != nil {
+		gl.Errorf("Failed to register transaction store: %v", err)
+	}
+
+	// Registra TransactionStepStore (checklist de etapas — Colonial NetImóveis)
+	stepMetadata := &t.StoreMetadata{
+		Name:         "transaction_step",
+		Type:         reflect.TypeFor[transactionstore.TransactionStep](),
+		DriverName:   driverName,
+		Description:  "Transaction step checklist store (Colonial NetImóveis)",
+		Version:      "1.0.0",
+		Capabilities: []string{"list", "update", "seed_defaults"},
+	}
+	stepFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("transaction step store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return transactionstore.NewPGTransactionStepStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "transaction_step", stepMetadata, stepFactory); err != nil {
+		gl.Errorf("Failed to register transaction step store: %v", err)
+	}
+
+	// Registra TransactionDocStore (documentos do processo — Colonial NetImóveis)
+	docMetadata := &t.StoreMetadata{
+		Name:         "transaction_doc",
+		Type:         reflect.TypeFor[transactionstore.TransactionDoc](),
+		DriverName:   driverName,
+		Description:  "Transaction document store (Colonial NetImóveis) — upload + LLM extraction",
+		Version:      "1.0.0",
+		Capabilities: []string{"append", "list", "llm_extraction"},
+	}
+	docFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("transaction doc store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return transactionstore.NewPGTransactionDocStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "transaction_doc", docMetadata, docFactory); err != nil {
+		gl.Errorf("Failed to register transaction doc store: %v", err)
+	}
+
+	// Registra VisitEventStore (agenda de visitas — Colonial NetImóveis)
+	visitMetadata := &t.StoreMetadata{
+		Name:         "visit_event",
+		Type:         reflect.TypeFor[visiteventstore.VisitEvent](),
+		DriverName:   driverName,
+		Description:  "Visit agenda store (Colonial NetImóveis) — agendamento + roteiro",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "pagination", "filtering", "list_by_day"},
+	}
+	visitFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("visit event store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return visiteventstore.NewPGVisitEventStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "visit_event", visitMetadata, visitFactory); err != nil {
+		gl.Errorf("Failed to register visit event store: %v", err)
+	}
+
+	// ── Cozinha Pass (KDS) ────────────────────────────────────────────────────
+
+	ckCompanyMetadata := &t.StoreMetadata{
+		Name:         "ck_company",
+		Type:         reflect.TypeFor[ckcompanystore.CKCompany](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — empresa locatária (tenant do KDS)",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "channels", "pagination", "filtering"},
+	}
+	ckCompanyFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_company store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckcompanystore.NewPGCKCompanyStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_company", ckCompanyMetadata, ckCompanyFactory); err != nil {
+		gl.Errorf("Failed to register ck_company store: %v", err)
+	}
+
+	ckOrderMetadata := &t.StoreMetadata{
+		Name:         "ck_order",
+		Type:         reflect.TypeFor[ckorderstore.CKOrder](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — pedidos e itens do KDS",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "status_lifecycle", "pagination", "filtering"},
+	}
+	ckOrderFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_order store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckorderstore.NewPGCKOrderStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_order", ckOrderMetadata, ckOrderFactory); err != nil {
+		gl.Errorf("Failed to register ck_order store: %v", err)
+	}
+
+	siftStageMetadata := &t.StoreMetadata{
+		Name:         "sift_stage",
+		Type:         reflect.TypeFor[siftstagestore.Stage](),
+		DriverName:   driverName,
+		Description:  "Sift — estágios do pipeline (dado, não código: a operação reordena sem deploy)",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "upsert_idempotente", "tenant_scoped"},
+	}
+	siftStageFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("sift_stage store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return siftstagestore.NewPGSiftStageStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "sift_stage", siftStageMetadata, siftStageFactory); err != nil {
+		gl.Errorf("Failed to register sift_stage store: %v", err)
+	}
+
+	siftTurmaMetadata := &t.StoreMetadata{
+		Name:         "sift_turma",
+		Type:         reflect.TypeFor[siftturmastore.Turma](),
+		DriverName:   driverName,
+		Description:  "Sift — turmas; resolvidas por landing_slug global na landing anônima",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "slug_lookup", "tenant_scoped"},
+	}
+	siftTurmaFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("sift_turma store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return siftturmastore.NewPGSiftTurmaStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "sift_turma", siftTurmaMetadata, siftTurmaFactory); err != nil {
+		gl.Errorf("Failed to register sift_turma store: %v", err)
+	}
+
+	siftLeadMetadata := &t.StoreMetadata{
+		Name:         "sift_lead",
+		Type:         reflect.TypeFor[siftleadstore.Lead](),
+		DriverName:   driverName,
+		Description:  "Sift — leads do funil de captação, com origem opcional e quem captou",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "dedupe", "pagination", "filtering", "tenant_scoped"},
+	}
+	siftLeadFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("sift_lead store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return siftleadstore.NewPGSiftLeadStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "sift_lead", siftLeadMetadata, siftLeadFactory); err != nil {
+		gl.Errorf("Failed to register sift_lead store: %v", err)
+	}
+
+	siftLeadEventMetadata := &t.StoreMetadata{
+		Name:         "sift_lead_event",
+		Type:         reflect.TypeFor[siftleadeventstore.LeadEvent](),
+		DriverName:   driverName,
+		Description:  "Sift — trilha de eventos do lead (tempo-em-estágio e tempo-até-escalar sem cálculo posterior)",
+		Version:      "1.0.0",
+		Capabilities: []string{"append_only", "timeline", "tenant_scoped"},
+	}
+	siftLeadEventFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("sift_lead_event store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return siftleadeventstore.NewPGSiftLeadEventStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "sift_lead_event", siftLeadEventMetadata, siftLeadEventFactory); err != nil {
+		gl.Errorf("Failed to register sift_lead_event store: %v", err)
+	}
+
+	ckInsumoMetadata := &t.StoreMetadata{
+		Name:         "ck_insumo",
+		Type:         reflect.TypeFor[ckinsumostore.CKInsumo](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — insumos (matéria-prima) com controle de estoque",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "estoque_ajuste", "baixo_estoque_filter", "pagination"},
+	}
+	ckInsumoFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_insumo store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckinsumostore.NewPGCKInsumoStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_insumo", ckInsumoMetadata, ckInsumoFactory); err != nil {
+		gl.Errorf("Failed to register ck_insumo store: %v", err)
+	}
+
+	ckProdutoMetadata := &t.StoreMetadata{
+		Name:         "ck_produto",
+		Type:         reflect.TypeFor[ckprodutostore.CKProduto](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — produtos (BOM recursivo) com ficha técnica",
+		Version:      "1.0.0",
+		Capabilities: []string{"crud", "componentes", "bom", "pagination", "filtering"},
+	}
+	ckProdutoFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_produto store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckprodutostore.NewPGCKProdutoStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_produto", ckProdutoMetadata, ckProdutoFactory); err != nil {
+		gl.Errorf("Failed to register ck_produto store: %v", err)
+	}
+
+	ckMessageMetadata := &t.StoreMetadata{
+		Name:         "ck_message",
+		Type:         reflect.TypeFor[ckmessagestore.CKMessage](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — inbox de mensagens multi-canal",
+		Version:      "1.0.0",
+		Capabilities: []string{"append", "mark_read", "conversation_read", "pagination", "filtering"},
+	}
+	ckMessageFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_message store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckmessagestore.NewPGCKMessageStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_message", ckMessageMetadata, ckMessageFactory); err != nil {
+		gl.Errorf("Failed to register ck_message store: %v", err)
+	}
+
+	ckMovimentacaoMetadata := &t.StoreMetadata{
+		Name:         "ck_movimentacao",
+		Type:         reflect.TypeFor[ckmovimentacaostore.CKMovimentacao](),
+		DriverName:   driverName,
+		Description:  "Cozinha Pass — livro-razão de movimentações de estoque (idempotente para baixa)",
+		Version:      "1.0.0",
+		Capabilities: []string{"append", "idempotent_baixa", "list_by_insumo", "list_by_order"},
+	}
+	ckMovimentacaoFactory := func(ctx context.Context, drv t.Driver) (t.StoreType, error) {
+		exec, err := drv.Executor(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if exec.Kind() != execution.BackendPostgres {
+			return nil, gl.Errorf("ck_movimentacao store requires Postgres, got %s", exec.Kind())
+		}
+		pgExec := exec.PG()
+		if pgExec == nil {
+			return nil, gl.Error("PGExecutor is nil")
+		}
+		return ckmovimentacaostore.NewPGCKMovimentacaoStore(pgExec), nil
+	}
+	if err := RegisterStore(driverName, "ck_movimentacao", ckMovimentacaoMetadata, ckMovimentacaoFactory); err != nil {
+		gl.Errorf("Failed to register ck_movimentacao store: %v", err)
 	}
 
 	gl.Noticef("Registered %d stores for driver: %s", len(ListStoresByDriver(driverName)), driverName)

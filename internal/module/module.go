@@ -6,7 +6,6 @@ import (
 	"github.com/kubex-ecosystem/domus/internal/module/version"
 
 	info "github.com/kubex-ecosystem/domus/internal/module/info"
-	kbxInfo "github.com/kubex-ecosystem/kbx/tools/info"
 	kbxStyle "github.com/kubex-ecosystem/kbx/tools/style"
 	logz "github.com/kubex-ecosystem/logz"
 
@@ -58,13 +57,17 @@ func (m *Domus) Command() *cobra.Command {
 		Use: m.Module(),
 		//Aliases:     []string{m.Alias(), "w", "wb", "webServer", "http"},
 		Example: m.concatenateExamples(),
-		Annotations: kbxInfo.CLIBannerStyle(
-			info.GetBanners(),
-			[]string{
-				m.LongDescription(),
-				m.ShortDescription(),
-			}, m.hideBanner,
-		),
+		Annotations: info.GetDescriptions([]string{
+			m.LongDescription(),
+			m.ShortDescription(),
+		}, m.hideBanner),
+		// Annotations: kbxInfo.CLIBannerStyle(
+		// 	info.GetBanners(),
+		// 	[]string{
+		// 		m.LongDescription(),
+		// 		m.ShortDescription(),
+		// 	}, m.hideBanner,
+		// ),
 		Version: version.GetVersion(),
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd.Help()

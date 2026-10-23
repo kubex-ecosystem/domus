@@ -9,11 +9,20 @@ import "context"
 type BackendKind string
 
 const (
-	BackendUnknown  BackendKind = "unknown"
+	// BackendUnknown é o tipo de backend padrão, sem sabor.
+	BackendUnknown BackendKind = "unknown"
+
+	// BackendPostgres é o tipo de backend para PostgreSQL.
 	BackendPostgres BackendKind = "postgres"
-	BackendMongo    BackendKind = "mongo"
-	BackendRedis    BackendKind = "redis"
-	BackendHTTP     BackendKind = "http"
+
+	// BackendMongo é o tipo de backend para MongoDB.
+	BackendMongo BackendKind = "mongo"
+
+	// BackendRedis é o tipo de backend para Redis.
+	BackendRedis BackendKind = "redis"
+
+	// BackendHTTP é o tipo de backend para HTTP.
+	BackendHTTP BackendKind = "http"
 )
 
 // Executor é a interface unificada que um Store ou Service deve receber.
@@ -37,10 +46,14 @@ type Executor interface {
 	// Gorm retorna o executor baseado em GORM (se disponível).
 	Gorm() GormExecutor
 
-	// Futuro: extensões para Mongo, Redis, etc.
-	// Mongo() MongoExecutor
-	// Redis() RedisExecutor
-	// HTTP() HTTPExecutor
+	// Mongo retorna o executor baseado em MongoDB (se disponível).
+	Mongo() MongoExecutor
+
+	// Redis retorna o executor baseado em Redis (se disponível).
+	Redis() RedisExecutor
+
+	// HTTP retorna o executor baseado em HTTP (se disponível).
+	HTTP() HTTPExecutor
 
 	// Generic retorna o executor genérico que trabalha com QueryModel.
 	Generic() GenericExecutor
@@ -51,45 +64,78 @@ type Executor interface {
 type executorImpl struct {
 	kind BackendKind
 
-	pg   PGExecutor
-	gen  GenericExecutor
-	gorm GormExecutor
-
-	// Futuro:
-	// mongo MongoExecutor
-	// redis RedisExecutor
-	// http  HTTPExecutor
+	pg    PGExecutor
+	gen   GenericExecutor
+	gorm  GormExecutor
+	mongo MongoExecutor
+	redis RedisExecutor
+	http  HTTPExecutor
 }
 
 // ExecutorOption permite configurar a implementação do Executor
 // sem precisar criar múltiplos construtores.
-type ExecutorOption func(*executorImpl)
+type ExecutorOption func(Executor)
 
 // WithKind define o tipo principal do backend.
 func WithKind(kind BackendKind) ExecutorOption {
-	return func(e *executorImpl) {
-		e.kind = kind
+	return func(e Executor) {
+		if a, ok := e.(*executorImpl); ok {
+			a.kind = kind
+		}
 	}
 }
 
 // WithPG define o executor específico de Postgres.
 func WithPG(pg PGExecutor) ExecutorOption {
-	return func(e *executorImpl) {
-		e.pg = pg
+	return func(e Executor) {
+		if a, ok := e.(*executorImpl); ok {
+			a.pg = pg
+		}
 	}
 }
 
 // WithGeneric define o executor genérico.
 func WithGeneric(gen GenericExecutor) ExecutorOption {
-	return func(e *executorImpl) {
-		e.gen = gen
+	return func(e Executor) {
+		if a, ok := e.(*executorImpl); ok {
+			a.gen = gen
+		}
 	}
 }
 
 // WithGorm define o executor baseado em GORM.
 func WithGorm(gorm GormExecutor) ExecutorOption {
-	return func(e *executorImpl) {
-		e.gorm = gorm
+	return func(e Executor) {
+		if a, ok := e.(*executorImpl); ok {
+			a.gorm = gorm
+		}
+	}
+}
+
+// WithMongo define o executor baseado em MongoDB.
+func WithMongo(mongo MongoExecutor) ExecutorOption {
+	return func(e Executor) {
+		if a, ok := e.(*executorImpl); ok {
+			a.mongo = mongo
+		}
+	}
+}
+
+// WithRedis define o executor baseado em Redis.
+func WithRedis(redis RedisExecutor) ExecutorOption {
+	return func(e Executor) {
+		if a, ok := e.(*executorImpl); ok {
+			a.redis = redis
+		}
+	}
+}
+
+// WithHTTP define o executor baseado em HTTP.
+func WithHTTP(http HTTPExecutor) ExecutorOption {
+	return func(e Executor) {
+		if a, ok := e.(*executorImpl); ok {
+			a.http = http
+		}
 	}
 }
 
@@ -118,30 +164,42 @@ func NewExecutor(opts ...ExecutorOption) Executor {
 
 // Implementação dos métodos da interface Executor.
 
+// Kind retorna o tipo principal do backend.
 func (e *executorImpl) Kind() BackendKind {
 	return e.kind
 }
 
+// PG retorna o executor específico de Postgres.
 func (e *executorImpl) PG() PGExecutor {
 	return e.pg
 }
 
+// Gorm retorna o executor baseado em GORM.
 func (e *executorImpl) Gorm() GormExecutor {
 	return e.gorm
 }
 
-// Futuro:
-// func (e *executorImpl) Mongo() MongoExecutor { return e.mongo }
-// func (e *executorImpl) Redis() RedisExecutor { return e.redis }
-// func (e *executorImpl) HTTP() HTTPExecutor   { return e.http }
+// Mongo retorna o executor baseado em MongoDB.
+func (e *executorImpl) Mongo() MongoExecutor {
+	return e.mongo
+}
 
+// Redis retorna o executor baseado em Redis.
+func (e *executorImpl) Redis() RedisExecutor {
+	return e.redis
+}
+
+// HTTP retorna o executor baseado em HTTP.
+func (e *executorImpl) HTTP() HTTPExecutor {
+	return e.http
+}
+
+// Generic retorna o executor genérico que trabalha com QueryModel.
 func (e *executorImpl) Generic() GenericExecutor {
 	return e.gen
 }
 
-// Helper que pode ser útil em testes ou casos pontuais: cria um Executor
-// totalmente genérico, sem backend específico.
-
+// NewPureGenericExecutor cria um Executor totalmente genérico, sem backend específico.
 func NewPureGenericExecutor() Executor {
 	return &executorImpl{
 		kind: BackendUnknown,

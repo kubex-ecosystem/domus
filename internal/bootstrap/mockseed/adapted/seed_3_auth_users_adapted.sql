@@ -28,7 +28,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000011',
-    'viewer@kubex.world',
+    'viewer@kubex.space',
     'Test',
     'Viewer',
     crypt(
@@ -70,7 +70,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000012',
-    'multi@kubex.world',
+    'multi@kubex.space',
     'Multi',
     'Tenant User',
     crypt(
@@ -118,7 +118,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000013',
-    'inactive@kubex.world',
+    'inactive@kubex.space',
     'Inactive',
     'User',
     crypt(
@@ -157,7 +157,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000014',
-    'reset@kubex.world',
+    'reset@kubex.space',
     'Password',
     'Reset',
     crypt('temp123', gen_salt('bf')),
@@ -195,7 +195,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000015',
-    'test.superadmin@kubex.world',
+    'test.superadmin@kubex.space',
     'Test',
     'Super Admin',
     crypt('test123', gen_salt('bf')),
@@ -228,7 +228,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000016',
-    'test.admin@kubex.world',
+    'test.admin@kubex.space',
     'Test',
     'Admin',
     crypt('test123', gen_salt('bf')),
@@ -261,7 +261,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000017',
-    'test.manager@kubex.world',
+    'test.manager@kubex.space',
     'Test',
     'Manager',
     crypt('test123', gen_salt('bf')),
@@ -294,7 +294,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000018',
-    'test.salesrep@kubex.world',
+    'test.salesrep@kubex.space',
     'Test',
     'Sales Rep',
     crypt('test123', gen_salt('bf')),
@@ -327,7 +327,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000019',
-    'test.partneradmin@kubex.world',
+    'test.partneradmin@kubex.space',
     'Test',
     'Partner Admin',
     crypt('test123', gen_salt('bf')),
@@ -360,7 +360,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000020',
-    'test.partner@kubex.world',
+    'test.partner@kubex.space',
     'Test',
     'Partner',
     crypt('test123', gen_salt('bf')),
@@ -393,7 +393,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000021',
-    'test.analyst@kubex.world',
+    'test.analyst@kubex.space',
     'Test',
     'Analyst',
     crypt('test123', gen_salt('bf')),
@@ -426,7 +426,7 @@ INSERT INTO "user" (
   )
 VALUES (
     '60000000-0000-0000-0000-000000000022',
-    'test.viewer@kubex.world',
+    'test.viewer@kubex.space',
     'Test',
     'Viewer',
     crypt('test123', gen_salt('bf')),

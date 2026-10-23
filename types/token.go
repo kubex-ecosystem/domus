@@ -8,7 +8,7 @@ import (
 
 	ci "github.com/kubex-ecosystem/domus/internal/interfaces"
 	"github.com/kubex-ecosystem/domus/internal/types"
-	kbxSec "github.com/kubex-ecosystem/kbx/tools/security/interfaces"
+	kbxSec "github.com/kubex-ecosystem/ethyr/tools/security/interfaces"
 )
 
 type TSConfig struct {
