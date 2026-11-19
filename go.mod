@@ -21,7 +21,7 @@ require (
 
 require (
 	github.com/kubex-ecosystem/ethyr v0.1.0
-	github.com/kubex-ecosystem/logz v1.7.0
+	github.com/kubex-ecosystem/logz v1.7.1
 	github.com/lib/pq v1.12.3
 	github.com/rabbitmq/amqp091-go v1.11.0
 	go.mongodb.org/mongo-driver/v2 v2.6.0
@@ -111,7 +111,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/kubex-ecosystem/kbx v1.1.0
+	github.com/kubex-ecosystem/kbx v1.1.1
 	github.com/kubex-ecosystem/xtui v1.3.3
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
