@@ -1,11 +1,8 @@
 name: CI
 
 # Build e testes do domus em todo PR e push na main.
-#
-# Enquanto o go.mod tiver `replace` locais (kbx e logz em /projects/kubex/*),
-# a CI clona esses módulos nesse caminho antes de compilar. Quando os replace
-# forem trocados por tags, este passo sai. O ethyr vem do proxy de módulos
-# (v0.1.0). Todos os repos clonados são públicos: nenhum secret é necessário.
+# Todas as dependências kubex (kbx, logz, ethyr) vêm do proxy de módulos por
+# tag: nenhum clone de módulo irmão nem secret é necessário.
 
 on:
   pull_request:
@@ -25,34 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: domus
-
-      - uses: actions/checkout@v4
-        with:
-          repository: kubex-ecosystem/kbx
-          path: kbx
-      - uses: actions/checkout@v4
-        with:
-          repository: kubex-ecosystem/logz
-          path: logz
-
-      - name: Ligar módulos irmãos em /projects/kubex
-        run: |
-          sudo mkdir -p /projects/kubex
-          for m in domus kbx logz; do
-            sudo ln -sfn "$GITHUB_WORKSPACE/$m" "/projects/kubex/$m"
-          done
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: domus/go.mod
-          cache-dependency-path: domus/go.sum
+          go-version-file: go.mod
 
       - name: Build
-        working-directory: domus
         run: go build ./...
 
       - name: Test
-        working-directory: domus
         run: go test ./...
