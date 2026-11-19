@@ -20,23 +20,26 @@ type CKMessage struct {
 }
 
 type CreateCKMessageInput struct {
-	CompanyID  string
-	OrderID    *string
-	Channel    string
-	ClientName string
-	Content    string
-	Direction  string
-	Read       bool
+	CompanyID  string  `json:"company_id"`
+	OrderID    *string `json:"order_id"`
+	Channel    string  `json:"channel"`
+	ClientName string  `json:"client_name"`
+	Content    string  `json:"content"`
+	Direction  string  `json:"direction"`
+	Read       bool    `json:"read"`
 }
 
 type CKMessageFilters struct {
 	CompanyID *string
-	OrderID   *string
-	Channel   *string
-	Direction *string
-	Unread    *bool
-	Page      int
-	Limit     int
+	// CompanyIDs restringe às empresas listadas. nil = sem filtro;
+	// slice vazio = nenhum registro (fail-closed).
+	CompanyIDs []string
+	OrderID    *string
+	Channel    *string
+	Direction  *string
+	Unread     *bool
+	Page       int
+	Limit      int
 }
 
 type CKMessageStore interface {

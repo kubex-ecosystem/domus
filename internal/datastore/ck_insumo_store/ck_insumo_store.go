@@ -20,25 +20,28 @@ type CKInsumo struct {
 }
 
 type CreateCKInsumoInput struct {
-	CompanyID     string
-	Nome          string
-	Unidade       string
-	Estoque       float64
-	EstoqueMinimo float64
-	CustoUnitario float64
+	CompanyID     string  `json:"company_id"`
+	Nome          string  `json:"nome"`
+	Unidade       string  `json:"unidade"`
+	Estoque       float64 `json:"estoque"`
+	EstoqueMinimo float64 `json:"estoque_minimo"`
+	CustoUnitario float64 `json:"custo_unitario"`
 }
 
 type UpdateCKInsumoInput struct {
-	ID            string
-	Nome          *string
-	Unidade       *string
-	Estoque       *float64
-	EstoqueMinimo *float64
-	CustoUnitario *float64
+	ID            string   `json:"id"`
+	Nome          *string  `json:"nome"`
+	Unidade       *string  `json:"unidade"`
+	Estoque       *float64 `json:"estoque"`
+	EstoqueMinimo *float64 `json:"estoque_minimo"`
+	CustoUnitario *float64 `json:"custo_unitario"`
 }
 
 type CKInsumoFilters struct {
-	CompanyID    *string
+	CompanyID *string
+	// CompanyIDs restringe às empresas listadas. nil = sem filtro;
+	// slice vazio = nenhum registro (fail-closed).
+	CompanyIDs   []string
 	BaixoEstoque *bool
 	Page         int
 	Limit        int

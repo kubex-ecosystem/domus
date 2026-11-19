@@ -147,6 +147,15 @@ func (s *pgCKInsumoStore) List(ctx context.Context, filters *CKInsumoFilters) (*
 	idx := 1
 
 	if filters != nil {
+		if filters.CompanyIDs != nil {
+			if len(filters.CompanyIDs) == 0 {
+				wheres = append(wheres, "FALSE")
+			} else {
+				wheres = append(wheres, fmt.Sprintf("company_id = ANY($%d::uuid[])", idx))
+				args = append(args, filters.CompanyIDs)
+				idx++
+			}
+		}
 		if filters.CompanyID != nil {
 			wheres = append(wheres, fmt.Sprintf("company_id = $%d", idx))
 			args = append(args, *filters.CompanyID)

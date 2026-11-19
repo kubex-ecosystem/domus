@@ -28,33 +28,36 @@ type CKProduto struct {
 }
 
 type CreateCKComponenteInput struct {
-	RefTipo      string
-	InsumoRefID  *string
-	ProdutoRefID *string
-	Quantidade   float64
+	RefTipo      string  `json:"ref_tipo"`
+	InsumoRefID  *string `json:"insumo_ref_id"`
+	ProdutoRefID *string `json:"produto_ref_id"`
+	Quantidade   float64 `json:"quantidade"`
 }
 
 type CreateCKProdutoInput struct {
-	CompanyID   string
-	Nome        string
-	Tipo        string
-	PrecoVenda  *float64
-	Componentes []CreateCKComponenteInput
+	CompanyID   string                    `json:"company_id"`
+	Nome        string                    `json:"nome"`
+	Tipo        string                    `json:"tipo"`
+	PrecoVenda  *float64                  `json:"preco_venda"`
+	Componentes []CreateCKComponenteInput `json:"componentes"`
 }
 
 type UpdateCKProdutoInput struct {
-	ID          string
-	Nome        *string
-	Tipo        *string
-	PrecoVenda  *float64
-	Componentes []CreateCKComponenteInput
+	ID          string                    `json:"id"`
+	Nome        *string                   `json:"nome"`
+	Tipo        *string                   `json:"tipo"`
+	PrecoVenda  *float64                  `json:"preco_venda"`
+	Componentes []CreateCKComponenteInput `json:"componentes"`
 }
 
 type CKProdutoFilters struct {
 	CompanyID *string
-	Tipo      *string
-	Page      int
-	Limit     int
+	// CompanyIDs restringe às empresas listadas. nil = sem filtro;
+	// slice vazio = nenhum registro (fail-closed).
+	CompanyIDs []string
+	Tipo       *string
+	Page       int
+	Limit      int
 }
 
 type CKProdutoStore interface {
