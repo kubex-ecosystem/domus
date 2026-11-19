@@ -115,39 +115,6 @@
       "rollback_safe": true
     },
     {
-      "step": 7,
-      "name": "Triggers",
-      "file": "core/etapa_7_triggers.sql",
-      "description": "Cria função e triggers para auto-update de updated_at",
-      "estimated_duration_seconds": 2,
-      "dependencies": ["etapa_6_indices.sql"],
-      "creates": [
-        "function: update_updated_at_column()",
-        "13 triggers de updated_at"
-      ],
-      "critical": false,
-      "rollback_safe": true
-    },
-    {
-      "step": 8,
-      "name": "Seed Data",
-      "file": "core/etapa_8_seed_data.sql",
-      "description": "Insere dados iniciais (roles, permissions, exemplos)",
-      "estimated_duration_seconds": 3,
-      "dependencies": ["etapa_7_triggers.sql"],
-      "creates": [
-        "8 system roles",
-        "35 permissions",
-        "~100+ role-permission mappings",
-        "1 org de exemplo",
-        "1 tenant de exemplo",
-        "1 user admin (com password_hash)",
-        "1 pipeline com 5 stages"
-      ],
-      "critical": false,
-      "rollback_safe": true
-    },
-    {
       "step": 9,
       "name": "Auth Sessions",
       "file": "core/etapa_9_auth_sessions.sql",
@@ -172,6 +139,39 @@
         "table: pending_access_requests",
         "index: idx_pending_access_requests_status",
         "index: idx_pending_access_requests_created_at"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 7,
+      "name": "Triggers",
+      "file": "core/etapa_7_triggers.sql",
+      "description": "Cria função e triggers para auto-update de updated_at",
+      "estimated_duration_seconds": 2,
+      "dependencies": ["etapa_6_indices.sql", "etapa_10_pending_access_requests.sql"],
+      "creates": [
+        "function: update_updated_at_column()",
+        "14 triggers de updated_at"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 8,
+      "name": "Seed Data",
+      "file": "core/etapa_8_seed_data.sql",
+      "description": "Insere dados iniciais (roles, permissions, exemplos)",
+      "estimated_duration_seconds": 3,
+      "dependencies": ["etapa_7_triggers.sql"],
+      "creates": [
+        "8 system roles",
+        "33 permissions",
+        "~100+ role-permission mappings",
+        "1 org de exemplo",
+        "1 tenant de exemplo",
+        "1 user admin (com password_hash)",
+        "1 pipeline com 5 stages"
       ],
       "critical": false,
       "rollback_safe": true
@@ -314,6 +314,28 @@
       "rollback_safe": true
     },
     {
+      "step": 25,
+      "name": "Cozinha Pass — KDS Multi-Tenant",
+      "file": "core/etapa_25_cozinha_pass.sql",
+      "description": "Cria o schema cozinha_pass do Kitchen Display System: empresas e canais, insumos, produtos e ficha técnica recursiva, pedidos e itens, inbox de mensagens e livro-razão de estoque",
+      "estimated_duration_seconds": 1,
+      "dependencies": ["etapa_1_extensions_tenancy.sql"],
+      "creates": [
+        "schema: cozinha_pass",
+        "table: cozinha_pass.company",
+        "table: cozinha_pass.company_channel",
+        "table: cozinha_pass.insumo",
+        "table: cozinha_pass.produto",
+        "table: cozinha_pass.componente_ficha",
+        "table: cozinha_pass.orders",
+        "table: cozinha_pass.order_item",
+        "table: cozinha_pass.message",
+        "table: cozinha_pass.movimentacao_estoque"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
       "step": 26,
       "name": "Sift — CRM de captação (Growth Production)",
       "file": "core/etapa_26_sift.sql",
@@ -372,7 +394,7 @@
       "Validar existência de função update_updated_at_column",
       "Validar existência de 14 triggers",
       "Validar existência de 8 roles do sistema",
-      "Validar existência de 35 permissions",
+      "Validar existência de 33 permissions",
       "Validar integridade das Foreign Keys"
     ]
   },
