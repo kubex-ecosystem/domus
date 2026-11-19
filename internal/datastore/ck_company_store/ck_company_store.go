@@ -22,23 +22,23 @@ type CKCompany struct {
 type CreateCKCompanyInput struct {
 	// TenantID é o tenant dono da empresa. Opcional por compatibilidade, mas
 	// empresas sem tenant não aparecem em listagens filtradas por TenantIDs.
-	TenantID     string
-	Name         string
-	Logo         *string
-	BrandColor   string
-	Cuisine      string
-	ActiveStatus string
-	Channels     []string
+	TenantID     string   `json:"tenant_id"`
+	Name         string   `json:"name"`
+	Logo         *string  `json:"logo"`
+	BrandColor   string   `json:"brand_color"`
+	Cuisine      string   `json:"cuisine"`
+	ActiveStatus string   `json:"active_status"`
+	Channels     []string `json:"channels"`
 }
 
 type UpdateCKCompanyInput struct {
-	ID           string
-	Name         *string
-	Logo         *string
-	BrandColor   *string
-	Cuisine      *string
-	ActiveStatus *string
-	Channels     []string
+	ID           string   `json:"id"`
+	Name         *string  `json:"name"`
+	Logo         *string  `json:"logo"`
+	BrandColor   *string  `json:"brand_color"`
+	Cuisine      *string  `json:"cuisine"`
+	ActiveStatus *string  `json:"active_status"`
+	Channels     []string `json:"channels"`
 }
 
 type CKCompanyFilters struct {

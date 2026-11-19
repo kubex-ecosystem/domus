@@ -37,28 +37,28 @@ type CKOrder struct {
 }
 
 type CreateCKOrderItemInput struct {
-	Name      string
-	ProdutoID *string
-	Quantity  float64
-	UnitPrice float64
-	Notes     *string
+	Name      string  `json:"name"`
+	ProdutoID *string `json:"produto_id"`
+	Quantity  float64 `json:"quantity"`
+	UnitPrice float64 `json:"unit_price"`
+	Notes     *string `json:"notes"`
 }
 
 type CreateCKOrderInput struct {
-	CompanyID   string
-	Ticket      string
-	ClientName  string
-	Channel     string
-	Destination *string
-	Note        *string
-	TotalValue  float64
-	ExternalID  *string // ID na plataforma de origem (idempotência); nulo se manual
-	Items       []CreateCKOrderItemInput
+	CompanyID   string                   `json:"company_id"`
+	Ticket      string                   `json:"ticket"`
+	ClientName  string                   `json:"client_name"`
+	Channel     string                   `json:"channel"`
+	Destination *string                  `json:"destination"`
+	Note        *string                  `json:"note"`
+	TotalValue  float64                  `json:"total_value"`
+	ExternalID  *string                  `json:"external_id"` // ID na plataforma de origem (idempotência); nulo se manual
+	Items       []CreateCKOrderItemInput `json:"items"`
 }
 
 type UpdateCKOrderStatusInput struct {
-	ID     string
-	Status string
+	ID     string `json:"id"`
+	Status string `json:"status"`
 }
 
 type CKOrderFilters struct {

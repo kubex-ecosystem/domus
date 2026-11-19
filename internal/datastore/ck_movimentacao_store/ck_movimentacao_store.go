@@ -17,10 +17,10 @@ type CKMovimentacao struct {
 }
 
 type RegistrarMovimentacaoInput struct {
-	InsumoID   string
-	OrderID    *string
-	Tipo       string
-	Quantidade float64
+	InsumoID   string  `json:"insumo_id"`
+	OrderID    *string `json:"order_id"`
+	Tipo       string  `json:"tipo"`
+	Quantidade float64 `json:"quantidade"`
 }
 
 type CKMovimentacaoStore interface {
