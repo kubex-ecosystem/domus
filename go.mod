@@ -20,7 +20,7 @@ require (
 )
 
 require (
-	github.com/kubex-ecosystem/ethyr v0.1.0
+	github.com/kubex-ecosystem/ethyr v0.1.1
 	github.com/kubex-ecosystem/logz v1.7.1
 	github.com/lib/pq v1.12.3
 	github.com/rabbitmq/amqp091-go v1.11.0
