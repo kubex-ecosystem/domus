@@ -1,0 +1,65 @@
+name: CI
+
+# Build e testes do domus em todo PR e push na main.
+#
+# Enquanto o go.mod tiver `replace` locais (kbx e logz em /projects/kubex/*,
+# ethyr em ../ethyr), a CI clona esses módulos nos mesmos caminhos antes de
+# compilar. Quando os replace forem trocados por tags, este passo sai.
+#
+# Secret necessário: KUBEX_CI_TOKEN — token com leitura em
+# kubex-ecosystem/ethyr (repositório privado). kbx e logz são públicos.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: domus
+
+      - uses: actions/checkout@v4
+        with:
+          repository: kubex-ecosystem/kbx
+          path: kbx
+      - uses: actions/checkout@v4
+        with:
+          repository: kubex-ecosystem/logz
+          path: logz
+      - uses: actions/checkout@v4
+        with:
+          repository: kubex-ecosystem/ethyr
+          path: ethyr
+          token: ${{ secrets.KUBEX_CI_TOKEN }}
+
+      - name: Ligar módulos irmãos em /projects/kubex
+        run: |
+          sudo mkdir -p /projects/kubex
+          for m in domus kbx logz ethyr; do
+            sudo ln -sfn "$GITHUB_WORKSPACE/$m" "/projects/kubex/$m"
+          done
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: domus/go.mod
+          cache-dependency-path: domus/go.sum
+
+      - name: Build
+        working-directory: domus
+        run: go build ./...
+
+      - name: Test
+        working-directory: domus
+        run: go test ./...
