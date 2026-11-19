@@ -20,7 +20,7 @@ require (
 )
 
 require (
-	github.com/kubex-ecosystem/ethyr v0.0.0-00010101000000-000000000000
+	github.com/kubex-ecosystem/ethyr v0.1.0
 	github.com/kubex-ecosystem/logz v1.6.90
 	github.com/lib/pq v1.12.3
 	github.com/rabbitmq/amqp091-go v1.11.0
@@ -143,7 +143,5 @@ require (
 replace github.com/google/dotprompt/go/dotprompt => github.com/kubex-ecosystem/dotprompt v0.0.2
 
 replace github.com/kubex-ecosystem/kbx => /projects/kubex/kbx
-
-replace github.com/kubex-ecosystem/ethyr => ../ethyr
 
 replace github.com/kubex-ecosystem/logz => /projects/kubex/logz
