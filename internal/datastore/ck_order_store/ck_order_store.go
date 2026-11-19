@@ -18,22 +18,22 @@ type CKOrderItem struct {
 }
 
 type CKOrder struct {
-	ID          string        `json:"id"`
-	CompanyID   string        `json:"company_id"`
-	Ticket      string        `json:"ticket"`
-	ClientName  string        `json:"client_name"`
-	Channel     string        `json:"channel"`
-	Status      string        `json:"status"`
-	Destination *string       `json:"destination,omitempty"`
-	Note        *string       `json:"note,omitempty"`
-	TotalValue  float64       `json:"total_value"`
+	ID          string  `json:"id"`
+	CompanyID   string  `json:"company_id"`
+	Ticket      string  `json:"ticket"`
+	ClientName  string  `json:"client_name"`
+	Channel     string  `json:"channel"`
+	Status      string  `json:"status"`
+	Destination *string `json:"destination,omitempty"`
+	Note        *string `json:"note,omitempty"`
+	TotalValue  float64 `json:"total_value"`
 	// ExternalID é o ID do pedido na plataforma de origem (ex. order.id do iFood).
 	// Chave de idempotência estável — o Ticket é o número curto visível na comanda,
 	// que pode repetir entre lojas/dias. Nulo em pedidos manuais/sem origem externa.
-	ExternalID  *string       `json:"external_id,omitempty"`
-	CreatedAt   *time.Time    `json:"created_at,omitempty"`
-	UpdatedAt   *time.Time    `json:"updated_at,omitempty"`
-	Items       []CKOrderItem `json:"items,omitempty"`
+	ExternalID *string       `json:"external_id,omitempty"`
+	CreatedAt  *time.Time    `json:"created_at,omitempty"`
+	UpdatedAt  *time.Time    `json:"updated_at,omitempty"`
+	Items      []CKOrderItem `json:"items,omitempty"`
 }
 
 type CreateCKOrderItemInput struct {
@@ -63,10 +63,13 @@ type UpdateCKOrderStatusInput struct {
 
 type CKOrderFilters struct {
 	CompanyID *string
-	Status    *string
-	Channel   *string
-	Page      int
-	Limit     int
+	// CompanyIDs restringe às empresas listadas. nil = sem filtro;
+	// slice vazio = nenhum registro (fail-closed).
+	CompanyIDs []string
+	Status     *string
+	Channel    *string
+	Page       int
+	Limit      int
 }
 
 type CKOrderStore interface {

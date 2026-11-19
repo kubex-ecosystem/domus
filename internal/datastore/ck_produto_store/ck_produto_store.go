@@ -52,9 +52,12 @@ type UpdateCKProdutoInput struct {
 
 type CKProdutoFilters struct {
 	CompanyID *string
-	Tipo      *string
-	Page      int
-	Limit     int
+	// CompanyIDs restringe às empresas listadas. nil = sem filtro;
+	// slice vazio = nenhum registro (fail-closed).
+	CompanyIDs []string
+	Tipo       *string
+	Page       int
+	Limit      int
 }
 
 type CKProdutoStore interface {

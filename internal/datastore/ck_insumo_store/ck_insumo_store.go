@@ -38,7 +38,10 @@ type UpdateCKInsumoInput struct {
 }
 
 type CKInsumoFilters struct {
-	CompanyID    *string
+	CompanyID *string
+	// CompanyIDs restringe às empresas listadas. nil = sem filtro;
+	// slice vazio = nenhum registro (fail-closed).
+	CompanyIDs   []string
 	BaixoEstoque *bool
 	Page         int
 	Limit        int
