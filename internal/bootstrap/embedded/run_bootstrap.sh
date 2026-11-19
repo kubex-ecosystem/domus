@@ -174,10 +174,10 @@ validate_installation() {
 
   # Verificar permissions
   local permissions_count=$(psql "$DATABASE_URL" -tAc "SELECT COUNT(*) FROM permission")
-  if [ "$permissions_count" -eq 35 ]; then
-    log_info "✓ 35 permissions criadas"
+  if [ "$permissions_count" -eq 33 ]; then
+    log_info "✓ 33 permissions criadas"
   else
-    log_warning "⚠ Esperado 35 permissions, encontrado: $permissions_count"
+    log_warning "⚠ Esperado 33 permissions, encontrado: $permissions_count"
   fi
 
   if [ $errors -eq 0 ]; then
@@ -250,17 +250,21 @@ main() {
   execute_step 4 "Invites" "core/etapa_4_invites.sql" || exit 1
   execute_step 5 "Business Entities" "core/etapa_5_business_entities.sql" || exit 1
   execute_step 6 "Índices de Performance" "core/etapa_6_indices.sql" || exit 1
+  execute_step 9 "Auth Sessions" "core/etapa_9_auth_sessions.sql" || exit 1
+  execute_step 10 "Pending Access Requests" "core/etapa_10_pending_access_requests.sql" || exit 1
+  # A etapa 7 cria trigger em pending_access_requests, então roda depois da 10
   execute_step 7 "Triggers" "core/etapa_7_triggers.sql" || exit 1
   execute_step 8 "Seed Data" "core/etapa_8_seed_data.sql" || exit 1
-  execute_step 9 "Seed Data" "core/etapa_9_auth_sessions.sql" || exit 1
-  execute_step 10 "Seed Data" "core/etapa_10_pending_access_requests.sql" || exit 1
-  execute_step 11 "Seed Data" "core/etapa_11_integrations.sql" || exit 1
-  execute_step 12 "Seed Data" "core/etapa_12_external_metadata_registry.sql" || exit 1
-  execute_step 13 "Seed Data" "core/etapa_13_whatsapp_webhook.sql" || exit 1
-  execute_step 14 "Seed Data" "core/etapa_14_gnyx_bi.sql" || exit 1
-  execute_step 15 "Seed Data" "core/etapa_15_gnyx_sync.sql" || exit 1
-  execute_step 16 "Seed Data" "core/etapa_16_limalar_schema.sql" || exit 1
-  execute_step 17 "Seed Data" "core/etapa_17_limalar_whatsapp.sql" || exit 1
+  execute_step 11 "Integrations" "core/etapa_11_integrations.sql" || exit 1
+  execute_step 12 "External Metadata Registry" "core/etapa_12_external_metadata_registry.sql" || exit 1
+  execute_step 13 "WhatsApp Webhook Storage" "core/etapa_13_whatsapp_webhook.sql" || exit 1
+  execute_step 14 "GNyx BI Schema" "core/etapa_14_gnyx_bi.sql" || exit 1
+  execute_step 15 "GNyx Sync Schema" "core/etapa_15_gnyx_sync.sql" || exit 1
+  execute_step 16 "Limalar Schema" "core/etapa_16_limalar_schema.sql" || exit 1
+  execute_step 17 "Limalar WhatsApp" "core/etapa_17_limalar_whatsapp.sql" || exit 1
+  execute_step 25 "Cozinha Pass" "core/etapa_25_cozinha_pass.sql" || exit 1
+  execute_step 26 "Sift" "core/etapa_26_sift.sql" || exit 1
+  execute_step 27 "Sift Seed Demo" "core/etapa_27_sift_seed_demo.sql" || exit 1
 
   # Validar instalação
   if validate_installation; then
