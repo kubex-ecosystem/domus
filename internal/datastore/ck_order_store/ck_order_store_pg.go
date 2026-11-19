@@ -137,21 +137,100 @@ func (s *pgCKOrderStore) UpdateStatus(ctx context.Context, input *UpdateCKOrderS
 	if input == nil || strings.TrimSpace(input.ID) == "" {
 		return nil, fmt.Errorf("id is required: %w", t.ErrInvalidInput)
 	}
+	if !statusValido(input.Status) {
+		return nil, fmt.Errorf("status %q: %w", input.Status, t.ErrInvalidInput)
+	}
+
+	// Tudo numa transação: o FOR UPDATE serializa duas mudanças simultâneas no
+	// mesmo pedido, e a baixa só fica gravada se o status também ficar.
+	tx, err := s.exec.BeginTx(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin tx for ck order status: %w", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+
+	var atual, companyID string
+	err = tx.QueryRow(ctx,
+		`SELECT status, company_id FROM cozinha_pass.orders WHERE id = $1 FOR UPDATE`,
+		input.ID,
+	).Scan(&atual, &companyID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("ck order not found: %w", t.ErrNotFound)
+		}
+		return nil, fmt.Errorf("failed to lock ck order: %w", err)
+	}
+	if !TransicaoValida(atual, input.Status) {
+		return nil, fmt.Errorf("%s → %s: %w", atual, input.Status, ErrTransicaoInvalida)
+	}
+
 	const q = `
 		UPDATE cozinha_pass.orders SET status = $1, updated_at = $2
 		WHERE id = $3
 		RETURNING id, company_id, ticket, client_name, channel, status, destination, note, total_value, created_at, updated_at, external_id
 	`
-	row := s.exec.QueryRow(ctx, q, input.Status, time.Now().UTC(), input.ID)
-	order, err := scanCKOrder(row)
+	order, err := scanCKOrder(tx.QueryRow(ctx, q, input.Status, time.Now().UTC(), input.ID))
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, fmt.Errorf("ck order not found: %w", t.ErrNotFound)
-		}
 		return nil, fmt.Errorf("failed to update ck order status: %w", err)
+	}
+
+	if input.Status == "delivered" && atual != "delivered" {
+		if _, err := tx.Exec(ctx, baixaEntregaSQL, input.ID, companyID); err != nil {
+			return nil, fmt.Errorf("failed to apply stock baixa: %w", err)
+		}
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("failed to commit ck order status: %w", err)
 	}
 	return order, nil
 }
+
+// baixaEntregaSQL dá baixa no estoque de um pedido entregue ($1 = pedido,
+// $2 = empresa). Mesma regra do front (explodirInsumos em utils/producao.ts):
+//
+//   - explode cada item ligado a produto pela ficha técnica, recursivamente,
+//     multiplicando as quantidades; um produto que já está no caminho é
+//     ignorado (guarda de ciclo), e a profundidade para em 32;
+//   - soma o consumo por insumo, só de insumos da própria empresa;
+//   - grava uma movimentação 'baixa' por insumo. O índice único parcial
+//     (order_id, insumo_id) WHERE tipo='baixa' torna isso idempotente: o que
+//     já tinha baixa não entra de novo, e só o que entrou desconta estoque;
+//   - o estoque nunca fica negativo (GREATEST(0, ...)), como no front.
+const baixaEntregaSQL = `
+WITH RECURSIVE explode (produto_id, fator, caminho) AS (
+	SELECT oi.produto_id, oi.quantity::numeric, ARRAY[oi.produto_id]
+	FROM cozinha_pass.order_item oi
+	WHERE oi.order_id = $1 AND oi.produto_id IS NOT NULL
+	UNION ALL
+	SELECT cf.produto_ref_id, (e.fator * cf.quantidade)::numeric, e.caminho || cf.produto_ref_id
+	FROM explode e
+	JOIN cozinha_pass.componente_ficha cf ON cf.produto_id = e.produto_id
+	WHERE cf.ref_tipo = 'produto'
+	  AND NOT (cf.produto_ref_id = ANY (e.caminho))
+	  AND cardinality(e.caminho) < 32
+),
+consumo AS (
+	SELECT cf.insumo_ref_id AS insumo_id, SUM(e.fator * cf.quantidade) AS quantidade
+	FROM explode e
+	JOIN cozinha_pass.componente_ficha cf ON cf.produto_id = e.produto_id
+	JOIN cozinha_pass.insumo i ON i.id = cf.insumo_ref_id AND i.company_id = $2
+	WHERE cf.ref_tipo = 'insumo'
+	GROUP BY cf.insumo_ref_id
+),
+lancado AS (
+	INSERT INTO cozinha_pass.movimentacao_estoque (insumo_id, order_id, tipo, quantidade, created_at)
+	SELECT insumo_id, $1, 'baixa', quantidade, NOW()
+	FROM consumo
+	WHERE quantidade > 0
+	ON CONFLICT (order_id, insumo_id) WHERE tipo = 'baixa' DO NOTHING
+	RETURNING insumo_id, quantidade
+)
+UPDATE cozinha_pass.insumo i
+SET estoque = GREATEST(0, i.estoque - l.quantidade), updated_at = NOW()
+FROM lancado l
+WHERE i.id = l.insumo_id
+`
 
 func (s *pgCKOrderStore) Delete(ctx context.Context, id string) error {
 	if strings.TrimSpace(id) == "" {

@@ -26,13 +26,15 @@ func (s *pgCKMovimentacaoStore) Registrar(ctx context.Context, input *RegistrarM
 		return nil, fmt.Errorf("insumo_id is required: %w", t.ErrInvalidInput)
 	}
 
-	// Para tipo 'baixa': idempotente via unique index. INSERT ... ON CONFLICT DO NOTHING;
+	// Para tipo 'baixa': idempotente via índice único parcial. Ele não é uma
+	// constraint, então o ON CONFLICT precisa repetir colunas e predicado
+	// (ON CONFLICT ON CONSTRAINT falharia com "constraint does not exist").
 	// se não inseriu (conflito), busca o registro existente.
 	if input.Tipo == "baixa" && input.OrderID != nil {
 		const q = `
 			INSERT INTO cozinha_pass.movimentacao_estoque (insumo_id, order_id, tipo, quantidade, created_at)
 			VALUES ($1,$2,$3,$4,$5)
-			ON CONFLICT ON CONSTRAINT idx_ck_movimentacao_baixa_idempotente DO NOTHING
+			ON CONFLICT (order_id, insumo_id) WHERE tipo = 'baixa' DO NOTHING
 			RETURNING id, insumo_id, order_id, tipo, quantidade, created_at
 		`
 		row := s.exec.QueryRow(ctx, q, input.InsumoID, input.OrderID, input.Tipo, input.Quantidade, time.Now().UTC())
