@@ -36,12 +36,16 @@ func (s *pgCKCompanyStore) Create(ctx context.Context, input *CreateCKCompanyInp
 	}
 
 	const q = `
-		INSERT INTO cozinha_pass.company (name, logo, brand_color, cuisine, active_status, created_at)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id, name, logo, brand_color, cuisine, active_status, created_at
+		INSERT INTO cozinha_pass.company (tenant_id, name, logo, brand_color, cuisine, active_status, created_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING id, tenant_id, name, logo, brand_color, cuisine, active_status, created_at
 	`
+	var tenantID any
+	if tid := strings.TrimSpace(input.TenantID); tid != "" {
+		tenantID = tid
+	}
 	row := s.exec.QueryRow(ctx, q,
-		input.Name, input.Logo, brandColor, input.Cuisine, activeStatus, time.Now().UTC(),
+		tenantID, input.Name, input.Logo, brandColor, input.Cuisine, activeStatus, time.Now().UTC(),
 	)
 	company, err := scanCKCompany(row)
 	if err != nil {
@@ -62,7 +66,7 @@ func (s *pgCKCompanyStore) GetByID(ctx context.Context, id string) (*CKCompany, 
 		return nil, nil
 	}
 	const q = `
-		SELECT id, name, logo, brand_color, cuisine, active_status, created_at
+		SELECT id, tenant_id, name, logo, brand_color, cuisine, active_status, created_at
 		FROM cozinha_pass.company WHERE id = $1
 	`
 	row := s.exec.QueryRow(ctx, q, id)
@@ -122,7 +126,7 @@ func (s *pgCKCompanyStore) Update(ctx context.Context, input *UpdateCKCompanyInp
 		query := fmt.Sprintf(`
 			UPDATE cozinha_pass.company SET %s
 			WHERE id = $%d
-			RETURNING id, name, logo, brand_color, cuisine, active_status, created_at
+			RETURNING id, tenant_id, name, logo, brand_color, cuisine, active_status, created_at
 		`, strings.Join(sets, ", "), idx)
 		row := s.exec.QueryRow(ctx, query, args...)
 		var err error
@@ -187,6 +191,17 @@ func (s *pgCKCompanyStore) List(ctx context.Context, filters *CKCompanyFilters) 
 	idx := 1
 
 	if filters != nil {
+		if filters.TenantIDs != nil {
+			if len(filters.TenantIDs) == 0 {
+				// Fail-closed: escopo vazio não enxerga nenhuma empresa.
+				return &t.PaginatedResult[CKCompany]{
+					Data: []CKCompany{}, Total: 0, Page: page, Limit: limit, TotalPages: 0,
+				}, nil
+			}
+			wheres = append(wheres, fmt.Sprintf("tenant_id = ANY($%d::uuid[])", idx))
+			args = append(args, filters.TenantIDs)
+			idx++
+		}
 		if filters.Name != nil && strings.TrimSpace(*filters.Name) != "" {
 			wheres = append(wheres, fmt.Sprintf("name ILIKE $%d", idx))
 			args = append(args, "%"+*filters.Name+"%")
@@ -211,7 +226,7 @@ func (s *pgCKCompanyStore) List(ctx context.Context, filters *CKCompanyFilters) 
 
 	args = append(args, limit, offset)
 	rows, err := s.exec.Query(ctx, fmt.Sprintf(`
-		SELECT id, name, logo, brand_color, cuisine, active_status, created_at
+		SELECT id, tenant_id, name, logo, brand_color, cuisine, active_status, created_at
 		FROM cozinha_pass.company %s
 		ORDER BY created_at DESC LIMIT $%d OFFSET $%d
 	`, where, idx, idx+1), args...)
@@ -280,7 +295,7 @@ func (s *pgCKCompanyStore) GetChannels(ctx context.Context, companyID string) ([
 func scanCKCompany(scanner interface{ Scan(...any) error }) (*CKCompany, error) {
 	var c CKCompany
 	var createdAt time.Time
-	err := scanner.Scan(&c.ID, &c.Name, &c.Logo, &c.BrandColor, &c.Cuisine, &c.ActiveStatus, &createdAt)
+	err := scanner.Scan(&c.ID, &c.TenantID, &c.Name, &c.Logo, &c.BrandColor, &c.Cuisine, &c.ActiveStatus, &createdAt)
 	if err != nil {
 		return nil, err
 	}

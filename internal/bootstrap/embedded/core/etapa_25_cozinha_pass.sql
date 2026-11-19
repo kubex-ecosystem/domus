@@ -150,4 +150,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_ck_movimentacao_baixa_idempotente
     ON cozinha_pass.movimentacao_estoque (order_id, insumo_id) WHERE tipo = 'baixa';
 \echo '  Tabela cozinha_pass.movimentacao_estoque criada'
 
+-- ── Tenancy: cada empresa pertence a um tenant ───────────────────────────────
+-- Aditiva e anulável (mesma regra da extensão cozinha_pass_tenancy): empresa
+-- sem tenant fica invisível para o gateway, que filtra por tenant.
+ALTER TABLE cozinha_pass.company
+    ADD COLUMN IF NOT EXISTS tenant_id UUID REFERENCES public.tenant(id) ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS idx_ck_company_tenant ON cozinha_pass.company (tenant_id);
+\echo '  Coluna cozinha_pass.company.tenant_id criada'
+
 \echo 'ETAPA 25 concluída com sucesso!'

@@ -9,6 +9,7 @@ import (
 
 type CKCompany struct {
 	ID           string     `json:"id"`
+	TenantID     *string    `json:"tenant_id,omitempty"`
 	Name         string     `json:"name"`
 	Logo         *string    `json:"logo,omitempty"`
 	BrandColor   string     `json:"brand_color"`
@@ -19,6 +20,9 @@ type CKCompany struct {
 }
 
 type CreateCKCompanyInput struct {
+	// TenantID é o tenant dono da empresa. Opcional por compatibilidade, mas
+	// empresas sem tenant não aparecem em listagens filtradas por TenantIDs.
+	TenantID     string
 	Name         string
 	Logo         *string
 	BrandColor   string
@@ -38,6 +42,9 @@ type UpdateCKCompanyInput struct {
 }
 
 type CKCompanyFilters struct {
+	// TenantIDs restringe a listagem às empresas desses tenants. nil = sem
+	// filtro (uso interno); slice vazio = nenhuma empresa (fail-closed).
+	TenantIDs    []string
 	Name         *string
 	ActiveStatus *string
 	Page         int
