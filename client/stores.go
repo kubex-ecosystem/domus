@@ -226,6 +226,13 @@ const (
 	StatusExpired  = invite.StatusExpired
 )
 
+// ErrCKTransicaoInvalida: UpdateStatus recusou a mudança de status do pedido
+// (ex.: sair de delivered). Use errors.Is para responder 409.
+var ErrCKTransicaoInvalida = ckorderstore.ErrTransicaoInvalida
+
+// CKTransicaoValida diz se um pedido pode ir do status `de` para `para`.
+func CKTransicaoValida(de, para string) bool { return ckorderstore.TransicaoValida(de, para) }
+
 // GetUserStore é um helper para obter UserStore diretamente.
 func (c *DSClientImpl) GetUserStore(ctx context.Context, dbName string) (UserStore, error) {
 	conn, err := c.GetConn(ctx, dbName)

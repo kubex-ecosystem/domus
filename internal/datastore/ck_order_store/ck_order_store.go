@@ -2,6 +2,7 @@ package ckorderstore
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	t "github.com/kubex-ecosystem/domus/internal/types"
@@ -56,6 +57,35 @@ type CreateCKOrderInput struct {
 	Items       []CreateCKOrderItemInput `json:"items"`
 }
 
+// ErrTransicaoInvalida: o pedido não pode ir do status atual para o pedido.
+// O gateway responde 409 a esse erro (errors.Is).
+var ErrTransicaoInvalida = errors.New("transição de status inválida")
+
+// statusAtivos são os status em que o pedido ainda está na cozinha. Entre eles
+// o pedido anda para frente ou volta (operador arrastou para a coluna errada).
+var statusAtivos = map[string]bool{"new": true, "preparing": true, "ready": true}
+
+// TransicaoValida diz se um pedido pode ir de `de` para `para`.
+//
+//   - entre new, preparing e ready: livre, nos dois sentidos;
+//   - de qualquer status ativo para delivered ou cancelled: permitido;
+//   - delivered e cancelled são finais: nada sai deles. É isso que garante que
+//     a baixa de estoque da entrega acontece uma vez só;
+//   - mesmo status: permitido (no-op idempotente).
+func TransicaoValida(de, para string) bool {
+	if de == para {
+		return statusValido(para)
+	}
+	if !statusAtivos[de] {
+		return false
+	}
+	return statusAtivos[para] || para == "delivered" || para == "cancelled"
+}
+
+func statusValido(s string) bool {
+	return statusAtivos[s] || s == "delivered" || s == "cancelled"
+}
+
 type UpdateCKOrderStatusInput struct {
 	ID     string `json:"id"`
 	Status string `json:"status"`
@@ -81,6 +111,10 @@ type CKOrderStore interface {
 	// GetByExternalID busca por (empresa, ID da plataforma de origem) — a via de
 	// idempotência de pedidos de marketplace. (nil,nil) se não existir.
 	GetByExternalID(ctx context.Context, companyID, externalID string) (*CKOrder, error)
+	// UpdateStatus muda o status numa transação: trava o pedido, valida a
+	// transição (ErrTransicaoInvalida se não vale) e, ao entrar em delivered,
+	// dá baixa no estoque explodindo a ficha técnica de cada item até os
+	// insumos. A baixa é idempotente por (pedido, insumo).
 	UpdateStatus(ctx context.Context, input *UpdateCKOrderStatusInput) (*CKOrder, error)
 	Delete(ctx context.Context, id string) error
 	List(ctx context.Context, filters *CKOrderFilters) (*t.PaginatedResult[CKOrder], error)
