@@ -70,8 +70,8 @@ CREATE TABLE IF NOT EXISTS cozinha_pass.componente_ficha (
     id             UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
     produto_id     UUID          NOT NULL REFERENCES cozinha_pass.produto(id) ON DELETE CASCADE,
     ref_tipo       TEXT          NOT NULL CHECK (ref_tipo IN ('insumo','produto')),
-    insumo_ref_id  UUID          REFERENCES cozinha_pass.insumo(id)   ON DELETE RESTRICT,
-    produto_ref_id UUID          REFERENCES cozinha_pass.produto(id)  ON DELETE RESTRICT,
+    insumo_ref_id  UUID          REFERENCES cozinha_pass.insumo(id)   ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED,
+    produto_ref_id UUID          REFERENCES cozinha_pass.produto(id)  ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED,
     quantidade     NUMERIC(14,4) NOT NULL CHECK (quantidade > 0),
     CONSTRAINT ref_coerente CHECK (
         (ref_tipo = 'insumo'  AND insumo_ref_id  IS NOT NULL AND produto_ref_id IS NULL) OR
@@ -159,3 +159,17 @@ CREATE INDEX IF NOT EXISTS idx_ck_company_tenant ON cozinha_pass.company (tenant
 \echo '  Coluna cozinha_pass.company.tenant_id criada'
 
 \echo 'ETAPA 25 concluída com sucesso!'
+
+-- ── Ficha técnica: FK adiada em vez de RESTRICT ──────────────────────────────
+-- Mesma regra da extensão cozinha_pass_ficha_fk. RESTRICT barrava o cascade ao
+-- apagar a empresa; a FK adiada checa no commit, quando a ficha já saiu junto.
+-- Apagar direto um insumo/produto em uso continua recusado.
+ALTER TABLE cozinha_pass.componente_ficha
+    DROP CONSTRAINT IF EXISTS componente_ficha_insumo_ref_id_fkey,
+    ADD CONSTRAINT componente_ficha_insumo_ref_id_fkey
+        FOREIGN KEY (insumo_ref_id) REFERENCES cozinha_pass.insumo(id) ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE cozinha_pass.componente_ficha
+    DROP CONSTRAINT IF EXISTS componente_ficha_produto_ref_id_fkey,
+    ADD CONSTRAINT componente_ficha_produto_ref_id_fkey
+        FOREIGN KEY (produto_ref_id) REFERENCES cozinha_pass.produto(id) ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED;
+\echo '  FKs da ficha técnica adiadas (DEFERRABLE)'
